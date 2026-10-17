@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <meta name="theme-color" content="#2f5d8a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -113,12 +113,14 @@ input.text:focus{outline:3px solid #9cc0e4;border-color:var(--accent)}
 .help h2{font-size:21px;margin:18px 0 6px}
 .help ol,.help ul{padding-left:24px}
 .help li{margin:6px 0}
-#modal{position:fixed;inset:0;background:rgba(20,25,30,.5);display:none;align-items:flex-end;justify-content:center;z-index:100;padding:10px}
+#modal{position:fixed;inset:0;background:rgba(20,25,30,.5);display:none;align-items:flex-end;justify-content:center;z-index:100;padding:10px;overflow:hidden}
 #modal.show{display:flex}
-.sheet{background:#fff;border-radius:18px;width:100%;max-width:520px;padding:18px 16px calc(14px + env(safe-area-inset-bottom));box-shadow:0 10px 40px rgba(0,0,0,.3);max-height:90vh;overflow:auto}
+.sheet{background:#fff;border-radius:18px;width:100%;max-width:520px;padding:18px 16px calc(14px + env(safe-area-inset-bottom));box-shadow:0 10px 40px rgba(0,0,0,.3);max-height:100%;overflow:auto;overscroll-behavior:contain;margin:0}
 .sheet h2{margin:0 0 8px;font-size:21px}
 .sheet .msg{margin:0 0 12px;white-space:pre-line}
-.sheet .btns{display:flex;gap:8px;margin-top:14px}
+.sheet .btns{display:flex;gap:8px;margin-top:14px;position:sticky;bottom:calc(-14px - env(safe-area-inset-bottom));background:#fff;padding:8px 0 4px}
+.sheet input.text{scroll-margin-top:12px;scroll-margin-bottom:96px}
+.sheet .draftnote{background:#fff3cd;border-radius:8px;padding:6px 10px;color:#4d3b00}
 .sheet .btns button{flex:1;min-height:54px;border-radius:12px;font-size:18px;font-weight:700;border:1px solid var(--line);background:#fff}
 .sheet .btns .ok{background:var(--accent);color:#fff;border-color:var(--accent)}
 .sheet .btns .ok.red{background:var(--danger);border-color:var(--danger)}
@@ -145,13 +147,16 @@ input.text:focus{outline:3px solid #9cc0e4;border-color:var(--accent)}
 "use strict";
 /* Copy of the untouched page, captured before anything is drawn. Used for "give someone the app". */
 var PRISTINE = document.documentElement.cloneNode(true);
-var APP_VERSION = "0.5 (proof of concept)";
+var APP_VERSION = "0.6 (proof of concept)";
 /* When the app is opened from a web address (not a saved file), let it be installed and work offline. */
 var HOSTED = /^https?:$/.test(location.protocol);
 if (HOSTED){
   var ml = document.createElement("link"); ml.rel = "manifest"; ml.href = "manifest.webmanifest"; document.head.appendChild(ml);
   if ("serviceWorker" in navigator) window.addEventListener("load", function(){ navigator.serviceWorker.register("sw.js").catch(function(e){ console.warn("offline helper not started", e); }); });
 }
+/* After Chrome installs it: on some Android phones (Samsung) the icon goes only to the app drawer. */
+var INSTALL_TIP = "Look in your app drawer. To put it on your home screen, long-press the icon and pick Add to Home.";
+window.addEventListener("appinstalled", function(){ setTimeout(function(){ if (typeof info === "function") info("The app is installed", INSTALL_TIP); }, 0); });
 var FORMAT = "witnessing-app";
 
 /* ---------- small helpers ---------- */
@@ -419,23 +424,74 @@ function move(arr, i, d){ var j = i + d; if (j < 0 || j >= arr.length) return; v
 function idx(arr, id){ for (var i=0;i<arr.length;i++) if (arr[i].id === id) return i; return -1; }
 
 /* ---------- pop-up questions and messages ---------- */
+/* Pop-ups and the phone's Back button. Opening a pop-up adds a step to the browser history, so Back closes the
+   pop-up first (like Cancel). Closing it with its own buttons takes that step out again, so Back isn't needed twice. */
+var sheet = null, sheetSeq = 0, skipPop = 0;
+function sheetOpened(onBack){
+  var id = ++sheetSeq; sheet = { id:id, onBack:onBack, pushed:false };
+  try { history.pushState({ waSheet:id }, "", location.href); sheet.pushed = true; } catch(e){}
+  fitSheet(); return id;
+}
+function sheetClosed(id){
+  if (!sheet || sheet.id !== id) return Promise.resolve();
+  var sh = sheet; sheet = null;
+  if (!sh.pushed || !(history.state && history.state.waSheet === id)) return Promise.resolve();
+  return new Promise(function(res){
+    var t, finished = false;
+    function fin(){ if (finished) return; finished = true; window.removeEventListener("popstate", fin); clearTimeout(t); res(); }
+    skipPop++; window.addEventListener("popstate", fin);
+    t = setTimeout(function(){ if (skipPop) skipPop--; fin(); }, 700);
+    history.back();
+  });
+}
+window.addEventListener("popstate", function(e){
+  if (skipPop){ skipPop--; return; }
+  if (sheet && !(e.state && e.state.waSheet === sheet.id)){ var sh = sheet; sheet = null; sh.onBack(); }
+});
+/* Keep the pop-up above the on-screen keyboard: size it to the part of the screen that is really visible. */
+function fitSheet(){
+  var m = $("#modal"); if (!m || !m.classList.contains("show")) return;
+  var vv = window.visualViewport;
+  if (vv && vv.height > 0){ m.style.top = Math.max(0, vv.offsetTop) + "px"; m.style.left = Math.max(0, vv.offsetLeft) + "px"; m.style.width = vv.width + "px"; m.style.height = vv.height + "px"; m.style.right = "auto"; m.style.bottom = "auto"; }
+  var f = document.activeElement;
+  if (f && m.contains(f) && /^(INPUT|TEXTAREA)$/.test(f.tagName)){ try { f.scrollIntoView({ block:"nearest" }); } catch(e){} }
+}
+if (window.visualViewport){ window.visualViewport.addEventListener("resize", fitSheet); window.visualViewport.addEventListener("scroll", fitSheet); }
+window.addEventListener("resize", fitSheet);
+document.addEventListener("focusin", function(e){ var m = $("#modal"); if (m && m.contains(e.target)){ setTimeout(fitSheet, 60); setTimeout(fitSheet, 400); } });
+/* Unfinished text in a pop-up that was cancelled (or closed with Back) is kept and filled in next time. */
+var drafts = {};
 function modal(opts){
   return new Promise(function(resolve){
     var m = $("#modal");
     var fields = opts.fields || [];
-    var h = '<div class="sheet"><h2>' + esc(opts.title||"") + '</h2>' + (opts.message ? '<p class="msg">' + esc(opts.message) + '</p>' : '');
-    fields.forEach(function(f, i){ h += '<label class="fl" for="mf'+i+'">' + esc(f.label) + '</label><input class="text" id="mf'+i+'" type="'+(f.type||"text")+'" autocomplete="off" '+(f.type==="url"?'inputmode="url" autocapitalize="off"':'autocapitalize="sentences"')+' placeholder="'+esc(f.placeholder||"")+'" value="'+esc(f.value||"")+'">'; });
-    h += '<div class="btns">' + (opts.cancel === false ? '' : '<button type="button" class="no">' + esc(opts.cancel||"Cancel") + '</button>') + '<button type="button" class="ok' + (opts.danger?' red':'') + '">' + esc(opts.ok||"OK") + '</button></div></div>';
+    var dkey = (opts.title || "") + "\u0001" + fields.map(function(f){ return f.value || ""; }).join("\u0001"), draft = fields.length ? drafts[dkey] : null;
+    var h = '<form class="sheet" novalidate autocomplete="off"><h2>' + esc(opts.title||"") + '</h2>' + (opts.message ? '<p class="msg">' + esc(opts.message) + '</p>' : '');
+    if (draft) h += '<p class="hint draftnote">Your unfinished text from last time is filled in.</p>';
+    fields.forEach(function(f, i){ var last = i === fields.length - 1; h += '<label class="fl" for="mf'+i+'">' + esc(f.label) + '</label><input class="text" id="mf'+i+'" type="'+(f.type||"text")+'" autocomplete="off" enterkeyhint="' + (last ? (fields.length === 1 ? "go" : "done") : "next") + '" '+(f.type==="url"?'inputmode="url" autocapitalize="off"':'autocapitalize="sentences"')+' placeholder="'+esc(f.placeholder||"")+'" value="'+esc(draft ? draft[i] : (f.value||""))+'">'; });
+    h += '<div class="btns">' + (opts.cancel === false ? '' : '<button type="button" class="no">' + esc(opts.cancel||"Cancel") + '</button>') + '<button type="submit" class="ok' + (opts.danger?' red':'') + '">' + esc(opts.ok||"OK") + '</button></div></form>';
     m.innerHTML = h; m.classList.add("show");
+    var form = $("form", m), closing = false, id;
     var first = $("#mf0", m);
-    if (first){ setTimeout(function(){ first.focus(); try { first.select(); } catch(e){} }, 30); } else { setTimeout(function(){ var o = $(".ok", m); if (o) o.focus(); }, 30); }
-    function done(val){ m.classList.remove("show"); m.innerHTML = ""; document.removeEventListener("keydown", key); resolve(val); }
-    function ok(){ if (!fields.length) return done(true); var vals = fields.map(function(f, i){ return $("#mf"+i, m).value; }); if (fields.length === 1 && !cleanTitle(vals[0]) && fields[0].required !== false){ $("#mf0", m).focus(); return; } done(fields.length === 1 ? vals[0] : vals); }
-    function key(e){ if (e.key === "Escape") done(null); else if (e.key === "Enter" && e.target.tagName === "INPUT"){ e.preventDefault(); ok(); } }
+    if (first){ setTimeout(function(){ if (closing || m.contains(document.activeElement)) return; first.focus(); try { first.select(); } catch(e){} }, 30); } else { setTimeout(function(){ var o = $(".ok", m); if (o) o.focus(); }, 30); }
+    function values(){ return fields.map(function(f, i){ return $("#mf"+i, m).value; }); }
+    function edited(){ var v = values(); return fields.some(function(f, i){ return cleanTitle(v[i]) !== cleanTitle(f.value || ""); }); }
+    function done(val, keepDraft){
+      if (closing) return; closing = true;
+      if (fields.length){ if (keepDraft && edited()) drafts[dkey] = values(); else delete drafts[dkey]; }
+      m.classList.remove("show"); m.innerHTML = ""; document.removeEventListener("keydown", key);
+      sheetClosed(id).then(function(){ resolve(val); });
+    }
+    function cancel(){ done(null, true); }
+    function ok(){ if (!fields.length) return done(true); var vals = values(); if (fields.length === 1 && !cleanTitle(vals[0]) && fields[0].required !== false){ $("#mf0", m).focus(); return; } done(fields.length === 1 ? vals[0] : vals, false); }
+    /* Enter (or Go / Next on a phone keyboard): next field, or OK from the last one. */
+    function enter(el){ var i = fields.length ? Array.prototype.indexOf.call(m.querySelectorAll("input.text"), el) : -1; if (i >= 0 && i < fields.length - 1){ var nx = $("#mf"+(i+1), m); nx.focus(); try { nx.select(); } catch(e){} } else ok(); }
+    function key(e){ if (closing) return; if (e.key === "Escape") cancel(); else if (e.key === "Enter" && e.target.tagName === "INPUT" && m.contains(e.target)){ e.preventDefault(); enter(e.target); } }
     document.addEventListener("keydown", key);
-    $(".ok", m).onclick = ok;
-    var no = $(".no", m); if (no) no.onclick = function(){ done(null); };
-    m.onclick = function(e){ if (e.target === m && opts.cancel !== false) done(null); };
+    form.addEventListener("submit", function(e){ e.preventDefault(); var a = document.activeElement; if (a && a.tagName === "INPUT" && m.contains(a)) enter(a); else ok(); });
+    var no = $(".no", m); if (no) no.onclick = cancel;
+    m.onclick = function(e){ if (e.target === m && opts.cancel !== false) cancel(); };
+    id = sheetOpened(cancel);
   });
 }
 function ask(title, label, value, okText){ return modal({title:title, fields:[{label:label, value:value||""}], ok:okText||"Save"}).then(function(v){ return v == null ? null : cleanTitle(v); }); }
@@ -589,8 +645,8 @@ function viewShare(){
 }
 function viewHelp(){
   var h = header("#/", "Sections", "How to use") + '<main class="help">';
-  h += '<section class="panel"><h2 style="margin-top:0">Writing</h2><ol><li><b>Sections</b> are your big groups (for example “The Deity of Christ”). Tap <b>＋ New section</b>.</li><li>Open a section and tap <b>＋ New topic</b>. Give it a name and start typing right away.</li><li>A topic is made of <b>parts</b>, like the pieces of a tract. Tap <b>＋ Add a part</b> for the next piece, and <b>✎ Edit</b> to change one.</li><li>While editing, use the buttons for <b>Bold</b>, <i>Italic</i>, <b>Heading</b>, <b>Subheading</b>, <b>Quote</b> (a box for Bible verses), lists, <b>Link</b>, and <b>Picture</b>. Pictures are made smaller automatically so files stay small. Tap a picture while editing to make it small, medium, or full width, or to add a caption.</li><li>To rename, reorder, or delete, tap <b>✎ Change order, names, or delete</b> at the bottom of a list. Move things with the ↑ ↓ buttons, or press and drag the <b>≡ Drag</b> handle. Tap <b>✓ Done changing</b> when finished.</li><li>To find something, tap <b>🔍 Search your notes</b> on the main screen and type a word. Tap a result to open it. If a word is spelled a little differently, close matches are shown.</li></ol></section>';
-  h += '<section class="panel"><h2 style="margin-top:0">Put it on your home screen</h2><p>Open the app’s web address once while online. Then add it to your home screen: on <b>iPhone</b> (Safari), tap Share (the square with an arrow), then <b>Add to Home Screen</b>. On <b>Android</b> (Chrome), tap ⋮, then <b>Add to Home screen</b> or <b>Install app</b>. After that it opens like an app and works with no internet.</p>' + (HOSTED ? '<p>This app’s web address (send it to anyone who wants the app):<br><span class="addr" id="addr">' + esc(location.origin + location.pathname) + '</span></p>' : '<p>You opened this app as a saved file, so it has no web address here. To give it to someone, use <b>⇪ Share</b> → “Blank app”.</p>') + '</section>';
+  h += '<section class="panel"><h2 style="margin-top:0">Writing</h2><ol><li><b>Sections</b> are your big groups (for example “The Deity of Christ”). Tap <b>＋ New section</b>.</li><li>Open a section and tap <b>＋ New topic</b>. Give it a name and start typing right away.</li><li>A topic is made of <b>parts</b>, like the pieces of a tract. Tap <b>＋ Add a part</b> for the next piece, and <b>✎ Edit</b> to change one.</li><li>While editing, use the buttons for <b>Bold</b>, <i>Italic</i>, <b>Heading</b>, <b>Subheading</b>, <b>Quote</b> (a box for Bible verses), lists, <b>Link</b>, and <b>Picture</b>. Pictures are made smaller automatically so files stay small. Tap a picture while editing to make it small, medium, or full width, or to add a caption.</li><li>To rename, reorder, or delete, tap <b>✎ Change order, names, or delete</b> at the bottom of a list. Move things with the ↑ ↓ buttons, or press and drag the <b>≡ Drag</b> handle. Tap <b>✓ Done changing</b> when finished.</li><li>The phone’s <b>Back</b> button closes a pop-up first (anything you typed in it is kept for next time), then goes back one screen at a time.</li><li>To find something, tap <b>🔍 Search your notes</b> on the main screen and type a word. Tap a result to open it. If a word is spelled a little differently, close matches are shown.</li></ol></section>';
+  h += '<section class="panel"><h2 style="margin-top:0">Put it on your home screen</h2><p>Open the app’s web address once while online. Then add it to your home screen: on <b>iPhone</b> (Safari), tap Share (the square with an arrow), then <b>Add to Home Screen</b>. On <b>Android</b> (Chrome), tap ⋮, then <b>Add to Home screen</b>; if Chrome asks, pick <b>Install app</b> (not “Create shortcut”). After that it opens like an app and works with no internet.</p><p id="installtip"><b>No icon on your home screen?</b> Look in your app drawer. To put it on your home screen, long-press the icon and pick Add to Home.</p>' + (HOSTED ? '<p>This app’s web address (send it to anyone who wants the app):<br><span class="addr" id="addr">' + esc(location.origin + location.pathname) + '</span></p>' : '<p>You opened this app as a saved file, so it has no web address here. To give it to someone, use <b>⇪ Share</b> → “Blank app”.</p>') + '</section>';
   h += '<section class="panel"><h2 style="margin-top:0">Backing up</h2><p>Your notes are kept inside this browser on this phone. If you clear your browser’s data, they could be lost. So now and then go to <b>⇪ Share</b>, tick everything, and tap <b>Save</b>. Keep that file in Files, Google Drive, or email it to yourself. To restore, use <b>Bring in notes from a file</b>.</p></section>';
   h += '<section class="panel"><h2 style="margin-top:0">Sharing</h2><ul><li><b>Some notes:</b> in Share, tick the sections or topics you want and tap Send or Save. The other person opens the file with <b>Bring in notes</b> in their copy. It is added next to their notes; nothing of theirs is replaced.</li><li><b>The app itself:</b> “Blank app” gives a clean copy. “App with the ticked notes built in” gives a copy that already has those notes.</li><li>If something you send has the same name as something they already have but different words, it is added as “… (imported)” so both are kept.</li><li><b>Copies of the app:</b> a copy saved from Share (“Blank app” or “App with the ticked notes built in”) keeps its own notes, so it won’t mix with yours, even on the same phone. But the <b>same</b> app opened twice (two tabs, or the same file opened again) shares one set of notes on that phone. That’s fine: changes from both are combined, and nothing is lost.</li></ul></section>';
   h += '<section class="panel"><h2 style="margin-top:0">Samples</h2><p>The “Sample” sections show how things work. Delete them whenever you like. Scripture in the samples is from the King James Version.</p><button class="plain" data-act="addSamples">Put the sample sections back</button></section>';
@@ -1069,7 +1125,8 @@ function pictureSheet(fig){
     '</div><label class="fl" for="pcap">Caption (optional)</label><input class="text" id="pcap" autocomplete="off" autocapitalize="sentences" placeholder="Words to show under the picture" value="' + esc(capEl ? capEl.textContent : "") + '">' +
     '<div class="btns"><button type="button" class="warn" id="prm">Remove picture</button><button type="button" class="ok" id="pok">Done</button></div></div>';
   $(".pv", m).src = img.src; m.classList.add("show");
-  function close(changed){ m.classList.remove("show"); m.innerHTML = ""; document.removeEventListener("keydown", key); if (changed){ var box = $("#ed"); if (box){ box.dispatchEvent(new Event("input")); flushEditor(); } } }
+  var sid, closed = false;
+  function close(changed){ if (closed) return; closed = true; m.classList.remove("show"); m.innerHTML = ""; document.removeEventListener("keydown", key); if (changed){ var box = $("#ed"); if (box){ box.dispatchEvent(new Event("input")); flushEditor(); } } sheetClosed(sid); }
   function done(){
     fig.setAttribute("class", "pic size-" + size);
     var c = cleanTitle($("#pcap", m).value).slice(0, 300);
@@ -1082,6 +1139,7 @@ function pictureSheet(fig){
   $("#prm", m).onclick = function(){ if (!armed){ armed = true; this.textContent = "Tap again to remove"; return; } fig.remove(); close(true); toast("Picture removed."); };
   $("#pok", m).onclick = done;
   m.onclick = function(e){ if (e.target === m) close(false); };
+  sid = sheetOpened(function(){ done(); });  /* Back keeps what was chosen (size, caption), like Done */
 }
 $("#pickImage").addEventListener("change", function(e){ var f = e.target.files && e.target.files[0]; e.target.value = ""; insertImageFile(f); });
 
