@@ -165,16 +165,18 @@ input.text:focus{outline:3px solid #9cc0e4;border-color:var(--accent)}
 .sr{position:absolute;left:-9999px}
 #banner{position:relative;background:#fff3cd;color:#4d3b00;border-bottom:1px solid #e6cf7a;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;display:none;font-size:16px}
 #banner.show{display:block}
-#updnote{display:block;width:100%;min-height:52px;border:0;border-bottom:1px solid #b9d3b2;background:#e8f5ec;color:#1e4d2b;font-size:17px;font-weight:700;padding:calc(8px + env(safe-area-inset-top)) 14px 8px}
+#updnote{position:fixed;top:0;left:0;right:0;z-index:40;display:flex;align-items:center;gap:6px;min-height:60px;background:#e8f5ec;border-bottom:1px solid #b9d3b2;box-shadow:0 2px 6px rgba(0,0,0,.12);padding:calc(6px + env(safe-area-inset-top)) 8px 6px}
+#updgo{flex:1;min-height:48px;border:0;background:none;color:#1e4d2b;font-size:17px;font-weight:700;text-align:left;padding:0 6px}
+#updlater{flex:none;min-height:44px;min-width:64px;border:1px solid #9cc3a2;border-radius:10px;background:#fff;color:#1e4d2b;font-weight:650}
 #updnote[hidden]{display:none}
-.ver{text-align:center;color:var(--muted);font-size:13px;margin:22px 0 4px}
+.ver{color:var(--muted);font-size:13px;margin:-8px 2px 12px}
 #banner button{display:block;margin:6px 0 0 auto;min-height:48px;min-width:96px;border-radius:10px;border:1px solid #c9a93a;background:#fff;font-weight:700}
 .addr{overflow-wrap:anywhere;font-weight:650}
 </style>
 </head>
 <body>
 <div id="banner" role="status" aria-live="polite"></div>
-<button type="button" id="updnote" hidden>✨ New version ready — tap to update</button>
+<div id="updnote" role="status" hidden><button type="button" id="updgo">✨ New version ready — tap to update</button><button type="button" id="updlater">Later</button></div>
 <div id="app"><header class="top"><h1>My Witnessing Notes</h1></header><main id="main"><p class="lead">Loading…</p></main></div>
 <div id="modal" role="dialog" aria-modal="true"></div>
 <div id="toast" role="status" aria-live="polite"></div>
@@ -186,7 +188,7 @@ input.text:focus{outline:3px solid #9cc0e4;border-color:var(--accent)}
 "use strict";
 /* Copy of the untouched page, captured before anything is drawn. Used for "give someone the app". */
 var PRISTINE = document.documentElement.cloneNode(true);
-var APP_VERSION = "0.8 (proof of concept)";
+var APP_VERSION = "0.9 (proof of concept)";
 /* When the app is opened from a web address (not a saved file), let it be installed and work offline. */
 var HOSTED = /^https?:$/.test(location.protocol);
 if (HOSTED){
@@ -200,7 +202,7 @@ window.addEventListener("appinstalled", function(){ setTimeout(function(){ if (t
 /* Updates: look for a new version when the app opens and whenever it comes back to the screen.
    A new version is never switched in by itself: a note offers it, and tapping the note saves any open text first,
    then switches to the new version and reloads once. */
-var swReg = null, waitingWorker = null, updateTapped = false, updateReloaded = false;
+var swReg = null, waitingWorker = null, updateTapped = false, updateReloaded = false, updateLater = false;
 function setupUpdates(){
   navigator.serviceWorker.register("sw.js").then(function(reg){
     swReg = reg;
@@ -217,10 +219,19 @@ function setupUpdates(){
   document.addEventListener("visibilitychange", function(){ if (document.visibilityState === "visible") checkForUpdate(); });
 }
 function checkForUpdate(){ if (swReg) { try { swReg.update().catch(function(){}); } catch(e){} } }
-function offerUpdate(w){ waitingWorker = w; var b = document.getElementById("updnote"); if (b){ b.hidden = false; b.onclick = applyUpdate; } }
+function offerUpdate(w){ waitingWorker = w; updateLater = false; refreshUpdateNote(); }
+/* The note covers the title bar (so nothing on the page moves), and waits while a part is being edited. */
+function refreshUpdateNote(){
+  var b = document.getElementById("updnote"); if (!b) return;
+  var editing = (location.hash || "").indexOf("#/e/") === 0;
+  b.hidden = !(waitingWorker && (updateTapped || (!updateLater && !editing)));
+  var go = document.getElementById("updgo"), later = document.getElementById("updlater");
+  if (go) go.onclick = applyUpdate;
+  if (later){ later.hidden = updateTapped; later.onclick = function(){ updateLater = true; refreshUpdateNote(); toast("OK. The new version will be used next time you open the app."); }; }
+}
 function applyUpdate(){
   if (!waitingWorker || updateTapped) return;
-  updateTapped = true; var b = document.getElementById("updnote"); if (b) b.textContent = "Updating…";
+  updateTapped = true; var b = document.getElementById("updgo"); if (b) b.textContent = "Updating…"; refreshUpdateNote();
   var w = waitingWorker, p;
   try { flushEditor(); p = saveNow(); } catch(e){ p = null; }
   Promise.resolve(p).catch(function(){}).then(function(){
@@ -574,7 +585,7 @@ function ask(title, label, value, okText){ return modal({title:title, fields:[{l
 function confirmDelete(what){ return modal({title:"Delete " + what + "?", message:"This can't be undone. (Tip: if you're unsure, make a backup first with 🛟 Back up / Save all on the main screen.)", ok:"Delete", cancel:"Keep it", danger:true}); }
 function info(title, message){ return modal({title:title, message:message, ok:"OK", cancel:false}); }
 var toastTimer;
-function toast(t){ var el = $("#toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(function(){ el.classList.remove("show"); }, 3200); }
+function toast(t, ms){ var el = $("#toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(function(){ el.classList.remove("show"); }, ms || 3200); }
 function hideToast(){ clearTimeout(toastTimer); var el = $("#toast"); if (el) el.classList.remove("show"); }
 /* A notice that doesn't block anything (used when the app is open in another tab or window). */
 function banner(t){ var el = $("#banner"); el.innerHTML = '<span></span><button type="button">OK</button>'; el.firstChild.textContent = t; el.classList.add("show"); el.querySelector("button").onclick = function(){ el.classList.remove("show"); }; }
@@ -622,6 +633,7 @@ function render(navigated){
   if (r.view === "share") updatePicker();
   if (r.view === "search") setupSearch();
   window.scrollTo(0, same ? y : 0);
+  refreshUpdateNote();
   if (r.view === "t" && r.sub && navigated){ var card = document.querySelector('.card[data-sub="' + r.sub + '"]'); if (card){ card.scrollIntoView({block:"center"}); card.classList.add("flash"); } }
 }
 
@@ -641,14 +653,14 @@ function viewHome(){
   h += '<button class="searchbar" data-act="nav" data-to="#/search" aria-label="Search your notes">🔍 <span>Search your notes</span></button>';
   if (needsReminder()){ var lb = lastBackupTime(); h += '<div class="remind" id="remind"><p>' + (lb == null ? 'You haven’t made a backup file yet.' : 'Your last backup file was ' + plural(daysSince(lb), "day", "days") + ' ago.') + ' It keeps your notes safe.</p><div class="two"><button class="go" data-act="nav" data-to="#/backup">Back up now</button><button data-act="snooze">Not now</button></div></div>'; }
   h += '<button class="plain backup" data-act="nav" data-to="#/backup">🛟 Back up / Save all</button>';
-  h += '<p class="lead intro">Keep your witnessing notes here. <b>Sections</b> hold <b>topics</b>, and each topic is made of <b>parts</b>. Your notes stay on this phone. Tap a section to open it.</p>';
+  h += '<p class="lead intro">Keep your witnessing notes here. <b>Sections</b> hold <b>topics</b>, and each topic is made of <b>parts</b>. Your notes stay on this phone. Tap a section to open it.</p><p class="ver" id="ver">Version ' + esc(APP_VERSION.split(" ")[0]) + '</p>';
   if (!n) h += '<div class="empty">No sections yet.<br>Tap the green button to make your first one.</div>';
   h += '<ul class="list" data-list="section">';
   data.sections.forEach(function(s, i){
     h += '<li data-item="'+s.id+'" class="row' + (ui.arrange?' arr':'') + '"><button class="open" data-act="nav" data-to="#/s/'+s.id+'"><span class="name">' + esc(s.title) + (s.sample?'<span class="badge">Sample</span>':'') + '</span><span class="meta">' + plural(s.topics.length, "topic", "topics") + '</span></button>' + (ui.arrange ? ctrls("section", s.id, i, n) : '<span class="chev">›</span>') + '</li>';
   });
   h += '</ul><button class="big" data-act="newSection">＋ New section</button>' + arrangeBtn(n, "sections");
-  h += '<p class="ver" id="ver">Version ' + esc(APP_VERSION.split(" ")[0]) + '</p></main>';
+  h += '</main>';
   return h;
 }
 function viewSection(id){
@@ -730,14 +742,14 @@ function viewHelp(){
   h += '<section class="panel"><h2 style="margin-top:0">Backing up</h2><p>Your notes are kept inside this browser on this phone. Now and then, tap <b>🛟 Back up / Save all</b> on the main screen.</p><ul><li><b>Save as PDF (readable)</b> makes a booklet of all your notes, with pictures and full link addresses, that anyone can open.</li><li><b>Full backup file (can restore)</b> saves everything in one file this app can bring back, with <b>Bring in notes from a file</b> in ⇪ Share.</li></ul><p>Keep the file somewhere other than this phone, for example email it to yourself or put it in Google Drive. If you haven’t saved a full backup file for 30 days, the main screen reminds you (a PDF or readable copy doesn’t count, because it can’t be brought back).</p><p id="olderHelp">' + OLDER_BACKUP + '</p></section>';
   h += '<section class="panel" id="safety"><h2 style="margin-top:0">Keeping your notes safe</h2><div class="storageStatus">' + storageHtml() + '</div><p><b>What can erase your notes on Android (Chrome):</b></p><ul>' +
     '<li><b>Clearing Chrome’s data.</b> “Delete browsing data” with <b>Cookies and site data</b> ticked, or deleting this site’s data in Chrome’s settings. So does Android <b>Settings → Apps → Chrome → Storage → Clear storage</b>, uninstalling Chrome, or a cleaner app that clears Chrome’s data.</li>' +
-    '<li><b>Blocking on-device site data</b> for this site in Chrome’s Site settings.</li>' +
+    '<li><b>Blocking on-device site data</b> for this site in Chrome’s Site settings hides your notes from the app (and may erase them).</li>' +
     '<li><b>Removing the app’s icon</b> (uninstalling the app) doesn’t erase the notes by itself. They’re kept in Chrome, not in the icon.</li>' +
     '<li><b>Phone very low on space:</b> if your notes aren’t protected (see above), Chrome may clear them by itself. This is rare.</li>' +
     '<li><b>Factory reset or a new phone:</b> notes don’t move by themselves, and signing in to Chrome doesn’t copy them. Bring your backup file across and use <b>Bring in notes from a file</b>.</li>' +
     '<li><b>Each browser and each web address keeps its own notes.</b> Notes in Chrome aren’t in Samsung Internet, a saved copy of the app has its own notes, and if the app ever moves to a new web address, it starts empty there. Use a backup file to move them.</li>' +
     '<li><b>Incognito</b> (private) tabs forget everything when they’re closed.</li>' +
     '<li><b>Safe:</b> updates to this app, to Chrome, and to Android don’t erase your notes.</li></ul>' +
-    '<p><b>On iPhone:</b> Safari erases a website’s notes after 7 days of using Safari without opening that site. Apps added to the Home Screen are not erased this way, so add it to your Home Screen and open it from there.</p></section>';
+    '<p id="iphonehelp"><b>On iPhone:</b> ' + IPHONE_NOTE + '</p></section>';
   h += '<section class="panel"><h2 style="margin-top:0">Sharing</h2><ul><li><b>Some notes:</b> in Share, tick the sections or topics you want and tap Send or Save. The other person opens the file with <b>Bring in notes</b> in their copy. It is added next to their notes; nothing of theirs is replaced.</li><li><b>The app itself:</b> “Blank app” gives a clean copy. “App with the ticked notes built in” gives a copy that already has those notes.</li><li>If something you send has the same name as something they already have but different words, it is added as “… (imported)” so both are kept.</li><li><b>Copies of the app:</b> a copy saved from Share (“Blank app” or “App with the ticked notes built in”) keeps its own notes, so it won’t mix with yours, even on the same phone. But the <b>same</b> app opened twice (two tabs, or the same file opened again) shares one set of notes on that phone. That’s fine: changes from both are combined, and nothing is lost.</li></ul></section>';
   h += '<p class="ver" id="helpver">Version ' + esc(APP_VERSION) + '. When a new version is ready, a green note at the top says “New version ready — tap to update”.</p>';
   h += '<section class="panel"><h2 style="margin-top:0">Samples</h2><p>The “Sample” sections show how things work. Delete them whenever you like. Scripture in the samples is from the King James Version.</p><button class="plain" data-act="addSamples">Put the sample sections back</button></section>';
@@ -760,16 +772,17 @@ function storageHtml(){
   var h;
   if (!storageInfo.supported) h = '<p class="safe-warn">This browser doesn’t say whether it protects your notes. Keep a backup file to be safe.</p>';
   else if (storageInfo.persisted === null) h = '<p>Checking…</p>';
-  else if (storageInfo.persisted) h = '<p class="safe-ok">✅ <b>Protected.</b> This browser has agreed not to clear your notes by itself, even if the phone runs low on space. You can still erase them yourself, for example by clearing Chrome’s data (see below).</p>';
-  else h = '<p class="safe-warn">⚠️ <b>Not protected yet.</b> Your notes are saved, but if the phone runs very low on space, ' + esc(browserLabel()) + ' could clear them by itself. It decides this on its own, without asking you, and usually protects an app once it’s installed or used often. The app asks again each time it opens. Keep a backup file to be safe.' + (isIOS() ? ' On iPhone, add the app to your Home Screen: Safari erases a site’s notes after 7 days of not opening it, but not for apps on the Home Screen.' : '') + '</p>';
+  else if (storageInfo.persisted) h = '<p class="safe-ok">✅ <b>Protected.</b> This browser has agreed not to clear your notes by itself, even if the phone runs low on space. You can still erase them yourself, for example by clearing ' + esc(browserName() ? browserName() + '’s' : 'this browser’s') + ' data (see below).</p>' + (isIOS() ? '<p class="hint"><b>On iPhone:</b> ' + IPHONE_NOTE + '</p>' : '');
+  else h = '<p class="safe-warn">⚠️ <b>Not protected yet.</b> Your notes are saved, but if the phone runs very low on space, ' + esc(browserLabel()) + ' could clear them by itself. It decides this on its own, without asking you, and usually protects an app once it’s installed or used often. The app asks again each time it opens. Keep a backup file to be safe.</p>' + (isIOS() ? '<p class="hint"><b>On iPhone:</b> ' + IPHONE_NOTE + '</p>' : '');
   if (storageInfo.usage) h += '<p class="hint">The app and your notes use about ' + fmtSize(storageInfo.usage) + ' on this device.</p>';
   return h;
 }
+var IPHONE_NOTE = 'The app on your Home Screen keeps its own notes, separate from Safari’s. Before you switch, save a full backup file in Safari, then open the Home Screen app and use <b>Bring in notes from a file</b> (in ⇪ Share). Safari also erases a website’s notes after 7 days of using Safari without opening that site; apps on the Home Screen aren’t erased this way.';
 function browserName(){ var u = navigator.userAgent || ""; if (/SamsungBrowser/i.test(u)) return "Samsung Internet"; if (/EdgA?\/|EdgiOS/.test(u)) return "Edge"; if (/Firefox|FxiOS/.test(u)) return "Firefox"; if (/CriOS/.test(u)) return "Chrome"; if (/OPR\//.test(u)) return ""; if (/Chrome\//.test(u)) return "Chrome"; if (/Safari\//.test(u) && /AppleWebKit/.test(u)) return "Safari"; return ""; }
 function browserLabel(){ var n = browserName(); return n ? "this browser (" + n + ")" : "this browser"; }
 function isIOS(){ return /iPhone|iPad|iPod/.test(navigator.userAgent || "") || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1); }
 function hasOwnNotes(){ return data.sections.some(function(s){ return !s.sample; }); }
-function noteBackup(kind){ meta.backup = meta.backup || {}; meta.backup[kind] = now(); meta.remindSnooze = null; saveMeta(); }
+function noteBackup(kind){ meta.backup = meta.backup || {}; meta.backup[kind] = now(); if (kind === "full") meta.remindSnooze = null; /* only a full backup ends a "Not now" snooze */ saveMeta(); }
 /* Only a full .witness.json backup counts for the reminder: a PDF or readable copy can't be brought back into the app. */
 function lastBackupTime(){ var b = meta.backup || {}, t = b.full ? Date.parse(b.full) : NaN; return isFinite(t) ? t : null; }
 var GRACE_DAYS = 3;
@@ -1473,6 +1486,7 @@ store.init(COPY_ID).then(function(){ return Promise.all([store.get("data"), stor
   if (oldRep.removed){ var have = allIds(); var add = makeSamples().filter(function(x){ return !have[x.id]; }); if (add.length) merge(add); }
   if (oldRep.removed || oldRep.kept.length || oldRep.updated) saveSoon(0);
   if (applyPending()) saveSoon(0);
+  var wasUser = !!meta.initialized;
   if (!meta.initialized){
     if (!(bundle && bundle.noSamples) && !data.sections.length) data.sections = makeSamples();
     meta.initialized = true; saveSoon(0); saveMeta();
@@ -1492,9 +1506,11 @@ store.init(COPY_ID).then(function(){ return Promise.all([store.get("data"), stor
       if (!ok) return; data.sections = data.sections.filter(function(s){ return !isOldSample(s); }); saveSoon(0); render(); toast("Old sample sections deleted.");
     });
   }
+  /* Once after an update: say so (not on a first install). */
+  if (meta.lastVersion !== APP_VERSION){ var shownUpd = meta.lastVersion || wasUser; meta.lastVersion = APP_VERSION; saveMeta(); if (shownUpd && store.mode() !== "memory") toast("Updated to version " + APP_VERSION.split(" ")[0] + ". Your notes are kept.", 6000); }
   tellOthers({t:"hello"});
 }).catch(function(e){ console.error(e); $("#main") && ($("#main").innerHTML = '<p class="lead">Something went wrong while opening your notes. Please reload the page.</p>'); });
-window.__wa = { get data(){ return data; }, checkForUpdate: function(){ checkForUpdate(); }, info: function(t, m){ return info(t, m); }, get meta(){ return meta; }, saveMeta: function(){ return saveMeta(); }, render: function(){ render(); }, storageInfo: storageInfo, needsReminder: function(){ return needsReminder(); }, backupName: function(){ return backupName(); }, readableHtml: function(){ return readableHtml(printSections()); }, copyId: COPY_ID, get movedFromShared(){ return movedFromShared; }, get rev(){ return rev; }, sanitize: sanitize, merge: merge, merge3: merge3, normalizeImport: normalizeImport, saveNow: saveNow, doSearch: doSearch, makeSamples: makeSamples, sampleSig: sampleSig, tidyOldSamples: tidyOldSamples, checkForNewer: checkForNewer, safeHref: safeHref, version: APP_VERSION };
+window.__wa = { get data(){ return data; }, noteBackup: function(k){ noteBackup(k); }, testOfferUpdate: function(){ offerUpdate({ postMessage: function(){ window.__skipAsked = (window.__skipAsked || 0) + 1; } }); }, checkForUpdate: function(){ checkForUpdate(); }, info: function(t, m){ return info(t, m); }, get meta(){ return meta; }, saveMeta: function(){ return saveMeta(); }, render: function(){ render(); }, storageInfo: storageInfo, needsReminder: function(){ return needsReminder(); }, backupName: function(){ return backupName(); }, readableHtml: function(){ return readableHtml(printSections()); }, copyId: COPY_ID, get movedFromShared(){ return movedFromShared; }, get rev(){ return rev; }, sanitize: sanitize, merge: merge, merge3: merge3, normalizeImport: normalizeImport, saveNow: saveNow, doSearch: doSearch, makeSamples: makeSamples, sampleSig: sampleSig, tidyOldSamples: tidyOldSamples, checkForNewer: checkForNewer, safeHref: safeHref, version: APP_VERSION };
 })();
 </script>
 </body>

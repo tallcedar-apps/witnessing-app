@@ -1,8 +1,9 @@
 /* Offline helper for My Witnessing Notes. It keeps a copy of the app so it opens with no internet.
    Your notes are NOT stored here; they stay in the browser's own storage on your device. */
-var CACHE = "witnessing-app-v0.8";
+var CACHE = "witnessing-app-v0.9";
 var FILES = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png"];
-/* A new version waits until the user taps "New version ready" in the app (never mid-edit).
+/* A new version waits until the user taps "New version ready" in the app (never mid-edit), or until every window
+   of the app has been closed; the next open then uses it (standard offline-helper behaviour).
    Exception: when replacing a version older than 0.8, whose page has no such note, switch at once as before. */
 self.addEventListener("install", function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) {
