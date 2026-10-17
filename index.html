@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2f5d8a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Witnessing">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src data: blob:; connect-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; form-action 'none'; base-uri 'none'">
+<title>My Witnessing Notes</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232f5d8a'/%3E%3Cpath d='M12 18c8-3 14-2 20 2 6-4 12-5 20-2v30c-8-3-14-2-20 2-6-4-12-5-20-2z' fill='%23fff'/%3E%3Cpath d='M32 20v30' stroke='%232f5d8a' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAADC0lEQVR4nO3c0WnbQACA4aZ0n3SHzpEuUOhbl2jfClkge2SHjNQHgSmJf0dx7NMFfd+jLOsO83M+WeCb27vfn+CYz1tPgHmJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJg/RR43h6+LX1FNZ6vP+59RTOdPOB/vv8aBBfv/8ZP5OVjmbx7cff8TM5z+xxrFwhZktk5WoxeSgzxvGer4zNKzn7S2TCUGaJ47J7iPGJXHZjMUkoW8Zx7U3lmESuvd/cMJTRcYy/y7heIuNvQwaHMiKOSW47L1jJDHenA0L5cu0B5rE0+s5EZshimB3FsTg7kV1lsdhdHIv1ieywiYOdxrE4bIaOVrLnLBa7juPg2UIii8VHffB2cf8vHpP8BrU5cZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZC+bD2BN/j6/c/Lg08Pv8bPZKVvP/6+PPh4/3P8TM4zexxHg3h5wmyJHM3i5UuThzJdHK/WcPpd21Zyook158/WyvZxnFfDq1cbXMlbs1hzkc1b2SaOywZxYohrJ3KRJtZcfJNQBsUxoIbT4168kqtm8epwY1q5ub37PWCYSZxI5Fm+9ekPbmJb2+85RnrPQrKrLBb7iuNgfSU7bOJgp3EcnNi37jmLxb72HLyJZyskcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQfoHO6aWlD6JHdkAAAAASUVORK5CYII=">
+<script type="application/json" id="wa-bundle"></script>
+<style>
+:root{--bg:#f7f3ec;--card:#fff;--ink:#1f2328;--muted:#5e6670;--line:#e3ddd2;--accent:#2f5d8a;--accent-soft:#e6eef6;--go:#2e7d4f;--go-dark:#256a42;--danger:#b3261e;--radius:14px}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;padding-bottom:env(safe-area-inset-bottom)}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.top{position:sticky;top:0;z-index:20;background:var(--accent);color:#fff;padding:calc(6px + env(safe-area-inset-top)) 8px 6px;display:flex;align-items:center;gap:6px;min-height:60px;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.top h1{flex:1;margin:0 4px;font-size:19px;line-height:1.2;font-weight:650;overflow:hidden;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.tbtn{background:rgba(255,255,255,.14);border:0;color:#fff;border-radius:10px;min-height:48px;min-width:48px;padding:2px 10px;font-size:16px;line-height:1.15;font-weight:600;display:inline-flex;align-items:center;gap:4px;max-width:40%;overflow:hidden;text-align:left;flex:none}
+.tbtn .bl{overflow:hidden;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.tbtn:active{background:rgba(255,255,255,.3)}
+.saved{font-size:13px;opacity:.85;min-width:44px;text-align:right}
+main{max-width:720px;margin:0 auto;padding:14px 14px 40px}
+.lead{color:var(--muted);margin:2px 2px 14px;font-size:17px}
+.list{display:flex;flex-direction:column;gap:10px;margin:0 0 16px;padding:0;list-style:none}
+.row{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);display:flex;align-items:stretch;min-height:64px;overflow:hidden}
+.row .open{flex:1;background:none;border:0;text-align:left;padding:12px 14px;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.row .open:active{background:var(--accent-soft)}
+.row .name{font-weight:650;font-size:19px;overflow-wrap:anywhere}
+.row .meta{color:var(--muted);font-size:15px}
+.row .chev{align-self:center;padding-right:14px;color:var(--muted);font-size:24px}
+.ctrls{display:flex;align-items:center;gap:4px;padding:6px;border-left:1px solid var(--line);background:#fbfaf7;flex-wrap:wrap;justify-content:flex-end;max-width:56%}
+.row.arr{flex-wrap:wrap}.row.arr .ctrls{flex-basis:100%;max-width:none;border-left:0;border-top:1px solid var(--line);gap:8px;justify-content:flex-end}.row.arr .ctrls .ibtn{min-width:56px}
+.ibtn{min-width:48px;min-height:48px;border-radius:10px;border:1px solid var(--line);background:#fff;font-size:20px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px}
+.ibtn:active{background:var(--accent-soft)}
+.ibtn:disabled{opacity:.3}
+.ibtn.del{color:var(--danger)}
+.badge{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;background:#fff3cd;color:#7a5b00;border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:2px}
+.big{display:flex;width:100%;align-items:center;justify-content:center;gap:8px;min-height:60px;border:0;border-radius:var(--radius);background:var(--go);color:#fff;font-size:20px;font-weight:700;margin:8px 0;box-shadow:0 2px 0 var(--go-dark)}
+.big:active{transform:translateY(1px);box-shadow:none}
+.big.blue{background:var(--accent);box-shadow:0 2px 0 #234a70}
+.big.light{background:#fff;color:var(--accent);border:2px solid var(--accent);box-shadow:none}
+.plain{display:flex;width:100%;align-items:center;justify-content:center;min-height:52px;border:1px solid var(--line);border-radius:var(--radius);background:#fff;font-size:17px;font-weight:600;margin:8px 0;color:var(--accent)}
+.plain.on{background:var(--accent-soft);border-color:var(--accent)}
+.danger{color:var(--danger)}
+.empty{background:var(--card);border:2px dashed var(--line);border-radius:var(--radius);padding:22px 16px;text-align:center;color:var(--muted);margin-bottom:12px}
+.tract h2.ttl{font-size:26px;line-height:1.25;margin:4px 2px 12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 16px 10px;margin:0 0 12px}
+.card .sub-title{font-size:21px;margin:4px 0 6px;color:var(--accent)}
+.card .cardbar{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:10px;padding-top:8px}
+.card .editbtn{min-height:48px;padding:0 16px;border-radius:10px;border:1px solid var(--accent);background:#fff;color:var(--accent);font-weight:650}
+.rich{overflow-wrap:anywhere}
+.rich h2{font-size:22px;margin:14px 0 6px;line-height:1.3}
+.rich h3{font-size:19px;margin:12px 0 4px}
+.rich h4{font-size:18px;margin:10px 0 4px}
+.rich p{margin:0 0 10px}
+.rich ul,.rich ol{margin:0 0 10px;padding-left:28px}
+.rich li{margin:3px 0}
+.rich blockquote{margin:8px 0 12px;padding:8px 12px;border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 8px 8px 0}
+.rich img{max-width:100%;height:auto;border-radius:8px;display:block;margin:8px 0}
+.rich figure{margin:12px auto;padding:0;max-width:100%}
+.rich figure.size-s{width:45%}.rich figure.size-m{width:72%}.rich figure.size-l{width:100%}
+.rich figure img{width:100%;margin:0}
+.rich figcaption{font-size:15px;line-height:1.35;color:var(--muted);text-align:center;font-style:italic;margin-top:5px}
+.editor figure{cursor:pointer;border-radius:10px;outline:2px dashed #b9c9da;outline-offset:3px}
+.sheet .pv{max-width:100%;max-height:150px;display:block;margin:0 auto 6px;border-radius:8px}
+.seg{display:flex;gap:6px}.seg button{flex:1;min-height:52px;border-radius:12px;border:1px solid #cfc7b8;background:#fff;font-weight:650;font-size:16px;padding:0 4px}
+.seg button[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+.sheet .btns .warn{color:var(--danger)}
+.searchbar{display:flex;align-items:center;gap:10px;width:100%;min-height:54px;margin:0 0 14px;padding:0 14px;border:1px solid #cfc7b8;border-radius:var(--radius);background:#fff;color:var(--muted);font-size:18px;text-align:left}
+.res{display:block;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;margin:0 0 10px;min-height:60px}
+.res:active{background:var(--accent-soft)}
+.res .kind{display:inline-block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--accent);background:var(--accent-soft);border-radius:6px;padding:1px 6px;margin-right:6px;vertical-align:2px}
+.res .rt{font-weight:650;font-size:18px;overflow-wrap:anywhere}
+.res .rp{display:block;color:var(--muted);font-size:14px;margin-top:2px}
+.res .rs{display:block;font-size:16px;margin-top:4px;overflow-wrap:anywhere}
+mark{background:#ffe58a;color:inherit;border-radius:3px;padding:0 1px}
+.card.flash{animation:flash 1.6s ease-out}
+@keyframes flash{0%,40%{box-shadow:0 0 0 4px #f2c94c}100%{box-shadow:0 0 0 0 transparent}}
+.handle{touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;min-width:56px;min-height:48px;border-radius:10px;border:1px dashed #9fb3c8;background:#f4f8fb;color:var(--accent);font-size:16px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:0 10px;margin-right:auto}
+.dragging{position:relative;z-index:30;box-shadow:0 8px 24px rgba(0,0,0,.25);opacity:.97}
+.shifting{transition:transform .15s ease}
+body.is-dragging{user-select:none;-webkit-user-select:none}
+.rich a{color:var(--accent);text-decoration:underline;word-break:break-word}
+.rich .empty-note{color:var(--muted);font-style:italic}
+label.fl{display:block;font-weight:650;margin:6px 2px 4px;font-size:16px;color:var(--muted)}
+input.text{width:100%;min-height:52px;border:1px solid #cfc7b8;border-radius:12px;padding:10px 12px;background:#fff;font-size:18px}
+input.text:focus{outline:3px solid #9cc0e4;border-color:var(--accent)}
+.toolbar{position:sticky;top:60px;z-index:15;display:flex;flex-wrap:wrap;gap:6px;background:var(--bg);padding:8px 0}
+.toolbar button{flex:1 1 auto;white-space:nowrap;min-width:48px;min-height:46px;padding:0 7px;border-radius:10px;border:1px solid #cfc7b8;background:#fff;font-size:15px;font-weight:600}
+.toolbar button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.toolbar button:active{background:var(--accent-soft)}
+.editor{min-height:45vh;background:#fff;border:1px solid #cfc7b8;border-radius:12px;padding:12px 14px;outline:none}
+.editor:focus{border-color:var(--accent);box-shadow:0 0 0 3px #9cc0e4}
+.editor:empty:before{content:attr(data-placeholder);color:#8a8f96}
+.hint{font-size:15px;color:var(--muted);margin:6px 2px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin:0 0 16px}
+.panel h2{margin:0 0 6px;font-size:21px}
+.panel p{margin:4px 0 10px}
+.pick{list-style:none;margin:6px 0 8px;padding:0}
+.pick li{margin:0}
+.pick label{display:flex;align-items:center;gap:12px;min-height:56px;padding:4px 4px;border-bottom:1px solid #f0ebe2}
+.pick .tp label{padding-left:36px;font-size:17px}
+.pick input{width:32px;height:32px;flex:none;accent-color:var(--accent)}
+.pick .sname{font-weight:650}
+.two{display:flex;gap:8px}
+.two>*{flex:1}
+.help h2{font-size:21px;margin:18px 0 6px}
+.help ol,.help ul{padding-left:24px}
+.help li{margin:6px 0}
+#modal{position:fixed;inset:0;background:rgba(20,25,30,.5);display:none;align-items:flex-end;justify-content:center;z-index:100;padding:10px}
+#modal.show{display:flex}
+.sheet{background:#fff;border-radius:18px;width:100%;max-width:520px;padding:18px 16px calc(14px + env(safe-area-inset-bottom));box-shadow:0 10px 40px rgba(0,0,0,.3);max-height:90vh;overflow:auto}
+.sheet h2{margin:0 0 8px;font-size:21px}
+.sheet .msg{margin:0 0 12px;white-space:pre-line}
+.sheet .btns{display:flex;gap:8px;margin-top:14px}
+.sheet .btns button{flex:1;min-height:54px;border-radius:12px;font-size:18px;font-weight:700;border:1px solid var(--line);background:#fff}
+.sheet .btns .ok{background:var(--accent);color:#fff;border-color:var(--accent)}
+.sheet .btns .ok.red{background:var(--danger);border-color:var(--danger)}
+@media(min-width:700px){#modal{align-items:center}}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#222;color:#fff;padding:12px 18px;border-radius:12px;font-size:16px;max-width:92vw;z-index:120;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.show{opacity:1}
+.sr{position:absolute;left:-9999px}
+#banner{position:relative;background:#fff3cd;color:#4d3b00;border-bottom:1px solid #e6cf7a;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;display:none;font-size:16px}
+#banner.show{display:block}
+#banner button{display:block;margin:6px 0 0 auto;min-height:48px;min-width:96px;border-radius:10px;border:1px solid #c9a93a;background:#fff;font-weight:700}
+.addr{overflow-wrap:anywhere;font-weight:650}
+</style>
+</head>
+<body>
+<div id="banner" role="status" aria-live="polite"></div>
+<div id="app"><header class="top"><h1>My Witnessing Notes</h1></header><main id="main"><p class="lead">Loading…</p></main></div>
+<div id="modal" role="dialog" aria-modal="true"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<input type="file" id="pickImage" class="sr" accept="image/*" aria-hidden="true" tabindex="-1">
+<input type="file" id="pickImport" class="sr" accept=".json,.html,.htm,application/json,text/html,text/plain" aria-hidden="true" tabindex="-1">
+<noscript><p style="padding:20px">This app needs JavaScript turned on in your browser.</p></noscript>
+<script>
+(function(){
+"use strict";
+/* Copy of the untouched page, captured before anything is drawn. Used for "give someone the app". */
+var PRISTINE = document.documentElement.cloneNode(true);
+var APP_VERSION = "0.5 (proof of concept)";
+/* When the app is opened from a web address (not a saved file), let it be installed and work offline. */
+var HOSTED = /^https?:$/.test(location.protocol);
+if (HOSTED){
+  var ml = document.createElement("link"); ml.rel = "manifest"; ml.href = "manifest.webmanifest"; document.head.appendChild(ml);
+  if ("serviceWorker" in navigator) window.addEventListener("load", function(){ navigator.serviceWorker.register("sw.js").catch(function(e){ console.warn("offline helper not started", e); }); });
+}
+var FORMAT = "witnessing-app";
+
+/* ---------- small helpers ---------- */
+function $(s, r){ return (r||document).querySelector(s); }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+function uid(){ var a = new Uint8Array(12); (window.crypto||window.msCrypto).getRandomValues(a); var s = ""; for (var i=0;i<a.length;i++) s += ("0"+a[i].toString(16)).slice(-2); return "w" + s; }
+function now(){ return new Date().toISOString(); }
+function norm(s){ return String(s||"").trim().toLowerCase().replace(/\s+/g," "); }
+function cleanTitle(s){ return String(s==null?"":s).replace(/[\u0000-\u001f]/g," ").trim().slice(0,200); }
+function okId(id){ return typeof id === "string" && /^[A-Za-z0-9_-]{1,64}$/.test(id); }
+function plural(n, one, many){ return n + " " + (n===1?one:many); }
+function today(){ var d=new Date(); return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2); }
+function slug(s){ return norm(s).replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,40) || "notes"; }
+function fmtSize(n){ return n < 1024*1024 ? Math.max(1,Math.round(n/1024)) + " KB" : (n/1024/1024).toFixed(1) + " MB"; }
+
+/* ---------- cleaning text that comes from pasting or from other people's files ---------- */
+var ALLOWED = {P:1,BR:1,H2:1,H3:1,H4:1,STRONG:1,B:1,EM:1,I:1,U:1,UL:1,OL:1,LI:1,BLOCKQUOTE:1,A:1,IMG:1,HR:1};
+var DROP = {SCRIPT:1,STYLE:1,IFRAME:1,FRAME:1,FRAMESET:1,OBJECT:1,EMBED:1,SVG:1,MATH:1,TEMPLATE:1,NOSCRIPT:1,LINK:1,META:1,TITLE:1,HEAD:1,FORM:1,INPUT:1,BUTTON:1,TEXTAREA:1,SELECT:1,OPTION:1,VIDEO:1,AUDIO:1,CANVAS:1,SOURCE:1,TRACK:1,BASE:1,APPLET:1,PORTAL:1,DIALOG:1};
+var RENAME = {H1:"H2",H5:"H4",H6:"H4"};
+var BLOCKS = {FIGURE:1,IMG:1,P:1,DIV:1,H1:1,H2:1,H3:1,H4:1,H5:1,H6:1,UL:1,OL:1,LI:1,BLOCKQUOTE:1,TABLE:1,SECTION:1,ARTICLE:1,HEADER:1,FOOTER:1,PRE:1,HR:1};
+function safeHref(h){
+  h = String(h||"").trim();
+  if (!/^(https?:|mailto:|tel:)/i.test(h) || /\s/.test(h)) return null;
+  if (/^https?:/i.test(h)){ try { if (!new URL(h).hostname) return null; } catch(e){ return null; } }
+  return h;
+}
+/* Pictures must be stored inside the notes (data: pictures). Pictures from the internet are left out, so opening a
+   note never contacts another website. Very large pictures (over about 2 MB) are left out too. */
+var MAX_PIC = 2800000, dropped = { big:0, web:0 };
+function safeSrc(s){
+  s = String(s||"").trim();
+  if (/^data:image\/(png|jpe?g|gif|webp);base64,[A-Za-z0-9+\/=\s]+$/i.test(s)){ s = s.replace(/\s+/g,""); if (s.length > MAX_PIC){ dropped.big++; return null; } return s; }
+  if (s) dropped.web++;
+  return null;
+}
+var BLOCK_SEL = "figure,img,p,div,h1,h2,h3,h4,h5,h6,ul,ol,li,blockquote,table,section,article,header,footer,pre,hr";
+function sanitize(html){
+  var doc = new DOMParser().parseFromString("<!DOCTYPE html><html><body>" + String(html||"") + "</body></html>", "text/html");
+  var out = doc.createElement("div");
+  function walk(src, dst){
+    for (var n = src.firstChild; n; n = n.nextSibling){
+      if (n.nodeType === 3){ dst.appendChild(doc.createTextNode(n.nodeValue)); continue; }
+      if (n.nodeType !== 1) continue;
+      var tag = n.tagName.toUpperCase();
+      if (DROP[tag]) continue;
+      if (RENAME[tag]) tag = RENAME[tag];
+      if (tag === "DIV" || tag === "PRE" || tag === "SECTION" || tag === "ARTICLE"){
+        var hasBlock = !!n.querySelector(BLOCK_SEL);
+        if (!hasBlock && dst.tagName !== "LI" && dst.tagName !== "P" && dst.tagName !== "BLOCKQUOTE"){ var p = doc.createElement("p"); walk(n, p); if (p.childNodes.length) dst.appendChild(p); }
+        else walk(n, dst);
+        continue;
+      }
+      if (tag === "FIGURE" || tag === "IMG"){
+        var im0 = tag === "IMG" ? n : n.querySelector("img"); if (!im0) continue;
+        var src0 = safeSrc(im0.getAttribute("src")); if (!src0) continue;
+        var fig = doc.createElement("figure"), sz = tag === "FIGURE" && /(?:^|\s)size-(s|m|l)(?:\s|$)/.exec(n.getAttribute("class") || "");
+        fig.setAttribute("class", "pic size-" + (sz ? sz[1] : "l"));
+        var im = doc.createElement("img"); im.setAttribute("src", src0); var alt0 = im0.getAttribute("alt"); im.setAttribute("alt", alt0 ? alt0.slice(0,300) : "");
+        fig.appendChild(im);
+        var fc = tag === "FIGURE" && n.querySelector("figcaption"), cap = "";
+        if (fc){ fc = fc.cloneNode(true); fc.querySelectorAll("script,style,template,noscript,svg,math,iframe,object,embed").forEach(function(x){ x.remove(); }); cap = cleanTitle(fc.textContent).slice(0,300); }
+        if (cap){ var fc2 = doc.createElement("figcaption"); fc2.textContent = cap; fig.appendChild(fc2); }
+        dst.appendChild(fig); continue;
+      }
+      if (!ALLOWED[tag]){ walk(n, dst); continue; }
+      if (tag === "P" || tag === "H2" || tag === "H3" || tag === "H4" || tag === "A"){
+        if (n.querySelector(tag === "A" ? "img,figure" : BLOCK_SEL)){ walk(n, dst); continue; }
+      }
+      var el = doc.createElement(tag.toLowerCase());
+      if (tag === "A"){
+        var h = safeHref(n.getAttribute("href"));
+        if (!h){ walk(n, dst); continue; }
+        el.setAttribute("href", h); el.setAttribute("target","_blank"); el.setAttribute("rel","noopener noreferrer");
+      }
+      if (tag !== "BR" && tag !== "HR") walk(n, el);
+      if (tag === "P" && !el.firstChild) continue;
+      dst.appendChild(el);
+    }
+  }
+  walk(doc.body, out);
+  var res = out.innerHTML;
+  if (/^(\s|<br>|<p>(\s|<br>)*<\/p>)*$/.test(res)) return "";
+  return res;
+}
+
+/* ---------- storage on this device (IndexedDB, with a simpler fallback) ---------- */
+/* Each copy made with Share has its own storage space ("copy id"), so it doesn't mix notes with yours.
+   The original file uses the space "main". The same file opened twice shares one space (see saveNow: changes are combined).
+   Version 0.1 kept notes in one shared space ("witnessing-app"); the main copy moves them over once. */
+var LEGACY_DB = "witnessing-app";
+var store = (function(){
+  var db = null, mode = "none", prefix = "";
+  function openIDB(name){ return new Promise(function(res, rej){
+    try {
+      if (!window.indexedDB) return rej(new Error("no idb"));
+      var r = indexedDB.open(name, 1);
+      r.onupgradeneeded = function(){ r.result.createObjectStore("kv"); };
+      r.onsuccess = function(){ res(r.result); };
+      r.onerror = function(){ rej(r.error); };
+      r.onblocked = function(){ rej(new Error("blocked")); };
+      setTimeout(function(){ rej(new Error("timeout")); }, 4000);
+    } catch(e){ rej(e); }
+  }); }
+  function idbGet(d, key){ return new Promise(function(res, rej){ var t = d.transaction("kv","readonly").objectStore("kv").get(key); t.onsuccess = function(){ res(t.result); }; t.onerror = function(){ rej(t.error); }; }); }
+  function idbSet(d, key, val){ return new Promise(function(res, rej){ var tx = d.transaction("kv","readwrite"); tx.objectStore("kv").put(val, key); tx.oncomplete = function(){ res(); }; tx.onerror = function(){ rej(tx.error); }; tx.onabort = function(){ rej(tx.error || new Error("aborted")); }; }); }
+  function lsGet(k){ try { var v = localStorage.getItem(k); return Promise.resolve(v ? JSON.parse(v) : undefined); } catch(e){ return Promise.reject(e); } }
+  function lsSet(k, val){ try { localStorage.setItem(k, JSON.stringify(val)); return Promise.resolve(); } catch(e){ return Promise.reject(e); } }
+  function legacyExists(){ try { if (indexedDB.databases) return indexedDB.databases().then(function(list){ return list.some(function(x){ return x.name === LEGACY_DB; }); }, function(){ return true; }); } catch(e){} return Promise.resolve(true); }
+  function withLegacy(fn){ return legacyExists().then(function(yes){ if (!yes) return undefined; return openIDB(LEGACY_DB).then(function(d){ return fn(d).then(function(v){ d.close(); return v; }, function(e){ d.close(); throw e; }); }); }); }
+  return {
+    init: function(ns){ prefix = "wa-" + ns + "-"; return openIDB("wa-notes-" + ns).then(function(d){ db = d; mode = "idb"; }, function(){ try { localStorage.setItem("wa-test","1"); localStorage.removeItem("wa-test"); mode = "ls"; } catch(e){ mode = "memory"; } }); },
+    mode: function(){ return mode; },
+    get: function(key){ if (mode === "idb") return idbGet(db, key); if (mode === "ls") return lsGet(prefix + key); return Promise.resolve(undefined); },
+    set: function(key, val){ if (mode === "idb") return idbSet(db, key, val); if (mode === "ls") return lsSet(prefix + key, val); return Promise.resolve(); },
+    /* Read what is stored, work out the new value, and write it, all in one step (no other window can save in between). */
+    update: function(key, fn){
+      if (mode === "idb") return new Promise(function(res, rej){
+        var tx = db.transaction("kv","readwrite"), os = tx.objectStore("kv"), out, g = os.get(key);
+        g.onsuccess = function(){ try { out = fn(g.result); os.put(out, key); } catch(e){ try { tx.abort(); } catch(e2){} rej(e); } };
+        tx.oncomplete = function(){ res(out); }; tx.onerror = function(){ rej(tx.error); }; tx.onabort = function(){ rej(tx.error || new Error("aborted")); };
+      });
+      if (mode === "ls") return lsGet(prefix + key).then(function(v){ var out = fn(v); return lsSet(prefix + key, out).then(function(){ return out; }); });
+      return Promise.resolve(fn(undefined));
+    },
+    legacyGet: function(key){ if (mode === "idb") return withLegacy(function(d){ return idbGet(d, key); }); if (mode === "ls") return lsGet("wa-" + key); return Promise.resolve(undefined); },
+    legacySet: function(key, val){ if (mode === "idb") return withLegacy(function(d){ return idbSet(d, key, val); }); if (mode === "ls") return lsSet("wa-" + key, val); return Promise.resolve(); }
+  };
+})();
+
+var data = { sections: [] };
+var meta = { initialized: false, appliedBundles: [] };
+var saveTimer = null, savePending = false, saving = null, loaded = false;
+/* rev counts saves. baseJSON is what this window last read from (or wrote to) storage. If another tab or window
+   saved in the meantime, the two sets of changes are combined (merge3) instead of one replacing the other. */
+var rev = 0, baseJSON = JSON.stringify({sections:[]}), TAB = uid();
+function snap(){ return JSON.stringify({sections:data.sections}); }
+function saveSoon(delay){ savePending = true; setSaved("Saving…"); clearTimeout(saveTimer); saveTimer = setTimeout(saveNow, delay == null ? 250 : delay); }
+function saveNow(){
+  flushEditor();
+  clearTimeout(saveTimer);
+  if (saving) return saving.then(saveNow);
+  if (!savePending || !loaded) return Promise.resolve();
+  savePending = false;
+  var mineJSON = snap(), mine = JSON.parse(mineJSON), started = Date.now(), combined = false, report = {};
+  saving = store.update("data", function(stored){
+    var theirRev = stored && typeof stored.rev === "number" ? stored.rev : 0, out = mine;
+    if (stored && Array.isArray(stored.sections) && theirRev !== rev){ report = {}; out = merge3(JSON.parse(baseJSON), mine, {sections:stored.sections}, report); combined = true; }
+    return { sections: out.sections, rev: Math.max(theirRev, rev) + 1 };
+  }).then(function(saved){
+    saving = null; rev = saved.rev;
+    var savedJSON = JSON.stringify({sections:saved.sections}); baseJSON = savedJSON;
+    if (combined && savedJSON !== mineJSON){
+      /* Another window had saved changes. Keep anything typed here while saving, on top of the combined notes. */
+      data.sections = merge3(mine, JSON.parse(snap()), {sections:saved.sections}).sections;
+      if (snap() !== savedJSON) savePending = true;
+      refreshView(); toast("Changes made in another tab or window were added in.");
+    }
+    keptMessage(report);
+    clearPending(started);
+    if (savePending) saveSoon(); else setSaved("Saved");
+    tellOthers({t:"saved", rev:rev});
+  }, function(e){ saving = null; setSaved("Not saved"); toast("Couldn't save. Your phone may be out of space. Try saving a backup file from Share."); console.warn(e); });
+  return saving;
+}
+function saveMeta(){ return store.set("meta", JSON.parse(JSON.stringify(meta))).catch(function(e){ console.warn(e); }); }
+function setSaved(t){ var el = $("#saved"); if (el) el.textContent = t; }
+/* Save straight away whenever the app is hidden, closed, reloaded, or loses focus. */
+function saveAll(){ flushEditor(); saveNow(); }
+document.addEventListener("visibilitychange", function(){ if (document.visibilityState === "hidden") saveAll(); else checkForNewer(); });
+window.addEventListener("pagehide", saveAll);
+window.addEventListener("beforeunload", saveAll);
+window.addEventListener("blur", saveAll);
+window.addEventListener("focus", function(){ checkForNewer(); });
+
+/* Combine two sets of changes made from the same starting point (base): mine (this window) and theirs (another one).
+   Works item by item using ids. Nothing typed is lost: if the same part was changed in both, both versions are kept. */
+function same(a, b){ return JSON.stringify(a) === JSON.stringify(b); }
+function merge3(base, mine, theirs, report){
+  var KIDS = ["topics", "subsections", null], WORD = ["section", "topic", "part"];
+  report = report || {};
+  function byId(a){ var m = {}; a.forEach(function(x){ if (x && x.id) m[x.id] = x; }); return m; }
+  function item(b, o, t, lv){
+    var kids = KIDS[lv];
+    if (!b){ if (o && t) return same(o, t) ? t : item(t, o, t, lv); return o || t || null; }
+    if (!o && !t) return null;
+    if (!o){ if (same(b, t)) return null; (report.keptHere = report.keptHere || []).push(WORD[lv]); return t; }  /* deleted here; kept because it was changed in the other window */
+    if (!t){ if (same(b, o)) return null; (report.keptThere = report.keptThere || []).push(WORD[lv]); return o; }  /* deleted there; kept because it was changed here */
+    var r = {}, clash = false;
+    Object.keys(Object.assign({}, b, t, o)).forEach(function(k){
+      if (k === kids) return;
+      var oc = !same(o[k], b[k]), tc = !same(t[k], b[k]);
+      if (oc || t[k] !== undefined) r[k] = oc ? o[k] : t[k];
+      if (oc && tc && !same(o[k], t[k])) clash = true;
+    });
+    if (kids){ r[kids] = list(b[kids], o[kids], t[kids], lv + 1); return r; }
+    if (clash){ var c = JSON.parse(JSON.stringify(t)); c.id = uid(); c.title = cleanTitle((t.title ? t.title + " " : "") + "(from another window)"); return [r, c]; }
+    return r;
+  }
+  function list(b, o, t, lv){
+    b = b || []; o = o || []; t = t || [];
+    var B = byId(b), O = byId(o), T = byId(t);
+    var mineMoved = !same(o.filter(function(x){ return B[x.id]; }).map(function(x){ return x.id; }), b.filter(function(x){ return O[x.id]; }).map(function(x){ return x.id; }));
+    var first = mineMoved ? o : t, second = mineMoved ? t : o, out = [], seen = {};
+    function put(x, at){ if (seen[x.id]) return; seen[x.id] = 1; var r = item(B[x.id], O[x.id], T[x.id], lv); if (!r) return; r = [].concat(r); if (at == null) out = out.concat(r); else Array.prototype.splice.apply(out, [at, 0].concat(r)); }
+    first.forEach(function(x){ put(x); });
+    second.forEach(function(x, i){
+      if (seen[x.id]) return;
+      var at = 0; for (var k = i - 1; k >= 0; k--){ var p = idx(out, second[k].id); if (p >= 0){ at = p + 1; break; } }
+      put(x, at);
+    });
+    return out;
+  }
+  return { sections: list(base.sections, mine.sections, theirs.sections, 0) };
+}
+/* If another window saved newer notes, show them here (unless something is being changed here right now). */
+function checkForNewer(){
+  if (!loaded || savePending || saving || ed.subId || drag) return Promise.resolve(false);
+  return store.get("data").then(function(d){
+    if (!d || typeof d.rev !== "number" || d.rev === rev || !Array.isArray(d.sections) || savePending || saving || ed.subId || drag) return false;
+    data = { sections: d.sections }; rev = d.rev; baseJSON = JSON.stringify({sections:d.sections});
+    refreshView(); keptMessage({}); return true;
+  }, function(){ return false; });
+}
+function refreshView(){ if (route().view === "e" || drag) return; render(); }
+/* Something deleted in one window but changed in another is kept (so no words are lost). Say so, in both windows. */
+var deletedHere = {};
+function keptMessage(report){
+  var lines = [];
+  if (report.keptThere) lines.push("A " + report.keptThere[0] + " that was deleted in another tab or window had changes here, so it was kept.");
+  var back = Object.keys(deletedHere).filter(function(id){ return findSection(id) || findTopic(id) || findSub(id); });
+  if (back.length || report.keptHere) lines.push("A " + (back.length ? deletedHere[back[0]] : report.keptHere[0]) + " you deleted was changed in another tab or window, so it was kept. Delete it again if you don’t need it.");
+  back.forEach(function(id){ delete deletedHere[id]; });
+  if (lines.length) banner(lines.join(" "));
+}
+
+/* Text being typed is also copied at once into simple storage, so it survives an instant reload or crash. */
+function pendingKey(){ return "wa-pending-" + COPY_ID + "-"; }
+function keepPending(){
+  if (!ed.subId) return; var f = findSub(ed.subId), box = $("#ed"), ti = $("#subTitle"); if (!f || !box || !ti) return;
+  try { localStorage.setItem(pendingKey() + TAB, JSON.stringify({sub:ed.subId, topic:f.topic.id, title:ti.value, html:box.innerHTML, at:Date.now()})); } catch(e){}
+}
+function clearPending(before){ try { var k = pendingKey() + TAB, p = JSON.parse(localStorage.getItem(k) || "null"); if (p && !(p.at > before)) localStorage.removeItem(k); } catch(e){} }
+function applyPending(){
+  var changed = false;
+  try {
+    for (var i = localStorage.length - 1; i >= 0; i--){
+      var k = localStorage.key(i); if (!k || k.indexOf(pendingKey()) !== 0) continue;
+      var p = null; try { p = JSON.parse(localStorage.getItem(k)); } catch(e){}
+      localStorage.removeItem(k);
+      if (!p || !okId(p.sub)) continue;
+      var html = sanitize(p.html), title = cleanTitle(p.title), f = findSub(p.sub);
+      if (f){ if (f.sub.html !== html || f.sub.title !== title){ f.sub.html = html; f.sub.title = title; changed = true; } }
+      else { var t = okId(p.topic) && findTopic(p.topic); if (t && (html || title)){ t.topic.subsections.push({ id:p.sub, title:title, html:html }); changed = true; } }
+    }
+  } catch(e){ console.warn(e); }
+  return changed;
+}
+
+/* ---------- finding things ---------- */
+function findSection(id){ for (var i=0;i<data.sections.length;i++) if (data.sections[i].id === id) return data.sections[i]; return null; }
+function findTopic(id){ for (var i=0;i<data.sections.length;i++){ var s = data.sections[i]; for (var j=0;j<s.topics.length;j++) if (s.topics[j].id === id) return {section:s, topic:s.topics[j]}; } return null; }
+function findSub(id){ for (var i=0;i<data.sections.length;i++){ var s = data.sections[i]; for (var j=0;j<s.topics.length;j++){ var t = s.topics[j]; for (var k=0;k<t.subsections.length;k++) if (t.subsections[k].id === id) return {section:s, topic:t, sub:t.subsections[k]}; } } return null; }
+function allIds(){ var set = {}; data.sections.forEach(function(s){ set[s.id]=1; s.topics.forEach(function(t){ set[t.id]=1; t.subsections.forEach(function(u){ set[u.id]=1; }); }); }); return set; }
+function move(arr, i, d){ var j = i + d; if (j < 0 || j >= arr.length) return; var x = arr[i]; arr[i] = arr[j]; arr[j] = x; }
+function idx(arr, id){ for (var i=0;i<arr.length;i++) if (arr[i].id === id) return i; return -1; }
+
+/* ---------- pop-up questions and messages ---------- */
+function modal(opts){
+  return new Promise(function(resolve){
+    var m = $("#modal");
+    var fields = opts.fields || [];
+    var h = '<div class="sheet"><h2>' + esc(opts.title||"") + '</h2>' + (opts.message ? '<p class="msg">' + esc(opts.message) + '</p>' : '');
+    fields.forEach(function(f, i){ h += '<label class="fl" for="mf'+i+'">' + esc(f.label) + '</label><input class="text" id="mf'+i+'" type="'+(f.type||"text")+'" autocomplete="off" '+(f.type==="url"?'inputmode="url" autocapitalize="off"':'autocapitalize="sentences"')+' placeholder="'+esc(f.placeholder||"")+'" value="'+esc(f.value||"")+'">'; });
+    h += '<div class="btns">' + (opts.cancel === false ? '' : '<button type="button" class="no">' + esc(opts.cancel||"Cancel") + '</button>') + '<button type="button" class="ok' + (opts.danger?' red':'') + '">' + esc(opts.ok||"OK") + '</button></div></div>';
+    m.innerHTML = h; m.classList.add("show");
+    var first = $("#mf0", m);
+    if (first){ setTimeout(function(){ first.focus(); try { first.select(); } catch(e){} }, 30); } else { setTimeout(function(){ var o = $(".ok", m); if (o) o.focus(); }, 30); }
+    function done(val){ m.classList.remove("show"); m.innerHTML = ""; document.removeEventListener("keydown", key); resolve(val); }
+    function ok(){ if (!fields.length) return done(true); var vals = fields.map(function(f, i){ return $("#mf"+i, m).value; }); if (fields.length === 1 && !cleanTitle(vals[0]) && fields[0].required !== false){ $("#mf0", m).focus(); return; } done(fields.length === 1 ? vals[0] : vals); }
+    function key(e){ if (e.key === "Escape") done(null); else if (e.key === "Enter" && e.target.tagName === "INPUT"){ e.preventDefault(); ok(); } }
+    document.addEventListener("keydown", key);
+    $(".ok", m).onclick = ok;
+    var no = $(".no", m); if (no) no.onclick = function(){ done(null); };
+    m.onclick = function(e){ if (e.target === m && opts.cancel !== false) done(null); };
+  });
+}
+function ask(title, label, value, okText){ return modal({title:title, fields:[{label:label, value:value||""}], ok:okText||"Save"}).then(function(v){ return v == null ? null : cleanTitle(v); }); }
+function confirmDelete(what){ return modal({title:"Delete " + what + "?", message:"This can't be undone. (Tip: save a backup file from Share first if you're unsure.)", ok:"Delete", cancel:"Keep it", danger:true}); }
+function info(title, message){ return modal({title:title, message:message, ok:"OK", cancel:false}); }
+var toastTimer;
+function toast(t){ var el = $("#toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(function(){ el.classList.remove("show"); }, 3200); }
+function hideToast(){ clearTimeout(toastTimer); var el = $("#toast"); if (el) el.classList.remove("show"); }
+/* A notice that doesn't block anything (used when the app is open in another tab or window). */
+function banner(t){ var el = $("#banner"); el.innerHTML = '<span></span><button type="button">OK</button>'; el.firstChild.textContent = t; el.classList.add("show"); el.querySelector("button").onclick = function(){ el.classList.remove("show"); }; }
+
+/* ---------- moving around ---------- */
+var ui = { arrange:false, sel:null, leave:null, lastView:"" };
+var navStack = [];
+function route(){ var h = (location.hash || "#/").replace(/^#\/?/, ""); var p = h.split("/"); return {view:p[0]||"home", id:decodeURIComponent(p[1]||""), sub:p[2]||""}; }
+function go(hash){ if (location.hash === hash) render(); else location.hash = hash; }
+function goBack(parent){ if (navStack.length > 1 && navStack[navStack.length-2] === parent) history.back(); else go(parent); }
+window.addEventListener("hashchange", function(){
+  var h = location.hash || "#/";
+  if (navStack.length > 1 && navStack[navStack.length-2] === h) navStack.pop(); else navStack.push(h);
+  render(true);
+  checkForNewer();
+  if (ui.then){ var nx = ui.then; ui.then = null; go(nx); }
+});
+
+function header(backTo, backLabel, title, right){
+  return '<header class="top">' + (backTo ? '<button class="tbtn" data-act="back" data-to="'+esc(backTo)+'" aria-label="'+(backLabel === "Done" ? "Done" : "Back to "+esc(backLabel))+'">‹ <span class="bl">' + esc(backLabel) + '</span></button>' : '') +
+    '<h1>' + esc(title) + '</h1><span class="saved" id="saved"></span>' + (right||"") + '</header>';
+}
+
+function render(navigated){
+  if (ui.leave){ var f = ui.leave; ui.leave = null; f(); }
+  var r = route(), y = window.scrollY, html = "";
+  var key = r.view + "/" + r.id;
+  if (navigated || key !== ui.lastView) { ui.arrange = false; }
+  var same = key === ui.lastView;
+  if (ui.lastView.indexOf("share/") === 0 && key.indexOf("share/") !== 0) hideToast();
+  ui.lastView = key;
+  if (r.view === "home") html = viewHome();
+  else if (r.view === "s") html = viewSection(r.id);
+  else if (r.view === "t") html = viewTopic(r.id);
+  else if (r.view === "e") html = viewEditor(r.id);
+  else if (r.view === "share") html = viewShare();
+  else if (r.view === "help") html = viewHelp();
+  else if (r.view === "search") html = viewSearch();
+  else { location.replace("#/"); return; }
+  if (html == null) return; // view redirected
+  $("#app").innerHTML = html;
+  if (r.view === "e") setupEditor(r.id);
+  if (r.view === "share") updatePicker();
+  if (r.view === "search") setupSearch();
+  window.scrollTo(0, same ? y : 0);
+  if (r.view === "t" && r.sub && navigated){ var card = document.querySelector('.card[data-sub="' + r.sub + '"]'); if (card){ card.scrollIntoView({block:"center"}); card.classList.add("flash"); } }
+}
+
+/* ---------- screens ---------- */
+function arrangeBtn(n, what){ if (!n) return ""; return '<button class="plain'+(ui.arrange?' on':'')+'" data-act="arrange">' + (ui.arrange ? '✓ Done changing' : '✎ Change order, names, or delete ' + what) + '</button>'; }
+function handle(kind, id){ return '<span class="handle" data-drag="'+kind+'" data-id="'+id+'" role="button" aria-label="Drag to move" title="Press and drag to move">≡ Drag</span>'; }
+function ctrls(kind, id, i, n){
+  return '<div class="ctrls">' + handle(kind, id) + '<button class="ibtn" data-act="up" data-kind="'+kind+'" data-id="'+id+'" aria-label="Move up" '+(i===0?'disabled':'')+'>↑</button>' +
+    '<button class="ibtn" data-act="down" data-kind="'+kind+'" data-id="'+id+'" aria-label="Move down" '+(i===n-1?'disabled':'')+'>↓</button>' +
+    '<button class="ibtn" data-act="rename" data-kind="'+kind+'" data-id="'+id+'" aria-label="Rename">✎</button>' +
+    '<button class="ibtn del" data-act="delete" data-kind="'+kind+'" data-id="'+id+'" aria-label="Delete">🗑</button></div>';
+}
+function viewHome(){
+  var right = '<button class="tbtn" data-act="nav" data-to="#/share" aria-label="Share or back up">⇪ Share</button><button class="tbtn" data-act="nav" data-to="#/help" aria-label="Help">? Help</button>';
+  var h = header(null, "", "My Witnessing Notes", right) + '<main>';
+  var n = data.sections.length;
+  h += '<button class="searchbar" data-act="nav" data-to="#/search" aria-label="Search your notes">🔍 <span>Search your notes</span></button>';
+  h += '<p class="lead intro">Keep your witnessing notes here. <b>Sections</b> hold <b>topics</b>, and each topic is made of <b>parts</b>. Your notes stay on this phone. Tap a section to open it.</p>';
+  if (!n) h += '<div class="empty">No sections yet.<br>Tap the green button to make your first one.</div>';
+  h += '<ul class="list" data-list="section">';
+  data.sections.forEach(function(s, i){
+    h += '<li data-item="'+s.id+'" class="row' + (ui.arrange?' arr':'') + '"><button class="open" data-act="nav" data-to="#/s/'+s.id+'"><span class="name">' + esc(s.title) + (s.sample?'<span class="badge">Sample</span>':'') + '</span><span class="meta">' + plural(s.topics.length, "topic", "topics") + '</span></button>' + (ui.arrange ? ctrls("section", s.id, i, n) : '<span class="chev">›</span>') + '</li>';
+  });
+  h += '</ul><button class="big" data-act="newSection">＋ New section</button>' + arrangeBtn(n, "sections");
+  h += '</main>';
+  return h;
+}
+function viewSection(id){
+  var s = findSection(id); if (!s){ location.replace("#/"); return null; }
+  var h = header("#/", "Sections", s.title) + '<main>';
+  var n = s.topics.length;
+  h += '<p class="lead">Topics in “' + esc(s.title) + '”.</p>';
+  if (!n) h += '<div class="empty">No topics here yet.<br>Tap the green button to start one.</div>';
+  h += '<ul class="list" data-list="topic" data-parent="'+s.id+'">';
+  s.topics.forEach(function(t, i){
+    h += '<li data-item="'+t.id+'" class="row' + (ui.arrange?' arr':'') + '"><button class="open" data-act="nav" data-to="#/t/'+t.id+'"><span class="name">' + esc(t.title) + '</span><span class="meta">' + plural(t.subsections.length, "part", "parts") + '</span></button>' + (ui.arrange ? ctrls("topic", t.id, i, n) : '<span class="chev">›</span>') + '</li>';
+  });
+  h += '</ul><button class="big" data-act="newTopic" data-id="'+s.id+'">＋ New topic</button>' + arrangeBtn(n, "topics");
+  h += '</main>';
+  return h;
+}
+function viewTopic(id){
+  var f = findTopic(id); if (!f){ location.replace("#/"); return null; }
+  var t = f.topic, n = t.subsections.length;
+  var prev = navStack[navStack.length-2] || "", fromSearch = prev.indexOf("#/search") === 0;
+  var h = header(fromSearch ? prev : "#/s/"+f.section.id, fromSearch ? "Results" : f.section.title, t.title) + '<main class="tract">';
+  h += '<h2 class="ttl">' + esc(t.title) + '</h2>';
+  if (ui.arrange) h += '<button class="plain" data-act="rename" data-kind="topic" data-id="'+t.id+'">✎ Rename this topic</button>';
+  if (!n) h += '<div class="empty">This topic is empty.<br>Tap “Add a part” to start writing.</div>';
+  h += '<div class="cards" data-list="sub" data-parent="'+t.id+'">';
+  t.subsections.forEach(function(u, i){
+    var body = sanitize(u.html);
+    h += '<article class="card" data-item="'+u.id+'" data-sub="'+u.id+'">' + (u.title ? '<h3 class="sub-title">' + esc(u.title) + '</h3>' : '') +
+      '<div class="rich">' + (body || '<p class="empty-note">(empty — tap Edit to write)</p>') + '</div><div class="cardbar">' +
+      (ui.arrange ? handle("sub", u.id) + '<button class="ibtn" data-act="up" data-kind="sub" data-id="'+u.id+'" aria-label="Move up" '+(i===0?'disabled':'')+'>↑</button><button class="ibtn" data-act="down" data-kind="sub" data-id="'+u.id+'" aria-label="Move down" '+(i===n-1?'disabled':'')+'>↓</button><button class="ibtn del" data-act="delete" data-kind="sub" data-id="'+u.id+'" aria-label="Delete this part">🗑</button>' : '') +
+      '<button class="editbtn" data-act="nav" data-to="#/e/'+u.id+'">✎ Edit</button></div></article>';
+  });
+  h += '</div><button class="big" data-act="newSub" data-id="'+t.id+'">＋ Add a part</button>' + arrangeBtn(n, "parts");
+  h += '</main>';
+  return h;
+}
+function viewEditor(id){
+  var f = findSub(id); if (!f){ location.replace("#/"); return null; }
+  var h = header("#/t/"+f.topic.id, "Done", f.topic.title) + '<main>';
+  h += '<label class="fl" for="subTitle">Heading for this part (optional)</label><input class="text" id="subTitle" placeholder="e.g. Opening question" value="' + esc(f.sub.title) + '">';
+  h += '<div class="toolbar" id="tb" role="toolbar" aria-label="Formatting">' +
+    '<button data-cmd="bold"><b>Bold</b></button><button data-cmd="italic"><i>Italic</i></button>' +
+    '<button data-cmd="h2">Heading</button><button data-cmd="h3">Subheading</button><button data-cmd="quote" aria-label="Quote box">Quote</button>' +
+    '<button data-cmd="ul" aria-label="Bulleted list">• List</button><button data-cmd="ol" aria-label="Numbered list">1. List</button>' +
+    '<button data-cmd="link" aria-label="Insert link">Link</button><button data-cmd="image" aria-label="Insert picture">Picture</button>' +
+    '<button data-cmd="undo">↶ Undo</button></div>';
+  h += '<div class="editor rich" id="ed" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Text for this part" data-placeholder="Type here. Use the buttons above for headings, bold, lists, links, and pictures."></div>';
+  h += '<p class="hint">Changes save by themselves as you type. Tap a picture to change its size, add a caption, or remove it. Tap “Done” at the top when finished.</p>';
+  h += '<button class="plain danger" data-act="delete" data-kind="sub" data-id="'+f.sub.id+'">🗑 Delete this part</button>';
+  h += '</main>';
+  return h;
+}
+function viewShare(){
+  if (!ui.sel) selectAll(true);
+  var h = header("#/", "Sections", "Share & back up") + '<main>';
+  h += '<section class="panel"><h2>1. Save or share your notes</h2><p>Tick what to include, then save a file. Keep it somewhere safe as a backup, or send it to a friend so they can bring it into their copy.</p>';
+  h += '<div class="two"><button class="plain" data-act="selAll">Tick all</button><button class="plain" data-act="selNone">Untick all</button></div><ul class="pick" id="pick">';
+  if (!data.sections.length) h += '<li class="hint">You have no sections yet.</li>';
+  data.sections.forEach(function(s){
+    h += '<li><label><input type="checkbox" data-pick="section" data-id="'+s.id+'"><span class="sname">' + esc(s.title) + '</span></label>';
+    if (s.topics.length){ h += '<ul class="pick tp">'; s.topics.forEach(function(t){ h += '<li><label><input type="checkbox" data-pick="topic" data-id="'+t.id+'" data-section="'+s.id+'"><span>' + esc(t.title) + '</span></label></li>'; }); h += '</ul>'; }
+    h += '</li>';
+  });
+  h += '</ul><p class="hint" id="pickInfo"></p>';
+  if (canShareFiles()) h += '<button class="big blue" data-act="exportShare">⇪ Send the ticked notes…</button>';
+  h += '<button class="big' + (canShareFiles() ? ' light' : ' blue') + '" data-act="exportSave">⤓ Save the ticked notes as a file</button></section>';
+  h += '<section class="panel"><h2>2. Bring in notes from a file</h2><p>Open a notes file someone sent you (or your own backup). It is <b>added</b> to your notes. Nothing you already have is changed or replaced.</p><button class="big" data-act="import">⤒ Choose a file to bring in</button></section>';
+  h += '<section class="panel"><h2>3. Give someone the app</h2><p>Save a copy of this app as one file they can open in their phone’s browser.</p>';
+  h += '<button class="plain" data-act="appBlank">⤓ Blank app (no notes)</button><button class="plain" data-act="appBundle">⤓ App with the ticked notes built in</button>';
+  h += '<p class="hint">A copy saved here keeps its own notes, separate from yours, even on the same phone. A copy with notes built in starts with just those notes. To add them to your own notes instead, use step 2 and choose that app file.</p></section>';
+  h += '<p class="hint">App version ' + esc(APP_VERSION) + '. This copy’s own storage space: “' + esc(COPY_ID) + '”. Notes are kept in this browser on this device (' + ({idb:"device storage", ls:"simple browser storage", memory:"temporary memory only — save a file before closing!"}[store.mode()]) + ').</p>';
+  h += '</main>';
+  return h;
+}
+function viewHelp(){
+  var h = header("#/", "Sections", "How to use") + '<main class="help">';
+  h += '<section class="panel"><h2 style="margin-top:0">Writing</h2><ol><li><b>Sections</b> are your big groups (for example “The Deity of Christ”). Tap <b>＋ New section</b>.</li><li>Open a section and tap <b>＋ New topic</b>. Give it a name and start typing right away.</li><li>A topic is made of <b>parts</b>, like the pieces of a tract. Tap <b>＋ Add a part</b> for the next piece, and <b>✎ Edit</b> to change one.</li><li>While editing, use the buttons for <b>Bold</b>, <i>Italic</i>, <b>Heading</b>, <b>Subheading</b>, <b>Quote</b> (a box for Bible verses), lists, <b>Link</b>, and <b>Picture</b>. Pictures are made smaller automatically so files stay small. Tap a picture while editing to make it small, medium, or full width, or to add a caption.</li><li>To rename, reorder, or delete, tap <b>✎ Change order, names, or delete</b> at the bottom of a list. Move things with the ↑ ↓ buttons, or press and drag the <b>≡ Drag</b> handle. Tap <b>✓ Done changing</b> when finished.</li><li>To find something, tap <b>🔍 Search your notes</b> on the main screen and type a word. Tap a result to open it. If a word is spelled a little differently, close matches are shown.</li></ol></section>';
+  h += '<section class="panel"><h2 style="margin-top:0">Put it on your home screen</h2><p>Open the app’s web address once while online. Then add it to your home screen: on <b>iPhone</b> (Safari), tap Share (the square with an arrow), then <b>Add to Home Screen</b>. On <b>Android</b> (Chrome), tap ⋮, then <b>Add to Home screen</b> or <b>Install app</b>. After that it opens like an app and works with no internet.</p>' + (HOSTED ? '<p>This app’s web address (send it to anyone who wants the app):<br><span class="addr" id="addr">' + esc(location.origin + location.pathname) + '</span></p>' : '<p>You opened this app as a saved file, so it has no web address here. To give it to someone, use <b>⇪ Share</b> → “Blank app”.</p>') + '</section>';
+  h += '<section class="panel"><h2 style="margin-top:0">Backing up</h2><p>Your notes are kept inside this browser on this phone. If you clear your browser’s data, they could be lost. So now and then go to <b>⇪ Share</b>, tick everything, and tap <b>Save</b>. Keep that file in Files, Google Drive, or email it to yourself. To restore, use <b>Bring in notes from a file</b>.</p></section>';
+  h += '<section class="panel"><h2 style="margin-top:0">Sharing</h2><ul><li><b>Some notes:</b> in Share, tick the sections or topics you want and tap Send or Save. The other person opens the file with <b>Bring in notes</b> in their copy. It is added next to their notes; nothing of theirs is replaced.</li><li><b>The app itself:</b> “Blank app” gives a clean copy. “App with the ticked notes built in” gives a copy that already has those notes.</li><li>If something you send has the same name as something they already have but different words, it is added as “… (imported)” so both are kept.</li><li><b>Copies of the app:</b> a copy saved from Share (“Blank app” or “App with the ticked notes built in”) keeps its own notes, so it won’t mix with yours, even on the same phone. But the <b>same</b> app opened twice (two tabs, or the same file opened again) shares one set of notes on that phone. That’s fine: changes from both are combined, and nothing is lost.</li></ul></section>';
+  h += '<section class="panel"><h2 style="margin-top:0">Samples</h2><p>The “Sample” sections show how things work. Delete them whenever you like. Scripture in the samples is from the King James Version.</p><button class="plain" data-act="addSamples">Put the sample sections back</button></section>';
+  h += '</main>';
+  return h;
+}
+
+/* ---------- export / share picker ---------- */
+function selectAll(on){ ui.sel = {topics:{}, empty:{}}; if (on) data.sections.forEach(function(s){ if (!s.topics.length) ui.sel.empty[s.id] = 1; s.topics.forEach(function(t){ ui.sel.topics[t.id] = 1; }); }); }
+function updatePicker(){
+  var pick = $("#pick"); if (!pick) return;
+  data.sections.forEach(function(s){
+    var cb = pick.querySelector('input[data-pick="section"][data-id="'+s.id+'"]'); if (!cb) return;
+    if (!s.topics.length){ cb.checked = !!ui.sel.empty[s.id]; cb.indeterminate = false; }
+    else { var c = s.topics.filter(function(t){ return ui.sel.topics[t.id]; }).length; cb.checked = c === s.topics.length; cb.indeterminate = c > 0 && c < s.topics.length; }
+  });
+  pick.querySelectorAll('input[data-pick="topic"]').forEach(function(cb){ cb.checked = !!ui.sel.topics[cb.getAttribute("data-id")]; });
+  var sel = selectedSections(), tc = 0; sel.forEach(function(s){ tc += s.topics.length; });
+  var size = new Blob([JSON.stringify(exportObject(sel))]).size;
+  var inf = $("#pickInfo"); if (inf) inf.textContent = sel.length ? "Ticked: " + plural(sel.length, "section", "sections") + ", " + plural(tc, "topic", "topics") + " (about " + fmtSize(size) + ")." : "Nothing ticked yet.";
+}
+function selectedSections(){
+  var out = [];
+  data.sections.forEach(function(s){
+    if (!s.topics.length){ if (ui.sel.empty[s.id]) out.push(JSON.parse(JSON.stringify(s))); return; }
+    var ts = s.topics.filter(function(t){ return ui.sel.topics[t.id]; });
+    if (ts.length){ var c = JSON.parse(JSON.stringify(s)); c.topics = JSON.parse(JSON.stringify(ts)); out.push(c); }
+  });
+  return out;
+}
+function exportObject(sections){ return { app: FORMAT, format: 1, appVersion: APP_VERSION, exportedAt: now(), sections: sections }; }
+function canShareFiles(){ try { return !!(navigator.share && navigator.canShare && window.File && navigator.canShare({files:[new File(["x"], "t.json", {type:"application/json"})]})); } catch(e){ return false; } }
+function exportName(sel){ return (sel.length === 1 ? slug(sel[0].title) : "witnessing-notes") + "-" + today() + ".witness.json"; }
+function download(blob, name){
+  var url = URL.createObjectURL(blob), a = document.createElement("a");
+  a.href = url; a.download = name; a.rel = "noopener"; a.style.display = "none"; document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); }, 60000);
+}
+var NEXT = {
+  notes: "It’s in your Downloads (on iPhone: the Files app, then Downloads).\n\nNext: keep it somewhere safe as a backup, or send it to someone by email or message. They open it in their copy of the app with “Bring in notes from a file”.",
+  blank: "It’s in your Downloads (on iPhone: the Files app, then Downloads).\n\nNext: send this file to the other person by email or message. They open it in their phone’s browser. It starts with no notes.",
+  bundle: "It’s in your Downloads (on iPhone: the Files app, then Downloads).\n\nNext: send this file to the other person by email or message. They open it in their phone’s browser, and it starts with the notes you ticked."
+};
+function saved(name, kind){
+  var m = "Saved “" + name + "”.\n\n" + NEXT[kind];
+  if (HOSTED && kind !== "notes") m += "\n\nOr simply send them this app’s web address: " + location.origin + location.pathname;
+  return info("File saved", m);
+}
+function shareOrSave(blob, name, type, wantShare, kind){
+  if (wantShare && canShareFiles()){
+    var file = new File([blob], name, {type:type});
+    if (navigator.canShare({files:[file]})) return navigator.share({files:[file], title:name}).then(function(){ toast("Sent."); }, function(e){ if (e && e.name === "AbortError") return; download(blob, name); saved(name, kind); });
+  }
+  download(blob, name); saved(name, kind);
+  return Promise.resolve();
+}
+function doExport(wantShare){
+  var sel = selectedSections(); if (!sel.length) return info("Nothing ticked", "Tick at least one section or topic first.");
+  var blob = new Blob([JSON.stringify(exportObject(sel), null, 1)], {type:"application/json"});
+  return shareOrSave(blob, exportName(sel), "application/json", wantShare, "notes");
+}
+function appHtml(bundle){
+  var clone = PRISTINE.cloneNode(true);
+  var b = clone.querySelector("#wa-bundle");
+  b.textContent = bundle ? JSON.stringify(bundle).replace(/</g, "\\u003c") : "";
+  return "<!DOCTYPE html>\n" + clone.outerHTML;
+}
+function doAppCopy(withNotes){
+  var bundle = { copyId: uid(), bundleId: uid(), noSamples: true };
+  var name = "witnessing-app-blank.html";
+  if (withNotes){
+    var sel = selectedSections(); if (!sel.length) return info("Nothing ticked", "Tick at least one section or topic in step 1 first.");
+    bundle.data = exportObject(sel); name = "witnessing-app-with-" + (sel.length === 1 ? slug(sel[0].title) : "notes") + ".html";
+  }
+  return shareOrSave(new Blob([appHtml(bundle)], {type:"text/html"}), name, "text/html", false, withNotes ? "bundle" : "blank");
+}
+
+/* ---------- import and merge (never replaces anything) ---------- */
+function normalizeImport(obj){
+  if (!obj || typeof obj !== "object" || !Array.isArray(obj.sections)) throw new Error("This doesn't look like a notes file from this app.");
+  var seen = {};
+  function id(x){ var v = okId(x) && !seen[x] ? x : uid(); seen[v] = 1; return v; }
+  return obj.sections.filter(function(s){ return s && typeof s === "object"; }).map(function(s){
+    var sec = { id:id(s.id), title:cleanTitle(s.title) || "Untitled section", created:String(s.created||now()).slice(0,40),
+      topics:(Array.isArray(s.topics)?s.topics:[]).filter(function(t){ return t && typeof t === "object"; }).map(function(t){
+        return { id:id(t.id), title:cleanTitle(t.title) || "Untitled topic", created:String(t.created||now()).slice(0,40),
+          subsections:(Array.isArray(t.subsections)?t.subsections:[]).filter(function(u){ return u && typeof u === "object"; }).map(function(u){ return { id:id(u.id), title:cleanTitle(u.title), html:sanitize(typeof u.html === "string" ? u.html : "") }; }) };
+      }) };
+    if (s.sample === true) sec.sample = true;
+    return sec;
+  });
+}
+function baseTitle(t){ return norm(String(t).replace(/\s*\(imported(?: \d+)?\)$/i, "")); }
+/* The built-in sample picture is drawn by the phone, so its bytes can differ a little between phones and browsers.
+   When comparing notes, every copy of it counts as the same picture. */
+function fpHtml(h){ return String(h).replace(/<img src="data:image\/[^"]*" alt="Sample picture">/g, '<img alt="Sample picture">'); }
+function fingerprint(t){ return baseTitle(t.title) + "\u0001" + t.subsections.map(function(u){ return norm(u.title) + "\u0002" + fpHtml(u.html); }).join("\u0003"); }
+function freshIds(obj, ids){
+  function fix(x){ if (ids[x.id]) x.id = uid(); ids[x.id] = 1; }
+  fix(obj); (obj.topics||[]).forEach(function(t){ fix(t); t.subsections.forEach(fix); }); (obj.subsections||[]).forEach(fix);
+  return obj;
+}
+function uniqueTitle(list, base){ var t = base, n = 2; while (list.some(function(x){ return norm(x.title) === norm(t); })) { t = base.replace(/\)$/, " " + n + ")"); n++; } return t; }
+function sameParts(a, b){ return same(a.subsections.map(function(u){ return [norm(u.title), fpHtml(u.html)]; }), b.subsections.map(function(u){ return [norm(u.title), fpHtml(u.html)]; })); }
+function merge(sections){
+  var sum = { newSections:[], newTopics:0, already:0, copies:[], changed:[], intoExisting:[] };
+  var ids = allIds();
+  sections.forEach(function(s){
+    var local = findSection(s.id) || data.sections.filter(function(x){ return norm(x.title) === norm(s.title); })[0];
+    if (!local){
+      var fresh = freshIds(JSON.parse(JSON.stringify(s)), ids); fresh.imported = now();
+      data.sections.push(fresh); sum.newSections.push(fresh.title); sum.newTopics += fresh.topics.length; return;
+    }
+    var added = 0;
+    s.topics.forEach(function(t){
+      var fp = fingerprint(t), mineT = findTopic(t.id);
+      /* Same topic (same id) that only got a new name here, or is identical: nothing to add. */
+      if ((mineT && sameParts(mineT.topic, t)) || local.topics.some(function(x){ return fingerprint(x) === fp; })) { sum.already++; return; }
+      var copy = freshIds(JSON.parse(JSON.stringify(t)), ids); copy.imported = now();
+      var plainT = cleanTitle(t.title.replace(/\s*\(imported(?: \d+)?\)$/i, ""));
+      if (mineT){ copy.title = uniqueTitle(local.topics, plainT + " (imported)"); sum.changed.push("“" + mineT.topic.title + "” (the file’s version is “" + copy.title + "”)"); }
+      else if (local.topics.some(function(x){ return baseTitle(x.title) === baseTitle(t.title); })){ copy.title = uniqueTitle(local.topics, plainT + " (imported)"); sum.copies.push(copy.title); }
+      local.topics.push(copy); sum.newTopics++; added++;
+    });
+    if (added) sum.intoExisting.push(local.title);
+  });
+  return sum;
+}
+function summaryText(sum){
+  var lines = [];
+  if (sum.newSections.length) lines.push("New sections: " + sum.newSections.join(", ") + ".");
+  if (sum.newTopics) lines.push(plural(sum.newTopics, "topic was", "topics were") + " added.");
+  if (sum.intoExisting.length) lines.push("Some were put into your existing section" + (sum.intoExisting.length>1?"s":"") + ": " + sum.intoExisting.join(", ") + ".");
+  if (sum.changed.length) lines.push("You have a newer version of " + (sum.changed.length === 1 ? "this topic" : "these topics") + " (you changed " + (sum.changed.length === 1 ? "it" : "them") + " after the file was saved): " + sum.changed.join(", ") + ". Yours was left as it is, and the file’s version was added next to it so you can compare. Delete whichever you don’t need.");
+  if (sum.copies.length) lines.push("You already had a different topic with the same name, so these were added alongside yours: " + sum.copies.join(", ") + ".");
+  if (sum.oldGone) lines.push("Old sample sections from an earlier version of the app were left out.");
+  if (sum.oldKept && sum.oldKept.length) lines.push("Old sample sections that had been changed were brought in without the Sample label: " + sum.oldKept.join(", ") + ".");
+  if (sum.picsBig) lines.push(plural(sum.picsBig, "picture was", "pictures were") + " too large (over 2 MB) and " + (sum.picsBig === 1 ? "was" : "were") + " left out.");
+  if (sum.picsWeb) lines.push(plural(sum.picsWeb, "picture", "pictures") + " from the internet " + (sum.picsWeb === 1 ? "was" : "were") + " left out (the app only keeps pictures stored inside the notes).");
+  if (sum.already) lines.push(plural(sum.already, "topic was", "topics were") + " already in your notes, so " + (sum.already===1?"it was":"they were") + " skipped.");
+  if (!lines.length) lines.push("There was nothing new to add.");
+  lines.push("None of your own notes were changed.");
+  return lines.join("\n");
+}
+function parseImportText(text){
+  text = String(text || "").replace(/^\uFEFF/, "");
+  if (/^\s*</.test(text)){
+    var doc = new DOMParser().parseFromString(text, "text/html"), b = doc.getElementById("wa-bundle");
+    var j = b && b.textContent.trim() ? JSON.parse(b.textContent) : null;
+    if (!j || !j.data){ var er = new Error("no notes"); er.userMessage = "That app file has no notes built in, so there is nothing to bring in. (To use it, open it in the browser instead.)"; throw er; }
+    return j.data;
+  }
+  return JSON.parse(text);
+}
+function importFile(file){
+  if (!file) return;
+  if (file.size > 60*1024*1024) return info("File too big", "That file is larger than 60 MB, so it was not brought in.");
+  var reader = new FileReader();
+  reader.onload = function(){
+    var sections, rep = { removed:0, kept:[], updated:0 };
+    dropped.big = 0; dropped.web = 0;
+    try { var obj = parseImportText(reader.result); if (!obj || obj.app !== FORMAT) throw new Error("not ours"); sections = tidyOldSamples(normalizeImport(obj), rep); }
+    catch(e){ return info("Couldn't read that file", e.userMessage || "Please choose a notes file saved from this app (it usually ends in .witness.json)."); }
+    var sum = merge(sections); sum.oldGone = rep.removed; sum.oldKept = rep.kept; sum.picsBig = dropped.big; sum.picsWeb = dropped.web;
+    saveSoon(0); ui.sel = null; render();
+    info("Notes brought in", summaryText(sum));
+  };
+  reader.onerror = function(){ info("Couldn't open that file", "Please try again."); };
+  reader.readAsText(file);
+}
+$("#pickImport").addEventListener("change", function(e){ var f = e.target.files && e.target.files[0]; e.target.value = ""; importFile(f); });
+
+/* ---------- making new things ---------- */
+function newSection(){ ask("New section", "Section name", "", "Create").then(function(name){ if (!name) return; var s = { id:uid(), title:name, created:now(), topics:[] }; data.sections.push(s); saveSoon(0); go("#/s/" + s.id); }); }
+function newTopic(sid){ var s = findSection(sid); if (!s) return; ask("New topic", "Topic name", "", "Create").then(function(name){ if (!name) return; var u = { id:uid(), title:"", html:"" }; var t = { id:uid(), title:name, created:now(), subsections:[u] }; s.topics.push(t); saveSoon(0); ui.then = "#/e/" + u.id; go("#/t/" + t.id); }); }
+function newSub(tid){ var f = findTopic(tid); if (!f) return; var u = { id:uid(), title:"", html:"" }; f.topic.subsections.push(u); saveSoon(0); go("#/e/" + u.id); }
+
+/* ---------- actions ---------- */
+document.addEventListener("click", function(e){
+  var b = e.target.closest("[data-act]"); if (!b) return;
+  var act = b.getAttribute("data-act"), id = b.getAttribute("data-id"), kind = b.getAttribute("data-kind");
+  if (act === "nav") return go(b.getAttribute("data-to"));
+  if (act === "back") return goBack(b.getAttribute("data-to"));
+  if (act === "arrange"){ ui.arrange = !ui.arrange; return render(); }
+  if (act === "newSection") return newSection();
+  if (act === "newTopic") return newTopic(id);
+  if (act === "newSub") return newSub(id);
+  if (act === "up" || act === "down"){
+    var d = act === "up" ? -1 : 1;
+    if (kind === "section") move(data.sections, idx(data.sections, id), d);
+    if (kind === "topic"){ var f = findTopic(id); move(f.section.topics, idx(f.section.topics, id), d); }
+    if (kind === "sub"){ var g = findSub(id); move(g.topic.subsections, idx(g.topic.subsections, id), d); }
+    saveSoon(); render();
+    var again = document.querySelector('[data-act="'+act+'"][data-id="'+id+'"]'); if (again && !again.disabled) again.focus();
+    return;
+  }
+  if (act === "rename"){
+    var obj = kind === "section" ? findSection(id) : findTopic(id).topic;
+    return ask("Rename " + kind, (kind === "section" ? "Section" : "Topic") + " name", obj.title).then(function(v){ if (!v) return; var o2 = kind === "section" ? findSection(id) : (findTopic(id) || {}).topic; if (!o2) return; o2.title = v; saveSoon(0); render(); });
+  }
+  if (act === "delete"){
+    if (kind === "section"){ var s = findSection(id); return confirmDelete("the section “" + s.title + "” and its " + plural(s.topics.length, "topic", "topics")).then(function(ok){ if (!ok || idx(data.sections, id) < 0) return; data.sections.splice(idx(data.sections, id), 1); deletedHere[id] = "section"; saveSoon(0); render(); toast("Section deleted."); }); }
+    if (kind === "topic"){ var f2 = findTopic(id); return confirmDelete("the topic “" + f2.topic.title + "”").then(function(ok){ var f3 = ok && findTopic(id); if (!f3) return; f3.section.topics.splice(idx(f3.section.topics, id), 1); deletedHere[id] = "topic"; saveSoon(0); render(); toast("Topic deleted."); }); }
+    if (kind === "sub"){ var g2 = findSub(id); return confirmDelete("this part" + (g2.sub.title ? " (“" + g2.sub.title + "”)" : "")).then(function(ok){ var g3 = ok && findSub(id); if (!g3) return; ui.leave = null; ed.subId = null; g3.topic.subsections.splice(idx(g3.topic.subsections, id), 1); deletedHere[id] = "part"; saveSoon(0); if (route().view === "e") goBack("#/t/" + g3.topic.id); else render(); toast("Part deleted."); }); }
+  }
+  if (act === "selAll"){ selectAll(true); return updatePicker(); }
+  if (act === "selNone"){ selectAll(false); return updatePicker(); }
+  if (act === "exportShare") return doExport(true);
+  if (act === "exportSave") return doExport(false);
+  if (act === "import"){ return $("#pickImport").click(); }
+  if (act === "appBlank") return doAppCopy(false);
+  if (act === "appBundle") return doAppCopy(true);
+  if (act === "addSamples"){ var sum = merge(makeSamples()); saveSoon(0); info("Samples", sum.newTopics ? "The sample sections are back on your main screen." : "The samples are already there."); return; }
+});
+document.addEventListener("change", function(e){
+  var cb = e.target.closest && e.target.closest("[data-pick]"); if (!cb) return;
+  var id = cb.getAttribute("data-id");
+  if (cb.getAttribute("data-pick") === "section"){ var s = findSection(id); if (!s.topics.length){ if (cb.checked) ui.sel.empty[id] = 1; else delete ui.sel.empty[id]; } s.topics.forEach(function(t){ if (cb.checked) ui.sel.topics[t.id] = 1; else delete ui.sel.topics[t.id]; }); }
+  else { if (cb.checked) ui.sel.topics[id] = 1; else delete ui.sel.topics[id]; }
+  updatePicker();
+});
+
+/* ---------- search ---------- */
+var textCache = typeof WeakMap === "function" ? new WeakMap() : null;
+function plainOf(u){
+  var c = textCache && textCache.get(u); if (c && c.html === u.html) return c.text;
+  var d = new DOMParser().parseFromString("<body>" + String(u.html || "").replace(/<img[^>]*>/gi, " ").replace(/<(\/?(p|h2|h3|h4|li|blockquote|figcaption|figure)|br)\b/gi, " <$1") + "</body>", "text/html");
+  var t = (d.body.textContent || "").replace(/\s+/g, " ").trim();
+  if (textCache) textCache.set(u, {html:u.html, text:t});
+  return t;
+}
+function foldQ(t){ return String(t || "").toLowerCase().replace(/[\u2018\u2019]/g, "'").replace(/[\u201c\u201d]/g, '"'); }
+/* How many letters differ between two words (stops early once it is more than max). */
+function lev(a, b, max){
+  if (Math.abs(a.length - b.length) > max) return max + 1;
+  var prev = [], i, j; for (j = 0; j <= b.length; j++) prev[j] = j;
+  for (i = 1; i <= a.length; i++){ var cur = [i], best = i; for (j = 1; j <= b.length; j++){ cur[j] = Math.min(prev[j] + 1, cur[j-1] + 1, prev[j-1] + (a[i-1] === b[j-1] ? 0 : 1)); if (cur[j] < best) best = cur[j]; } if (best > max) return max + 1; prev = cur; }
+  return prev[b.length];
+}
+function doSearch(q){
+  var r = searchWith(foldQ(q).split(/\s+/).filter(Boolean).slice(0, 8).map(function(w){ return [w]; }));
+  if (r.results.length || !r.words.length) return r;
+  /* Nothing found: try close spellings (one letter off for short words, two for long ones). */
+  var vocab = {};
+  function addWords(t){ (foldQ(t).match(/[a-z0-9']+/g) || []).forEach(function(w){ vocab[w] = 1; }); }
+  data.sections.forEach(function(s){ addWords(s.title); s.topics.forEach(function(t){ addWords(t.title); t.subsections.forEach(function(u){ addWords(u.title + " " + plainOf(u)); }); }); });
+  var vw = Object.keys(vocab), ok = true;
+  var groups = r.words.map(function(w){
+    if (w.length < 4) return [w];
+    var max = w.length >= 7 ? 2 : 1, near = vw.filter(function(v){ return v.length >= 3 && lev(w, v, max) <= max; });
+    if (!near.length) ok = false;
+    return [w].concat(near.slice(0, 12));
+  });
+  if (!ok) return r;
+  var r2 = searchWith(groups); r2.fuzzy = r2.results.length > 0;
+  if (!r2.fuzzy) return r;
+  r2.close = groups.map(function(g){ return g.slice(1).join(", "); }).filter(Boolean);
+  return r2;
+}
+function searchWith(groups){
+  var words = [].concat.apply([], groups); if (!words.length) return {words:[], results:[]};
+  function hit(t){ t = foldQ(t); return groups.every(function(g){ return g.some(function(w){ return t.indexOf(w) >= 0; }); }); }
+  function snip(t){
+    var f = foldQ(t), at = -1; words.forEach(function(w){ var k = f.indexOf(w); if (k >= 0 && (at < 0 || k < at)) at = k; });
+    if (at < 0) return t.slice(0, 140) + (t.length > 140 ? "…" : "");
+    var a = Math.max(0, at - 50), b = Math.min(t.length, at + 110);
+    return (a > 0 ? "…" : "") + t.slice(a, b) + (b < t.length ? "…" : "");
+  }
+  var out = [];
+  data.sections.forEach(function(s){
+    if (hit(s.title)) out.push({kind:"Section", title:s.title, path:plural(s.topics.length, "topic", "topics"), to:"#/s/" + s.id});
+    s.topics.forEach(function(t){
+      if (hit(t.title)) out.push({kind:"Topic", title:t.title, path:s.title, to:"#/t/" + t.id});
+      t.subsections.forEach(function(u){
+        var txt = plainOf(u);
+        if (hit(u.title + " " + txt)) out.push({kind:"Part", title:u.title || t.title, path:s.title + " › " + t.title, snippet:snip(txt), to:"#/t/" + t.id + "/" + u.id});
+      });
+    });
+  });
+  return {words:words, results:out};
+}
+function highlight(text, words){
+  if (!words.length) return esc(text);
+  var re = new RegExp("(" + words.map(function(w){ return w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/'/g, "['\u2018\u2019]"); }).join("|") + ")", "gi");
+  return String(text).split(re).map(function(p, i){ return i % 2 ? "<mark>" + esc(p) + "</mark>" : esc(p); }).join("");
+}
+function viewSearch(){
+  var h = header("#/", "Sections", "Search") + '<main><label class="fl" for="q">Search all sections, topics, and parts</label>';
+  h += '<input class="text" id="q" type="search" placeholder="Type a word, e.g. grace" autocomplete="off" autocapitalize="off" enterkeyhint="search" value="' + esc(ui.q || "") + '">';
+  h += '<p class="hint" id="qinfo"></p><div id="results"></div></main>';
+  return h;
+}
+function showResults(){
+  var box = $("#results"), info = $("#qinfo"); if (!box) return;
+  var r = doSearch(ui.q || "");
+  if (!r.words.length){ box.innerHTML = ""; info.textContent = "Results show up as you type."; return; }
+  info.textContent = r.results.length ? (r.fuzzy ? "No exact matches. Showing close spellings (" + r.close.join("; ") + "): " : "") + plural(r.results.length, "match", "matches") + ". Tap one to open it." : "Nothing found. Try a different word.";
+  box.innerHTML = r.results.slice(0, 200).map(function(x){
+    return '<button class="res" data-act="nav" data-to="' + esc(x.to) + '"><span class="kind">' + x.kind + '</span><span class="rt">' + highlight(x.title, r.words) + '</span><span class="rp">' + esc(x.path) + '</span>' + (x.snippet ? '<span class="rs">' + highlight(x.snippet, r.words) + '</span>' : '') + '</button>';
+  }).join("");
+}
+function setupSearch(){
+  var q = $("#q"), t;
+  q.addEventListener("input", function(){ clearTimeout(t); t = setTimeout(function(){ ui.q = q.value; showResults(); }, 120); });
+  q.addEventListener("keydown", function(e){ if (e.key === "Enter"){ e.preventDefault(); ui.q = q.value; showResults(); q.blur(); } });
+  showResults();
+  if (!ui.q) setTimeout(function(){ q.focus(); }, 50);
+}
+
+/* ---------- drag to reorder (press and drag the ≡ handle) ---------- */
+var drag = null;
+function listArray(kind, id){ if (kind === "section") return data.sections; if (kind === "topic") return findTopic(id).section.topics; return findSub(id).topic.subsections; }
+document.addEventListener("pointerdown", function(e){
+  var hd = e.target.closest && e.target.closest("[data-drag]"); if (!hd || drag || (e.pointerType === "mouse" && e.button !== 0)) return;
+  var item = hd.closest("[data-item]"), list = item && item.parentNode; if (!list) return;
+  var items = Array.prototype.filter.call(list.children, function(x){ return x.hasAttribute("data-item"); });
+  if (items.length < 2) return;
+  e.preventDefault();
+  var rects = items.map(function(x){ var r = x.getBoundingClientRect(); return {top:r.top + window.scrollY, h:r.height}; });
+  var i = items.indexOf(item), gap = Math.max(0, rects[1].top - (rects[0].top + rects[0].h));
+  drag = { item:item, items:items, i:i, j:i, rects:rects, step:rects[i].h + gap, startY:e.clientY + window.scrollY, lastY:e.clientY, kind:hd.getAttribute("data-drag"), id:hd.getAttribute("data-id"), pid:e.pointerId, raf:0 };
+  try { hd.setPointerCapture(e.pointerId); } catch(err){}
+  item.classList.add("dragging"); document.body.classList.add("is-dragging");
+  items.forEach(function(x){ if (x !== item) x.classList.add("shifting"); });
+  drag.raf = requestAnimationFrame(autoScroll);
+});
+function dragUpdate(){
+  var d = drag; if (!d) return;
+  var dy = d.lastY + window.scrollY - d.startY, top = d.rects[d.i].top + dy, bottom = top + d.rects[d.i].h, j = d.i;
+  d.item.style.transform = "translateY(" + dy + "px)";
+  /* Moving down: pass a neighbour's middle with the bottom edge. Moving up: with the top edge. */
+  d.items.forEach(function(x, k){ var mid = d.rects[k].top + d.rects[k].h / 2; if (k > d.i && bottom > mid) j = Math.max(j, k); if (k < d.i && top < mid) j = Math.min(j, k); });
+  d.j = j;
+  d.items.forEach(function(x, k){ if (k === d.i) return; var t = (d.i < k && k <= j) ? -d.step : ((j <= k && k < d.i) ? d.step : 0); x.style.transform = t ? "translateY(" + t + "px)" : ""; });
+}
+function autoScroll(){
+  if (!drag) return;
+  var y = drag.lastY, v = y < 120 ? -10 : (y > window.innerHeight - 90 ? 10 : 0);
+  if (v){ var before = window.scrollY; window.scrollBy(0, v); if (window.scrollY !== before) dragUpdate(); }
+  drag.raf = requestAnimationFrame(autoScroll);
+}
+document.addEventListener("pointermove", function(e){ if (!drag || e.pointerId !== drag.pid) return; e.preventDefault(); drag.lastY = e.clientY; dragUpdate(); }, {passive:false});
+function endDrag(e){
+  if (!drag || (e && e.pointerId !== drag.pid)) return;
+  var d = drag; drag = null; cancelAnimationFrame(d.raf); document.body.classList.remove("is-dragging");
+  d.items.forEach(function(x){ x.style.transform = ""; x.classList.remove("shifting", "dragging"); });
+  if (e && e.type === "pointercancel") return;
+  /* Redraw a moment later, so the end of the touch lands on the page as it was (redrawing mid-touch can swallow the next tap). */
+  if (d.j !== d.i){ var arr = listArray(d.kind, d.id), x = arr.splice(d.i, 1)[0]; arr.splice(d.j, 0, x); saveSoon(); setTimeout(function(){ render(); toast("Moved."); }, 60); }
+}
+/* Tell the browser this touch is ours, so a quick release isn't treated as a flick (which would swallow the next tap). */
+document.addEventListener("touchstart", function(e){ if (e.target.closest && e.target.closest("[data-drag]")) e.preventDefault(); }, {passive:false});
+document.addEventListener("touchmove", function(e){ if (drag) e.preventDefault(); }, {passive:false});
+document.addEventListener("pointerup", endDrag);
+document.addEventListener("pointercancel", endDrag);
+
+/* ---------- the writing screen ---------- */
+var ed = { range:null, subId:null, timer:null };
+function flushEditor(){
+  if (!ed.subId) return;
+  var f = findSub(ed.subId), box = $("#ed"), ti = $("#subTitle"); if (!f || !box) return;
+  clearTimeout(ed.timer);
+  var html = sanitize(box.innerHTML), title = cleanTitle(ti.value);
+  if (html !== f.sub.html || title !== f.sub.title){ f.sub.html = html; f.sub.title = title; saveSoon(0); }
+}
+function setupEditor(id){
+  var f = findSub(id), box = $("#ed"), ti = $("#subTitle");
+  ed.subId = id; ed.range = null;
+  box.innerHTML = sanitize(f.sub.html); lockFigures(box);
+  try { document.execCommand("defaultParagraphSeparator", false, "p"); } catch(e){}
+  function changed(){ setSaved("Saving…"); keepPending(); clearTimeout(ed.timer); ed.timer = setTimeout(flushEditor, 300); }
+  box.addEventListener("input", changed); ti.addEventListener("input", changed);
+  box.addEventListener("blur", flushEditor); ti.addEventListener("blur", flushEditor);
+  box.addEventListener("click", function(e){
+    if (e.target.closest("a")) e.preventDefault();
+    var fg = e.target.closest("figure"); if (fg && box.contains(fg)){ e.preventDefault(); pictureSheet(fg); }
+  });
+  box.addEventListener("paste", function(e){
+    var cd = e.clipboardData; if (!cd) return;
+    var files = Array.prototype.filter.call(cd.files || [], function(x){ return /^image\//.test(x.type); });
+    if (files.length){ e.preventDefault(); saveRange(); insertImageFile(files[0]); return; }
+    var h = cd.getData("text/html"), t = cd.getData("text/plain");
+    e.preventDefault();
+    if (h){ var web0 = dropped.web; document.execCommand("insertHTML", false, sanitize(h)); if (dropped.web > web0) toast("Pictures from web pages can’t be pasted in. Save the picture to your phone first, then use Picture."); }
+    else if (t) document.execCommand("insertHTML", false, esc(t).replace(/\r?\n\r?\n/g, "</p><p>").replace(/\r?\n/g, "<br>"));
+    changed();
+  });
+  box.addEventListener("drop", function(e){ var fl = e.dataTransfer && e.dataTransfer.files; if (fl && fl.length && /^image\//.test(fl[0].type)){ e.preventDefault(); insertImageFile(fl[0]); } });
+  var tb = $("#tb");
+  tb.addEventListener("mousedown", function(e){ if (e.target.closest("button")) e.preventDefault(); });
+  tb.addEventListener("click", function(e){ var b = e.target.closest("button[data-cmd]"); if (b) runCmd(b.getAttribute("data-cmd")); });
+  ui.leave = function(){
+    flushEditor();
+    var g = findSub(id);
+    if (g && !g.sub.html && !g.sub.title){ g.topic.subsections.splice(idx(g.topic.subsections, id), 1); saveSoon(0); }
+    ed.subId = null;
+  };
+  if (!f.sub.html) setTimeout(function(){ box.focus(); }, 50);
+}
+function saveRange(){ var s = window.getSelection(), box = $("#ed"); if (box && s.rangeCount && box.contains(s.getRangeAt(0).commonAncestorContainer)) ed.range = s.getRangeAt(0).cloneRange(); }
+document.addEventListener("selectionchange", function(){ if (ed.subId){ saveRange(); updateToolbar(); } });
+function restoreRange(){
+  var box = $("#ed"); if (!box) return; box.focus();
+  var s = window.getSelection();
+  if (ed.range && box.contains(ed.range.commonAncestorContainer)){ s.removeAllRanges(); s.addRange(ed.range); }
+  else if (!s.rangeCount || !box.contains(s.getRangeAt(0).commonAncestorContainer)){ var r = document.createRange(); r.selectNodeContents(box); r.collapse(false); s.removeAllRanges(); s.addRange(r); }
+}
+function currentBlock(){ var v = ""; try { v = String(document.queryCommandValue("formatBlock") || "").toLowerCase().replace(/[<>]/g, ""); } catch(e){} return v; }
+function updateToolbar(){
+  var tb = $("#tb"); if (!tb) return; var blk = currentBlock();
+  function on(cmd, v){ var b = tb.querySelector('[data-cmd="'+cmd+'"]'); if (b) b.classList.toggle("on", !!v); }
+  var st = function(c){ try { return document.queryCommandState(c); } catch(e){ return false; } };
+  on("bold", st("bold")); on("italic", st("italic")); on("ul", st("insertUnorderedList")); on("ol", st("insertOrderedList")); on("h2", blk === "h2"); on("h3", blk === "h3"); on("quote", blk === "blockquote");
+}
+function runCmd(cmd){
+  restoreRange();
+  var blk = currentBlock();
+  if (cmd === "bold" || cmd === "italic" || cmd === "undo") document.execCommand(cmd, false, null);
+  else if (cmd === "ul") document.execCommand("insertUnorderedList", false, null);
+  else if (cmd === "ol") document.execCommand("insertOrderedList", false, null);
+  else if (cmd === "h2" || cmd === "h3") document.execCommand("formatBlock", false, blk === cmd ? "<p>" : "<" + cmd + ">");
+  else if (cmd === "quote") document.execCommand("formatBlock", false, blk === "blockquote" ? "<p>" : "<blockquote>");
+  else if (cmd === "link") return insertLink();
+  else if (cmd === "image"){ saveRange(); return $("#pickImage").click(); }
+  $("#ed").dispatchEvent(new Event("input")); updateToolbar();
+}
+function insertLink(){
+  saveRange();
+  var selText = ed.range ? ed.range.toString() : "";
+  modal({ title:"Add a link", fields:[{label:"Web address", value:"", placeholder:"e.g. www.example.org", type:"url"}, {label:"Words to show (optional)", value:selText, placeholder:"e.g. Read more", required:false}], ok:"Add link" }).then(function(v){
+    if (!v) return restoreRange();
+    var url = String(v[0]||"").trim(), text = cleanTitle(v[1]);
+    if (!url) return restoreRange();
+    if (!/^[a-z][a-z0-9+.-]*:/i.test(url)) url = (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(url) ? "mailto:" : "https://") + url;
+    var good = !!safeHref(url);
+    if (good && /^https?:/i.test(url)){ try { var hn = new URL(url).hostname; good = /\./.test(hn) || hn === "localhost"; } catch(e){ good = false; } }
+    if (!good) return info("That address won't work", "Please check the web address (no spaces, for example www.example.org), or use an email address, or a phone number (tel:).");
+    restoreRange();
+    document.execCommand("insertHTML", false, '<a href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">' + esc(text || url) + '</a>&nbsp;');
+    $("#ed").dispatchEvent(new Event("input"));
+  });
+}
+function resizeImage(file, maxEdge, quality){
+  return new Promise(function(resolve, reject){
+    var url = URL.createObjectURL(file), img = new Image();
+    img.onload = function(){
+      try {
+        var w = img.naturalWidth, h = img.naturalHeight, sc = Math.min(1, maxEdge / Math.max(w, h));
+        var cw = Math.max(1, Math.round(w * sc)), ch = Math.max(1, Math.round(h * sc));
+        var c = document.createElement("canvas"); c.width = cw; c.height = ch;
+        var x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, cw, ch); x.imageSmoothingQuality = "high"; x.drawImage(img, 0, 0, cw, ch);
+        URL.revokeObjectURL(url); resolve({ src:c.toDataURL("image/jpeg", quality), width:cw, height:ch });
+      } catch(e){ URL.revokeObjectURL(url); reject(e); }
+    };
+    img.onerror = function(){ URL.revokeObjectURL(url); reject(new Error("bad image")); };
+    img.src = url;
+  });
+}
+function insertImageFile(file){
+  if (!file) return;
+  toast("Adding picture…");
+  resizeImage(file, 1200, 0.8).then(function(r){
+    restoreRange();
+    document.execCommand("insertHTML", false, '<figure class="pic size-l"><img src="' + r.src + '" alt=""></figure><p><br></p>');
+    lockFigures($("#ed"));
+    $("#ed").dispatchEvent(new Event("input")); flushEditor();
+    toast("Picture added (" + r.width + "×" + r.height + ", " + fmtSize(r.src.length * 0.75) + "). Tap it to change size or add a caption.");
+  }, function(){ info("Couldn't add that picture", "Please try a different photo (JPEG or PNG work best)."); });
+}
+function lockFigures(box){ if (box) box.querySelectorAll("figure").forEach(function(f){ f.setAttribute("contenteditable", "false"); }); }
+function pictureSheet(fig){
+  var m = $("#modal"), img = fig.querySelector("img"), capEl = fig.querySelector("figcaption"), armed = false;
+  var size = (/size-(s|m|l)/.exec(fig.getAttribute("class") || "") || [0, "l"])[1];
+  m.innerHTML = '<div class="sheet"><h2>Picture</h2><img class="pv" alt=""><label class="fl">Size</label><div class="seg" role="group" aria-label="Picture size">' +
+    [["s","Small"],["m","Medium"],["l","Full width"]].map(function(o){ return '<button type="button" data-size="'+o[0]+'" aria-pressed="'+(o[0]===size)+'">'+o[1]+'</button>'; }).join("") +
+    '</div><label class="fl" for="pcap">Caption (optional)</label><input class="text" id="pcap" autocomplete="off" autocapitalize="sentences" placeholder="Words to show under the picture" value="' + esc(capEl ? capEl.textContent : "") + '">' +
+    '<div class="btns"><button type="button" class="warn" id="prm">Remove picture</button><button type="button" class="ok" id="pok">Done</button></div></div>';
+  $(".pv", m).src = img.src; m.classList.add("show");
+  function close(changed){ m.classList.remove("show"); m.innerHTML = ""; document.removeEventListener("keydown", key); if (changed){ var box = $("#ed"); if (box){ box.dispatchEvent(new Event("input")); flushEditor(); } } }
+  function done(){
+    fig.setAttribute("class", "pic size-" + size);
+    var c = cleanTitle($("#pcap", m).value).slice(0, 300);
+    if (c){ if (!capEl){ capEl = document.createElement("figcaption"); fig.appendChild(capEl); } capEl.textContent = c; } else if (capEl) capEl.remove();
+    close(true);
+  }
+  function key(e){ if (e.key === "Escape") close(false); else if (e.key === "Enter" && e.target.id === "pcap"){ e.preventDefault(); done(); } }
+  document.addEventListener("keydown", key);
+  m.querySelectorAll("[data-size]").forEach(function(b){ b.onclick = function(){ size = b.getAttribute("data-size"); m.querySelectorAll("[data-size]").forEach(function(x){ x.setAttribute("aria-pressed", String(x === b)); }); }; });
+  $("#prm", m).onclick = function(){ if (!armed){ armed = true; this.textContent = "Tap again to remove"; return; } fig.remove(); close(true); toast("Picture removed."); };
+  $("#pok", m).onclick = done;
+  m.onclick = function(e){ if (e.target === m) close(false); };
+}
+$("#pickImage").addEventListener("change", function(e){ var f = e.target.files && e.target.files[0]; e.target.value = ""; insertImageFile(f); });
+
+/* ---------- sample content (King James Version) ---------- */
+function samplePicture(){
+  try {
+    var c = document.createElement("canvas"); c.width = 800; c.height = 450; var x = c.getContext("2d");
+    var g = x.createLinearGradient(0, 0, 0, 450); g.addColorStop(0, "#9cc3e6"); g.addColorStop(1, "#f6e3b4"); x.fillStyle = g; x.fillRect(0, 0, 800, 450);
+    x.fillStyle = "#fff7df"; x.beginPath(); x.arc(400, 330, 110, Math.PI, 0); x.fill();
+    x.fillStyle = "#5a7d4a"; x.beginPath(); x.moveTo(0, 340); x.quadraticCurveTo(220, 280, 420, 335); x.quadraticCurveTo(620, 390, 800, 320); x.lineTo(800, 450); x.lineTo(0, 450); x.fill();
+    x.fillStyle = "#2f3b2a"; x.font = "bold 40px sans-serif"; x.textAlign = "center"; x.fillText("Sample picture", 400, 418);
+    return c.toDataURL("image/jpeg", 0.8);
+  } catch(e){ return ""; }
+}
+/* Samples quote the King James Version word for word (checked against Bible Gateway KJV and bible-api.com KJV). */
+function makeSamples(){
+  var pic = samplePicture();
+  var note = '<p><em>This is a sample to show how the app works. Delete it whenever you like: on the main screen, tap “Change order, names, or delete”, then 🗑.</em></p>';
+  var figure = pic ? '<figure class="pic size-m"><img src="' + pic + '" alt="Sample picture"><figcaption>Sample picture with a caption. While editing, tap a picture to change its size or caption.</figcaption></figure>' : '';
+  return normalizeImport({ sections:[
+    { id:"sample-deity-of-christ", title:"The Deity of Christ (sample)", sample:true, topics:[
+      { id:"sample-topic-john-1-1", title:"Who is the Word?", subsections:[
+        { id:"sample-sub-j1-note", title:"", html: note },
+        { id:"sample-sub-j1-open", title:"Opening question", html:'<p>“Who do you believe Jesus is? May I show you what John wrote about him?”</p>' },
+        { id:"sample-sub-j1-read", title:"Read together", html:'<blockquote><p>“In the beginning was the Word, and the Word was with God, and the Word was God.”</p></blockquote><p><strong>John 1:1</strong>, King James Version</p>' },
+        { id:"sample-sub-j1-ask", title:"Questions to ask", html:'<ol><li>When does this verse say the Word already was?</li><li>What does the last part of the verse say the Word <strong>was</strong>?</li><li>Read John 1:14 together. Who is the Word?</li></ol>' + figure }
+      ]},
+      { id:"sample-topic-john-20-28", title:"What Thomas called Jesus", subsections:[
+        { id:"sample-sub-j20-read", title:"Read together", html:'<blockquote><p>“And Thomas answered and said unto him, My Lord and my God.”</p></blockquote><p><strong>John 20:28</strong>, King James Version</p>' },
+        { id:"sample-sub-j20-ask", title:"Questions to ask", html:'<ol><li>Who was Thomas speaking to? (The verse says he “said unto <strong>him</strong>.”)</li><li>What two titles did Thomas use?</li><li>Read verse 29 together. Did Jesus correct Thomas?</li></ol>' }
+      ]}
+    ]},
+    { id:"sample-salvation-by-grace", title:"Salvation by Grace (sample)", sample:true, topics:[
+      { id:"sample-topic-eph-2-8-9", title:"A gift, not earned", subsections:[
+        { id:"sample-sub-e2-note", title:"", html: note },
+        { id:"sample-sub-e2-read", title:"Read together", html:'<blockquote><p>“For by grace are ye saved through faith; and that not of yourselves: <em>it is</em> the gift of God: Not of works, lest any man should boast.”</p></blockquote><p><strong>Ephesians 2:8-9</strong>, King James Version. (The words in italics are printed that way in the King James Version: the translators added them so the English reads clearly.)</p>' },
+        { id:"sample-sub-e2-ask", title:"Questions to ask", html:'<ol><li>According to verse 8, how are we saved?</li><li>Verse 8 calls it “the gift of God.” Can a gift be earned?</li><li>What does verse 9 say salvation is <strong>not</strong> of, and why?</li></ol>' },
+        { id:"sample-sub-e2-link", title:"Read the whole chapter", html:'<p>Example of a link: <a href="https://www.kingjamesbibleonline.org/Ephesians-Chapter-2/">Ephesians chapter 2 (KJV) online</a> (needs internet).</p>' }
+      ]}
+    ]}
+  ]});
+}
+/* Version 0.1 had two different sample sections. They are removed when unchanged, at start-up and when a file is
+   brought in. If they were changed, they lose the Sample label and the user is asked once whether to delete them.
+   Only a fingerprint of the old samples is kept here. Pictures, picture frames and captions are ignored by the
+   fingerprint, because bringing in an old file puts each picture in a frame. */
+var OLD_SAMPLES = { "sample-gods-name":"57c7cce9", "sample-kingdom":"50292131" };
+/* Version 0.3 and 0.4 samples (same ids as now). Unchanged ones are updated to the current wording. */
+var OLD_V03 = { "sample-deity-of-christ":["3d80b6a0", "5d8df88c"], "sample-salvation-by-grace":["b0534bf3"] };
+function hashStr(t){ var h = 2166136261; for (var i = 0; i < t.length; i++){ h ^= t.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; } return h.toString(16); }
+function sigHtml(h){ return String(h).replace(/<figcaption[\s\S]*?<\/figcaption>/gi, "").replace(/<\/?figure[^>]*>|<img[^>]*>/gi, ""); }
+function sampleSig(s){ return hashStr(JSON.stringify([s.title, s.topics.map(function(t){ return [t.id, t.title, t.subsections.map(function(u){ return [u.id, u.title, sigHtml(u.html)]; })]; })])); }
+function tidyOldSamples(list, rep){
+  var out = [], fresh = null;
+  list.forEach(function(s){
+    if (OLD_SAMPLES[s.id]){
+      if (sampleSig(s) === OLD_SAMPLES[s.id]){ rep.removed++; return; }
+      if (s.sample){ delete s.sample; s.title = cleanTitle(s.title.replace(/\s*\(sample\)\s*$/i, "") + " (old sample, changed)"); rep.kept.push(s.title); }
+    } else if (s.sample && OLD_V03[s.id] && OLD_V03[s.id].indexOf(sampleSig(s)) >= 0){
+      fresh = fresh || makeSamples(); var nw = fresh.filter(function(x){ return x.id === s.id; })[0];
+      if (nw){ out.push(nw); rep.updated++; return; }
+    }
+    out.push(s);
+  });
+  return out;
+}
+function isOldSample(s){ return !!OLD_SAMPLES[s.id]; }
+
+/* ---------- start up ---------- */
+function readBundle(){ try { var b = $("#wa-bundle"); var t = b && b.textContent.trim(); return t ? JSON.parse(t) : null; } catch(e){ console.warn("bundle", e); return null; } }
+var BUNDLE = readBundle();
+var COPY_ID = BUNDLE && okId(BUNDLE.copyId) ? BUNDLE.copyId : "main";
+var movedFromShared = false;
+/* Tabs and windows of this same copy tell each other when they save, so each shows the latest notes. */
+var bc = null; try { if (window.BroadcastChannel) bc = new BroadcastChannel("wa-notes-" + COPY_ID); } catch(e){}
+var warnedOther = false;
+/* Messages go by BroadcastChannel and also through simple storage (some browsers don't pass the first between saved files). */
+function tellOthers(m){ m.from = TAB; try { if (bc) bc.postMessage(m); } catch(e){} try { m.n = uid(); localStorage.setItem("wa-msg-" + COPY_ID, JSON.stringify(m)); } catch(e){} }
+function onMessage(m){ if (!m || m.from === TAB) return; if (m.t === "hello"){ tellOthers({t:"here"}); otherWindow(); } else if (m.t === "here") otherWindow(); else if (m.t === "saved") checkForNewer(); }
+function otherWindow(){ if (warnedOther) return; warnedOther = true; banner("This app is also open in another tab or window. Changes from both are combined, so nothing is lost, but it’s simplest to use just one."); }
+if (bc) bc.onmessage = function(e){ onMessage(e.data); };
+window.addEventListener("storage", function(e){
+  if (e.key === "wa-" + COPY_ID + "-data") checkForNewer();
+  else if (e.key === "wa-msg-" + COPY_ID && e.newValue){ try { onMessage(JSON.parse(e.newValue)); } catch(err){} }
+});
+store.init(COPY_ID).then(function(){ return Promise.all([store.get("data"), store.get("meta")]); }).then(function(r){
+  /* One-time move of notes saved by version 0.1 (shared space) into this copy's own space. Only the main copy does this. */
+  if (r[1] || COPY_ID !== "main" || store.mode() === "memory") return r;
+  return store.legacyGet("meta").then(function(lm){
+    if (lm && lm.migratedTo) return r;
+    return store.legacyGet("data").then(function(ld){
+      if (!ld || !Array.isArray(ld.sections)) return r;
+      var nm = { initialized:true, appliedBundles:(lm && Array.isArray(lm.appliedBundles)) ? lm.appliedBundles : [], movedFromShared:now() };
+      return store.set("data", ld).then(function(){ return store.set("meta", nm); }).then(function(){
+        var m2 = lm || {}; m2.migratedTo = "main"; m2.migratedAt = now(); return store.legacySet("meta", m2);
+      }).then(function(){ movedFromShared = true; return [ld, nm]; });
+    });
+  }).catch(function(e){ console.warn("could not move older notes", e); return r; });
+}).then(function(r){
+  if (r[0] && Array.isArray(r[0].sections)){ data = { sections: r[0].sections }; rev = typeof r[0].rev === "number" ? r[0].rev : 0; baseJSON = JSON.stringify({sections:data.sections}); }
+  if (r[1]) meta = r[1]; if (!Array.isArray(meta.appliedBundles)) meta.appliedBundles = [];
+  loaded = true;
+  var bundle = BUNDLE, message = null, oldRep = { removed:0, kept:[], updated:0 };
+  data.sections = tidyOldSamples(data.sections, oldRep);
+  if (oldRep.removed){ var have = allIds(); var add = makeSamples().filter(function(x){ return !have[x.id]; }); if (add.length) merge(add); }
+  if (oldRep.removed || oldRep.kept.length || oldRep.updated) saveSoon(0);
+  if (applyPending()) saveSoon(0);
+  if (!meta.initialized){
+    if (!(bundle && bundle.noSamples) && !data.sections.length) data.sections = makeSamples();
+    meta.initialized = true; saveSoon(0); saveMeta();
+  }
+  if (bundle && bundle.data && bundle.bundleId && meta.appliedBundles.indexOf(bundle.bundleId) < 0){
+    try { var brep = { removed:0, kept:[], updated:0 }; var sum = merge(tidyOldSamples(normalizeImport(bundle.data), brep)); sum.oldGone = brep.removed; sum.oldKept = brep.kept; message = summaryText(sum); } catch(e){ console.warn(e); }
+    meta.appliedBundles.push(String(bundle.bundleId).slice(0, 64)); saveSoon(0); saveMeta();
+  }
+  if (navigator.storage && navigator.storage.persist) { try { navigator.storage.persist().catch(function(){}); } catch(e){} }
+  navStack = [location.hash || "#/"];
+  render();
+  if (store.mode() === "memory") info("Notes can't be kept", "This browser won't let the app keep notes on this device. You can still write, but save a file from Share before closing.");
+  if (message) info("Notes that came with this app", message);
+  else if (oldRep.kept.length && !meta.oldSampleAsked){
+    meta.oldSampleAsked = now(); saveMeta();
+    modal({ title:"Old sample sections", message:"Your notes still have sample sections from an earlier version of the app, which you had changed: " + oldRep.kept.join(", ") + ".\n\nThey are no longer marked “Sample”. Would you like to delete them now? (Choose Keep if you wrote your own notes in them.)", ok:"Delete them", cancel:"Keep them", danger:true }).then(function(ok){
+      if (!ok) return; data.sections = data.sections.filter(function(s){ return !isOldSample(s); }); saveSoon(0); render(); toast("Old sample sections deleted.");
+    });
+  }
+  tellOthers({t:"hello"});
+}).catch(function(e){ console.error(e); $("#main") && ($("#main").innerHTML = '<p class="lead">Something went wrong while opening your notes. Please reload the page.</p>'); });
+window.__wa = { get data(){ return data; }, copyId: COPY_ID, get movedFromShared(){ return movedFromShared; }, get rev(){ return rev; }, sanitize: sanitize, merge: merge, merge3: merge3, normalizeImport: normalizeImport, saveNow: saveNow, doSearch: doSearch, makeSamples: makeSamples, sampleSig: sampleSig, tidyOldSamples: tidyOldSamples, checkForNewer: checkForNewer, safeHref: safeHref, version: APP_VERSION };
+})();
+</script>
+</body>
+</html>
