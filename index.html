@@ -91,12 +91,14 @@ body.is-dragging{user-select:none;-webkit-user-select:none}
 label.fl{display:block;font-weight:650;margin:6px 2px 4px;font-size:16px;color:var(--muted)}
 input.text{width:100%;min-height:52px;border:1px solid #cfc7b8;border-radius:12px;padding:10px 12px;background:#fff;font-size:18px}
 input.text:focus{outline:3px solid #9cc0e4;border-color:var(--accent)}
-.toolbar{position:sticky;top:60px;z-index:15;display:flex;flex-wrap:wrap;gap:6px;background:var(--bg);padding:8px 0}
+:root{--hdr:60px;--tbh:0px}
+html{scroll-padding-top:calc(var(--hdr) + var(--tbh) + 10px);scroll-padding-bottom:16px}
+.toolbar{position:sticky;top:var(--hdr);z-index:15;display:flex;flex-wrap:wrap;gap:6px;background:var(--bg);padding:8px 0}
 .toolbar button{flex:1 1 auto;white-space:nowrap;min-width:48px;min-height:46px;padding:0 7px;border-radius:10px;border:1px solid #cfc7b8;background:#fff;font-size:15px;font-weight:600}
 @media(max-width:380px){.toolbar{gap:4px}.toolbar button{padding:0 4px;font-size:14px;min-width:44px}}
 .toolbar button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 .toolbar button:active{background:var(--accent-soft)}
-.editor{min-height:45vh;background:#fff;border:1px solid #cfc7b8;border-radius:12px;padding:12px 14px;outline:none}
+.editor{min-height:220px;scroll-margin-top:calc(var(--hdr) + var(--tbh) + 10px);background:#fff;border:1px solid #cfc7b8;border-radius:12px;padding:12px 14px;outline:none}
 .editor:focus{border-color:var(--accent);box-shadow:0 0 0 3px #9cc0e4}
 .editor:empty:before{content:attr(data-placeholder);color:#8a8f96}
 .hint{font-size:15px;color:var(--muted);margin:6px 2px}
@@ -165,7 +167,7 @@ input.text:focus{outline:3px solid #9cc0e4;border-color:var(--accent)}
 .sr{position:absolute;left:-9999px}
 #banner{position:relative;background:#fff3cd;color:#4d3b00;border-bottom:1px solid #e6cf7a;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;display:none;font-size:16px}
 #banner.show{display:block}
-#updnote{position:fixed;top:0;left:0;right:0;z-index:40;display:flex;align-items:center;gap:6px;min-height:60px;background:#e8f5ec;border-bottom:1px solid #b9d3b2;box-shadow:0 2px 6px rgba(0,0,0,.12);padding:calc(6px + env(safe-area-inset-top)) 8px 6px}
+#updnote{position:fixed;top:var(--hdr);left:0;right:0;z-index:40;display:flex;align-items:center;gap:6px;min-height:52px;background:#e8f5ec;border-bottom:1px solid #b9d3b2;box-shadow:0 2px 6px rgba(0,0,0,.12);padding:4px 8px}
 #updgo{flex:1;min-height:48px;border:0;background:none;color:#1e4d2b;font-size:17px;font-weight:700;text-align:left;padding:0 6px}
 #updlater{flex:none;min-height:44px;min-width:64px;border:1px solid #9cc3a2;border-radius:10px;background:#fff;color:#1e4d2b;font-weight:650}
 #updnote[hidden]{display:none}
@@ -188,7 +190,7 @@ input.text:focus{outline:3px solid #9cc0e4;border-color:var(--accent)}
 "use strict";
 /* Copy of the untouched page, captured before anything is drawn. Used for "give someone the app". */
 var PRISTINE = document.documentElement.cloneNode(true);
-var APP_VERSION = "0.9 (proof of concept)";
+var APP_VERSION = "0.10 (proof of concept)";
 /* When the app is opened from a web address (not a saved file), let it be installed and work offline. */
 var HOSTED = /^https?:$/.test(location.protocol);
 if (HOSTED){
@@ -219,6 +221,10 @@ function setupUpdates(){
   document.addEventListener("visibilitychange", function(){ if (document.visibilityState === "visible") checkForUpdate(); });
 }
 function checkForUpdate(){ if (swReg) { try { swReg.update().catch(function(){}); } catch(e){} } }
+/* Compare versions number by number, so 0.10 is newer than 0.9. */
+function cmpVer(a, b){ a = String(a || "").split(" ")[0].split(/[.-]/); b = String(b || "").split(" ")[0].split(/[.-]/);
+  for (var i = 0; i < Math.max(a.length, b.length); i++){ var x = parseInt(a[i], 10), y = parseInt(b[i], 10); x = isNaN(x) ? -1 : x; y = isNaN(y) ? -1 : y; if (x !== y) return x < y ? -1 : 1; }
+  return 0; }
 function offerUpdate(w){ waitingWorker = w; updateLater = false; refreshUpdateNote(); }
 /* The note covers the title bar (so nothing on the page moves), and waits while a part is being edited. */
 function refreshUpdateNote(){
@@ -542,7 +548,7 @@ function fitSheet(){
 if (window.visualViewport){ window.visualViewport.addEventListener("resize", fitSheet); window.visualViewport.addEventListener("scroll", fitSheet); }
 window.addEventListener("resize", fitSheet);
 document.addEventListener("focusin", function(e){ var m = $("#modal"); if (m && m.contains(e.target)){ setTimeout(fitSheet, 60); setTimeout(fitSheet, 400); } });
-/* Unfinished text in a pop-up that was cancelled (or closed with Back) is kept and filled in next time. */
+/* Unfinished text in a pop-up that was canceled (or closed with Back) is kept and filled in next time. */
 var drafts = {};
 /* One pop-up at a time: a second one waits until the first is closed, so nothing typed is lost. */
 var modalBusy = false, modalQueue = [];
@@ -633,6 +639,7 @@ function render(navigated){
   if (r.view === "share") updatePicker();
   if (r.view === "search") setupSearch();
   window.scrollTo(0, same ? y : 0);
+  if (r.view !== "e") watchBars();
   refreshUpdateNote();
   if (r.view === "t" && r.sub && navigated){ var card = document.querySelector('.card[data-sub="' + r.sub + '"]'); if (card){ card.scrollIntoView({block:"center"}); card.classList.add("flash"); } }
 }
@@ -716,8 +723,8 @@ function viewEditor(id){
 function viewShare(){
   if (!ui.sel) selectAll(true);
   var h = header("#/", "Sections", "Share & back up") + '<main>';
-  h += '<section class="panel"><h2>1. Save or share your notes</h2><p>Tick what to include, then save a file. Keep it somewhere safe as a backup, or send it to a friend so they can bring it into their copy.</p>';
-  h += '<div class="two"><button class="plain" data-act="selAll">Tick all</button><button class="plain" data-act="selNone">Untick all</button></div><ul class="pick" id="pick">';
+  h += '<section class="panel"><h2>1. Save or share your notes</h2><p>Check what to include, then save a file. Keep it somewhere safe as a backup, or send it to a friend so they can bring it into their copy.</p>';
+  h += '<div class="two"><button class="plain" data-act="selAll">Check all</button><button class="plain" data-act="selNone">Uncheck all</button></div><ul class="pick" id="pick">';
   if (!data.sections.length) h += '<li class="hint">You have no sections yet.</li>';
   data.sections.forEach(function(s){
     h += '<li><label><input type="checkbox" data-pick="section" data-id="'+s.id+'"><span class="sname">' + esc(s.title) + '</span></label>';
@@ -725,11 +732,11 @@ function viewShare(){
     h += '</li>';
   });
   h += '</ul><p class="hint" id="pickInfo"></p>';
-  if (canShareFiles()) h += '<button class="big blue" data-act="exportShare">⇪ Send the ticked notes…</button>';
-  h += '<button class="big' + (canShareFiles() ? ' light' : ' blue') + '" data-act="exportSave">⤓ Save the ticked notes as a file</button></section>';
+  if (canShareFiles()) h += '<button class="big blue" data-act="exportShare">⇪ Send the checked notes…</button>';
+  h += '<button class="big' + (canShareFiles() ? ' light' : ' blue') + '" data-act="exportSave">⤓ Save the checked notes as a file</button></section>';
   h += '<section class="panel"><h2>2. Bring in notes from a file</h2><p>Open a notes file someone sent you (or your own backup). It is <b>added</b> to your notes. Nothing you already have is changed or replaced.</p><button class="big" data-act="import">⤒ Choose a file to bring in</button></section>';
   h += '<section class="panel"><h2>3. Give someone the app</h2><p>Save a copy of this app as one file they can open in their phone’s browser.</p>';
-  h += '<button class="plain" data-act="appBlank">⤓ Blank app (no notes)</button><button class="plain" data-act="appBundle">⤓ App with the ticked notes built in</button>';
+  h += '<button class="plain" data-act="appBlank">⤓ Blank app (no notes)</button><button class="plain" data-act="appBundle">⤓ App with the checked notes built in</button>';
   h += '<p class="hint">A copy saved here keeps its own notes, separate from yours, even on the same phone. A copy with notes built in starts with just those notes. To add them to your own notes instead, use step 2 and choose that app file.</p></section>';
   h += '<p class="hint">App version ' + esc(APP_VERSION) + '. This copy’s own storage space: “' + esc(COPY_ID) + '”. Notes are kept in this browser on this device (' + ({idb:"device storage", ls:"simple browser storage", memory:"temporary memory only — save a file before closing!"}[store.mode()]) + ').</p>';
   h += '</main>';
@@ -738,10 +745,10 @@ function viewShare(){
 function viewHelp(){
   var h = header("#/", "Sections", "How to use") + '<main class="help">';
   h += '<section class="panel"><h2 style="margin-top:0">Writing</h2><ol><li><b>Sections</b> are your big groups (for example “The Deity of Christ”). Tap <b>＋ New section</b>.</li><li>Open a section and tap <b>＋ New topic</b>. Give it a name and start typing right away.</li><li>A topic is made of <b>parts</b>, like the pieces of a tract. Tap <b>＋ Add a part</b> for the next piece, and <b>✎ Edit</b> to change one.</li><li>While editing, use the buttons for <b>Bold</b>, <i>Italic</i>, <b>Heading</b>, <b>Subheading</b>, <b>Quote</b> (a box for Bible verses), lists, <b>Link</b>, and <b>Picture</b>. Pictures are made smaller automatically so files stay small. Tap a picture while editing to make it small, medium, or full width, or to add a caption.</li><li>To rename, reorder, or delete, tap <b>✎ Change order, names, or delete</b> at the bottom of a list. Move things with the ↑ ↓ buttons, or press and drag the <b>≡ Drag</b> handle. Tap <b>✓ Done changing</b> when finished.</li><li>The phone’s <b>Back</b> button closes a pop-up first (anything you typed in it is kept for next time), then goes back one screen at a time.</li><li>To find something, tap <b>🔍 Search your notes</b> on the main screen and type a word. Tap a result to open it. If a word is spelled a little differently, close matches are shown.</li></ol></section>';
-  h += '<section class="panel"><h2 style="margin-top:0">Put it on your home screen</h2><p>Open the app’s web address once while online. Then add it to your home screen: on <b>iPhone</b> (Safari), tap Share (the square with an arrow), then <b>Add to Home Screen</b>. On <b>Android</b> (Chrome), tap ⋮, then <b>Install and create shortcut</b>, then <b>Install</b> (not “Create shortcut”). On some phones the menu item is called <b>Install app</b> or <b>Add to Home screen</b>. After that it opens like an app and works with no internet.</p><p id="installtip">If you don’t see the icon on your home screen, look in your app drawer. To put it on your home screen, long-press the icon and pick Add to Home.</p>' + (HOSTED ? '<p>This app’s web address (send it to anyone who wants the app):<br><span class="addr" id="addr">' + esc(location.origin + location.pathname) + '</span></p>' : '<p>You opened this app as a saved file, so it has no web address here. To give it to someone, use <b>⇪ Share</b> → “Blank app”.</p>') + '</section>';
+  h += '<section class="panel"><h2 style="margin-top:0">Put it on your home screen</h2><p>Open the app’s web address once while online. Then add it to your home screen: on <b>iPhone</b> (Safari), tap Share (the square with an arrow), then <b>Add to Home Screen</b>. On <b>Android</b> (Chrome), tap ⋮, then <b>Install and create shortcut</b>, then <b>Install</b> (not “Create shortcut”). On some phones the menu item is called <b>Install app</b> or <b>Add to Home screen</b>. After that it opens like an app and works with no internet.</p><p id="iphonepointer">On iPhone: if you already wrote notes in Safari, see <b>Keeping your notes safe</b> below first.</p><p id="installtip">If you don’t see the icon on your home screen, look in your app drawer. To put it on your home screen, long-press the icon and pick Add to Home.</p>' + (HOSTED ? '<p>This app’s web address (send it to anyone who wants the app):<br><span class="addr" id="addr">' + esc(location.origin + location.pathname) + '</span></p>' : '<p>You opened this app as a saved file, so it has no web address here. To give it to someone, use <b>⇪ Share</b> → “Blank app”.</p>') + '</section>';
   h += '<section class="panel"><h2 style="margin-top:0">Backing up</h2><p>Your notes are kept inside this browser on this phone. Now and then, tap <b>🛟 Back up / Save all</b> on the main screen.</p><ul><li><b>Save as PDF (readable)</b> makes a booklet of all your notes, with pictures and full link addresses, that anyone can open.</li><li><b>Full backup file (can restore)</b> saves everything in one file this app can bring back, with <b>Bring in notes from a file</b> in ⇪ Share.</li></ul><p>Keep the file somewhere other than this phone, for example email it to yourself or put it in Google Drive. If you haven’t saved a full backup file for 30 days, the main screen reminds you (a PDF or readable copy doesn’t count, because it can’t be brought back).</p><p id="olderHelp">' + OLDER_BACKUP + '</p></section>';
   h += '<section class="panel" id="safety"><h2 style="margin-top:0">Keeping your notes safe</h2><div class="storageStatus">' + storageHtml() + '</div><p><b>What can erase your notes on Android (Chrome):</b></p><ul>' +
-    '<li><b>Clearing Chrome’s data.</b> “Delete browsing data” with <b>Cookies and site data</b> ticked, or deleting this site’s data in Chrome’s settings. So does Android <b>Settings → Apps → Chrome → Storage → Clear storage</b>, uninstalling Chrome, or a cleaner app that clears Chrome’s data.</li>' +
+    '<li><b>Clearing Chrome’s data.</b> “Delete browsing data” with <b>Cookies and site data</b> checked, or deleting this site’s data in Chrome’s settings. So does Android <b>Settings → Apps → Chrome → Storage → Clear storage</b>, uninstalling Chrome, or a cleaner app that clears Chrome’s data.</li>' +
     '<li><b>Blocking on-device site data</b> for this site in Chrome’s Site settings hides your notes from the app (and may erase them).</li>' +
     '<li><b>Removing the app’s icon</b> (uninstalling the app) doesn’t erase the notes by itself. They’re kept in Chrome, not in the icon.</li>' +
     '<li><b>Phone very low on space:</b> if your notes aren’t protected (see above), Chrome may clear them by itself. This is rare.</li>' +
@@ -750,7 +757,7 @@ function viewHelp(){
     '<li><b>Incognito</b> (private) tabs forget everything when they’re closed.</li>' +
     '<li><b>Safe:</b> updates to this app, to Chrome, and to Android don’t erase your notes.</li></ul>' +
     '<p id="iphonehelp"><b>On iPhone:</b> ' + IPHONE_NOTE + '</p></section>';
-  h += '<section class="panel"><h2 style="margin-top:0">Sharing</h2><ul><li><b>Some notes:</b> in Share, tick the sections or topics you want and tap Send or Save. The other person opens the file with <b>Bring in notes</b> in their copy. It is added next to their notes; nothing of theirs is replaced.</li><li><b>The app itself:</b> “Blank app” gives a clean copy. “App with the ticked notes built in” gives a copy that already has those notes.</li><li>If something you send has the same name as something they already have but different words, it is added as “… (imported)” so both are kept.</li><li><b>Copies of the app:</b> a copy saved from Share (“Blank app” or “App with the ticked notes built in”) keeps its own notes, so it won’t mix with yours, even on the same phone. But the <b>same</b> app opened twice (two tabs, or the same file opened again) shares one set of notes on that phone. That’s fine: changes from both are combined, and nothing is lost.</li></ul></section>';
+  h += '<section class="panel"><h2 style="margin-top:0">Sharing</h2><ul><li><b>Some notes:</b> in Share, check the sections or topics you want and tap Send or Save. The other person opens the file with <b>Bring in notes</b> in their copy. It is added next to their notes; nothing of theirs is replaced.</li><li><b>The app itself:</b> “Blank app” gives a clean copy. “App with the checked notes built in” gives a copy that already has those notes.</li><li>If something you send has the same name as something they already have but different words, it is added as “… (imported)” so both are kept.</li><li><b>Copies of the app:</b> a copy saved from Share (“Blank app” or “App with the checked notes built in”) keeps its own notes, so it won’t mix with yours, even on the same phone. But the <b>same</b> app opened twice (two tabs, or the same file opened again) shares one set of notes on that phone. That’s fine: changes from both are combined, and nothing is lost.</li></ul></section>';
   h += '<p class="ver" id="helpver">Version ' + esc(APP_VERSION) + '. When a new version is ready, a green note at the top says “New version ready — tap to update”.</p>';
   h += '<section class="panel"><h2 style="margin-top:0">Samples</h2><p>The “Sample” sections show how things work. Delete them whenever you like. Scripture in the samples is from the King James Version.</p><button class="plain" data-act="addSamples">Put the sample sections back</button></section>';
   h += '</main>';
@@ -895,7 +902,7 @@ function updatePicker(){
   pick.querySelectorAll('input[data-pick="topic"]').forEach(function(cb){ cb.checked = !!ui.sel.topics[cb.getAttribute("data-id")]; });
   var sel = selectedSections(), tc = 0; sel.forEach(function(s){ tc += s.topics.length; });
   var size = new Blob([JSON.stringify(exportObject(sel))]).size;
-  var inf = $("#pickInfo"); if (inf) inf.textContent = sel.length ? "Ticked: " + plural(sel.length, "section", "sections") + ", " + plural(tc, "topic", "topics") + " (about " + fmtSize(size) + ")." : "Nothing ticked yet.";
+  var inf = $("#pickInfo"); if (inf) inf.textContent = sel.length ? "Checked: " + plural(sel.length, "section", "sections") + ", " + plural(tc, "topic", "topics") + " (about " + fmtSize(size) + ")." : "Nothing checked yet.";
 }
 function selectedSections(){
   var out = [];
@@ -919,7 +926,7 @@ var NEXT = {
   readable: "It’s in your Downloads (on iPhone: the Files app, then Downloads).\n\nOpen it to read it in the browser. To turn it into a PDF on Android: open it in Chrome, tap ⋮, then Share, then Print, and choose Save as PDF.",
   notes: "It’s in your Downloads (on iPhone: the Files app, then Downloads).\n\nNext: keep it somewhere safe as a backup, or send it to someone by email or message. They open it in their copy of the app with “Bring in notes from a file”.",
   blank: "It’s in your Downloads (on iPhone: the Files app, then Downloads).\n\nNext: send this file to the other person by email or message. They open it in their phone’s browser. It starts with no notes.",
-  bundle: "It’s in your Downloads (on iPhone: the Files app, then Downloads).\n\nNext: send this file to the other person by email or message. They open it in their phone’s browser, and it starts with the notes you ticked."
+  bundle: "It’s in your Downloads (on iPhone: the Files app, then Downloads).\n\nNext: send this file to the other person by email or message. They open it in their phone’s browser, and it starts with the notes you checked."
 };
 function saved(name, kind){
   var m = "Saved “" + name + "”.\n\n" + NEXT[kind];
@@ -935,7 +942,7 @@ function shareOrSave(blob, name, type, wantShare, kind){
   return Promise.resolve();
 }
 function doExport(wantShare){
-  var sel = selectedSections(); if (!sel.length) return info("Nothing ticked", "Tick at least one section or topic first.");
+  var sel = selectedSections(); if (!sel.length) return info("Nothing checked", "Check at least one section or topic first.");
   var blob = new Blob([JSON.stringify(exportObject(sel), null, 1)], {type:"application/json"});
   if (data.sections.every(function(s){ return s.topics.length ? s.topics.every(function(t){ return ui.sel.topics[t.id]; }) : ui.sel.empty[s.id]; })) noteBackup("full");
   return shareOrSave(blob, exportName(sel), "application/json", wantShare, "notes");
@@ -950,7 +957,7 @@ function doAppCopy(withNotes){
   var bundle = { copyId: uid(), bundleId: uid(), noSamples: true };
   var name = "witnessing-app-blank.html";
   if (withNotes){
-    var sel = selectedSections(); if (!sel.length) return info("Nothing ticked", "Tick at least one section or topic in step 1 first.");
+    var sel = selectedSections(); if (!sel.length) return info("Nothing checked", "Check at least one section or topic in step 1 first.");
     bundle.data = exportObject(sel); name = "witnessing-app-with-" + (sel.length === 1 ? slug(sel[0].title) : "notes") + ".html";
   }
   return shareOrSave(new Blob([appHtml(bundle)], {type:"text/html"}), name, "text/html", false, withNotes ? "bundle" : "blank");
@@ -1215,7 +1222,7 @@ function dragUpdate(){
   var d = drag; if (!d) return;
   var dy = d.lastY + window.scrollY - d.startY, top = d.rects[d.i].top + dy, bottom = top + d.rects[d.i].h, j = d.i;
   d.item.style.transform = "translateY(" + dy + "px)";
-  /* Moving down: pass a neighbour's middle with the bottom edge. Moving up: with the top edge. */
+  /* Moving down: pass a neighbor's middle with the bottom edge. Moving up: with the top edge. */
   d.items.forEach(function(x, k){ var mid = d.rects[k].top + d.rects[k].h / 2; if (k > d.i && bottom > mid) j = Math.max(j, k); if (k < d.i && top < mid) j = Math.min(j, k); });
   d.j = j;
   d.items.forEach(function(x, k){ if (k === d.i) return; var t = (d.i < k && k <= j) ? -d.step : ((j <= k && k < d.i) ? d.step : 0); x.style.transform = t ? "translateY(" + t + "px)" : ""; });
@@ -1282,12 +1289,51 @@ function setupEditor(id){
     if (g && !g.sub.html && !g.sub.title){ g.topic.subsections.splice(idx(g.topic.subsections, id), 1); saveSoon(0); }
     ed.subId = null;
   };
-  if (!f.sub.html) setTimeout(function(){ box.focus(); }, 50);
+  /* No automatic focus: it made the browser scroll the new part down past the heading. The page opens at the top. */
+  box.addEventListener("input", function(){ requestAnimationFrame(revealCaret); });
+  box.addEventListener("focus", function(){ setTimeout(revealCaret, 350); setTimeout(revealCaret, 700); });
+  watchBars();
 }
+/* The title bar and the sticky toolbar: measure their real height, so the toolbar sits right under the title bar
+   and the browser keeps the caret below both (scroll-padding-top). */
+var barObs = null;
+function setBars(){
+  var hd = document.querySelector("header.top"), tb = $("#tb"), st = document.documentElement.style;
+  if (hd) st.setProperty("--hdr", Math.round(hd.getBoundingClientRect().height) + "px");
+  st.setProperty("--tbh", (tb ? Math.round(tb.getBoundingClientRect().height) : 0) + "px");
+}
+function watchBars(){
+  if (barObs) barObs.disconnect();
+  setBars();
+  if (window.ResizeObserver){ barObs = new ResizeObserver(setBars); var hd = document.querySelector("header.top"), tb = $("#tb"); if (hd) barObs.observe(hd); if (tb) barObs.observe(tb); }
+}
+/* Where the caret is on screen (also in an empty box or an empty line). */
+function caretRect(box){
+  var s = window.getSelection(); if (!s.rangeCount) return null;
+  var r = s.getRangeAt(0); if (!box.contains(r.endContainer)) return null;
+  var c = r.cloneRange(); c.collapse(false);
+  var rs = c.getClientRects(); if (rs.length && rs[rs.length-1].height > 0) return rs[rs.length-1];
+  var n = c.endContainer, el = n.nodeType === 1 ? (n.childNodes[c.endOffset] && n.childNodes[c.endOffset].nodeType === 1 ? n.childNodes[c.endOffset] : n) : n.parentNode;
+  var b = el.getBoundingClientRect(), cs = getComputedStyle(el), lh = parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.4;
+  var top = el === box ? b.top + parseFloat(cs.paddingTop) : b.top; return { top: top, bottom: top + lh };
+}
+/* Only if the caret is really hidden (under the toolbar or under the keyboard), move the page just enough.
+   Never jumps to the top or bottom, and never runs on scrolling, so the user's own scrolling is left alone. */
+function revealCaret(){
+  var box = $("#ed"); if (!box || document.activeElement !== box) return;
+  var c = caretRect(box); if (!c) return;
+  var tb = $("#tb"), hd = document.querySelector("header.top"), vv = window.visualViewport;
+  var top = Math.max(tb ? tb.getBoundingClientRect().bottom : 0, hd ? hd.getBoundingClientRect().bottom : 0, vv ? vv.offsetTop : 0);
+  var bottom = vv ? vv.offsetTop + vv.height : window.innerHeight;
+  if (c.top < top + 2) window.scrollBy(0, c.top - top - 10);
+  else if (c.bottom > bottom - 2) window.scrollBy(0, c.bottom - bottom + 14);
+}
+var revealTimer = null;
+window.addEventListener("resize", function(){ var box = $("#ed"); if (box && document.activeElement === box){ clearTimeout(revealTimer); revealTimer = setTimeout(revealCaret, 120); } });
 function saveRange(){ var s = window.getSelection(), box = $("#ed"); if (box && s.rangeCount && box.contains(s.getRangeAt(0).commonAncestorContainer)) ed.range = s.getRangeAt(0).cloneRange(); }
 document.addEventListener("selectionchange", function(){ if (ed.subId){ saveRange(); updateToolbar(); } });
 function restoreRange(){
-  var box = $("#ed"); if (!box) return; box.focus();
+  var box = $("#ed"); if (!box) return; box.focus({ preventScroll: true });
   var s = window.getSelection();
   if (ed.range && box.contains(ed.range.commonAncestorContainer)){ s.removeAllRanges(); s.addRange(ed.range); }
   else if (!s.rangeCount || !box.contains(s.getRangeAt(0).commonAncestorContainer)){ var r = document.createRange(); r.selectNodeContents(box); r.collapse(false); s.removeAllRanges(); s.addRange(r); }
@@ -1507,10 +1553,18 @@ store.init(COPY_ID).then(function(){ return Promise.all([store.get("data"), stor
     });
   }
   /* Once after an update: say so (not on a first install). */
-  if (meta.lastVersion !== APP_VERSION){ var shownUpd = meta.lastVersion || wasUser; meta.lastVersion = APP_VERSION; saveMeta(); if (shownUpd && store.mode() !== "memory") toast("Updated to version " + APP_VERSION.split(" ")[0] + ". Your notes are kept.", 6000); }
+  { var lsKey = "wa-announced-" + COPY_ID, said = null; try { said = localStorage.getItem(lsKey); } catch(e){}
+    var last = meta.lastVersion;
+    if (said && cmpVer(said, last) > 0) last = said; /* an older tab may have saved settings without the mark */
+    if (cmpVer(APP_VERSION, last) !== 0){
+      var announce = (last ? cmpVer(APP_VERSION, last) > 0 : wasUser) && store.mode() !== "memory";
+      meta.lastVersion = APP_VERSION; saveMeta(); try { localStorage.setItem(lsKey, APP_VERSION); } catch(e){}
+      if (announce) toast("Updated to version " + APP_VERSION.split(" ")[0] + ". Your notes are kept.", 6000);
+    } else if (!meta.lastVersion || meta.lastVersion !== APP_VERSION){ meta.lastVersion = APP_VERSION; saveMeta(); }
+  }
   tellOthers({t:"hello"});
 }).catch(function(e){ console.error(e); $("#main") && ($("#main").innerHTML = '<p class="lead">Something went wrong while opening your notes. Please reload the page.</p>'); });
-window.__wa = { get data(){ return data; }, noteBackup: function(k){ noteBackup(k); }, testOfferUpdate: function(){ offerUpdate({ postMessage: function(){ window.__skipAsked = (window.__skipAsked || 0) + 1; } }); }, checkForUpdate: function(){ checkForUpdate(); }, info: function(t, m){ return info(t, m); }, get meta(){ return meta; }, saveMeta: function(){ return saveMeta(); }, render: function(){ render(); }, storageInfo: storageInfo, needsReminder: function(){ return needsReminder(); }, backupName: function(){ return backupName(); }, readableHtml: function(){ return readableHtml(printSections()); }, copyId: COPY_ID, get movedFromShared(){ return movedFromShared; }, get rev(){ return rev; }, sanitize: sanitize, merge: merge, merge3: merge3, normalizeImport: normalizeImport, saveNow: saveNow, doSearch: doSearch, makeSamples: makeSamples, sampleSig: sampleSig, tidyOldSamples: tidyOldSamples, checkForNewer: checkForNewer, safeHref: safeHref, version: APP_VERSION };
+window.__wa = { get data(){ return data; }, cmpVer: cmpVer, revealCaret: function(){ revealCaret(); }, noteBackup: function(k){ noteBackup(k); }, testOfferUpdate: function(){ offerUpdate({ postMessage: function(){ window.__skipAsked = (window.__skipAsked || 0) + 1; } }); }, checkForUpdate: function(){ checkForUpdate(); }, info: function(t, m){ return info(t, m); }, get meta(){ return meta; }, saveMeta: function(){ return saveMeta(); }, render: function(){ render(); }, storageInfo: storageInfo, needsReminder: function(){ return needsReminder(); }, backupName: function(){ return backupName(); }, readableHtml: function(){ return readableHtml(printSections()); }, copyId: COPY_ID, get movedFromShared(){ return movedFromShared; }, get rev(){ return rev; }, sanitize: sanitize, merge: merge, merge3: merge3, normalizeImport: normalizeImport, saveNow: saveNow, doSearch: doSearch, makeSamples: makeSamples, sampleSig: sampleSig, tidyOldSamples: tidyOldSamples, checkForNewer: checkForNewer, safeHref: safeHref, version: APP_VERSION };
 })();
 </script>
 </body>
