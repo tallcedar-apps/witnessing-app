@@ -155,6 +155,7 @@ html{scroll-padding-top:calc(var(--hdr) + var(--tbh) + 10px);scroll-padding-bott
 .sheet{background:#fff;border-radius:18px;width:100%;max-width:520px;padding:18px 16px calc(14px + env(safe-area-inset-bottom));box-shadow:0 10px 40px rgba(0,0,0,.3);max-height:100%;overflow:auto;overscroll-behavior:contain;margin:0}
 .sheet h2{margin:0 0 8px;font-size:21px}
 .sheet .msg{margin:0 0 12px;white-space:pre-line}
+.sheet .alert{margin:0 0 12px;padding:10px 12px;border-left:5px solid #b3261e;background:#fdecea;color:#8c1d18;font-weight:700}
 .sheet .btns{display:flex;gap:8px;margin-top:14px;position:sticky;bottom:calc(-14px - env(safe-area-inset-bottom));background:#fff;padding:8px 0 4px}
 .sheet input.text{scroll-margin-top:12px;scroll-margin-bottom:96px}
 .sheet .draftnote{background:#fff3cd;border-radius:8px;padding:6px 10px;color:#4d3b00}
@@ -174,6 +175,25 @@ html{scroll-padding-top:calc(var(--hdr) + var(--tbh) + 10px);scroll-padding-bott
 .ver{color:var(--muted);font-size:13px;margin:-8px 2px 12px}
 #banner button{display:block;margin:6px 0 0 auto;min-height:48px;min-width:96px;border-radius:10px;border:1px solid #c9a93a;background:#fff;font-weight:700}
 .addr{overflow-wrap:anywhere;font-weight:650}
+.bk{margin:0 0 12px}
+.bkbtn{display:flex;flex-direction:column;width:100%;align-items:center;justify-content:center;min-height:60px;border:0;border-radius:var(--radius);background:var(--accent);color:#fff;font-size:20px;font-weight:700;margin:0;padding:8px 12px;box-shadow:0 2px 0 #234a70;line-height:1.25}
+.bkbtn:active{transform:translateY(1px);box-shadow:none}
+.bkbtn .bksub{font-size:15px;font-weight:650}
+.bkbtn.changed{background:#f6c344;color:#3d2e00;box-shadow:0 2px 0 #c99a1e;border:2px solid #c99a1e}
+.bkinfo{font-size:15px;color:var(--muted);margin:6px 2px 0;overflow-wrap:anywhere}
+.bkinfo b{color:var(--ink)}
+.restore h2{margin-top:0}
+.restore .sch{font-size:19px;margin:16px 0 4px}
+.safety{list-style:none;margin:8px 0 0;padding:0}
+.safety li{border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:0 0 10px;background:#fff}
+.safety li p{margin:0 0 6px}
+.safety button{min-height:48px;margin:4px 0}
+.safety .redtext{color:var(--danger)}
+.sheet .choices{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.sheet .choices button{min-height:56px;border-radius:12px;font-size:18px;font-weight:700;border:1px solid var(--line);background:#fff;padding:6px 10px;color:var(--accent)}
+.sheet .choices button.go{background:var(--go);color:#fff;border-color:var(--go)}
+.sheet .choices button.redline{color:var(--danger);border:2px solid var(--danger);font-size:16px;min-height:50px}
+.sheet .choices .why{display:block;font-size:14px;font-weight:600;opacity:.9}
 </style>
 </head>
 <body>
@@ -183,6 +203,7 @@ html{scroll-padding-top:calc(var(--hdr) + var(--tbh) + 10px);scroll-padding-bott
 <div id="modal" role="dialog" aria-modal="true"></div>
 <div id="toast" role="status" aria-live="polite"></div>
 <input type="file" id="pickImage" class="sr" accept="image/*" aria-hidden="true" tabindex="-1">
+<input type="file" id="pickRestore" class="sr" accept=".json,.html,.htm,application/json,text/html,text/plain" aria-hidden="true" tabindex="-1">
 <input type="file" id="pickImport" class="sr" accept=".json,.html,.htm,application/json,text/html,text/plain" aria-hidden="true" tabindex="-1">
 <noscript><p style="padding:20px">This app needs JavaScript turned on in your browser.</p></noscript>
 <script>
@@ -190,7 +211,7 @@ html{scroll-padding-top:calc(var(--hdr) + var(--tbh) + 10px);scroll-padding-bott
 "use strict";
 /* Copy of the untouched page, captured before anything is drawn. Used for "give someone the app". */
 var PRISTINE = document.documentElement.cloneNode(true);
-var APP_VERSION = "0.10 (proof of concept)";
+var APP_VERSION = "0.11 (proof of concept)";
 /* When the app is opened from a web address (not a saved file), let it be installed and work offline. */
 var HOSTED = /^https?:$/.test(location.protocol);
 if (HOSTED){
@@ -559,14 +580,15 @@ function modal(opts){
     var m = $("#modal");
     var fields = opts.fields || [];
     var dkey = (opts.title || "") + "\u0001" + fields.map(function(f){ return f.value || ""; }).join("\u0001"), draft = fields.length ? drafts[dkey] : null;
-    var h = '<form class="sheet" novalidate autocomplete="off"><h2>' + esc(opts.title||"") + '</h2>' + (opts.message ? '<p class="msg">' + esc(opts.message) + '</p>' : '');
+    var h = '<form class="sheet" novalidate autocomplete="off"><h2>' + esc(opts.title||"") + '</h2>' + (opts.alert ? '<p class="alert" role="alert">' + esc(opts.alert) + '</p>' : '') + (opts.message ? '<p class="msg">' + esc(opts.message) + '</p>' : '');
     if (draft) h += '<p class="hint draftnote">Your unfinished text from last time is filled in.</p>';
     fields.forEach(function(f, i){ var last = i === fields.length - 1; h += '<label class="fl" for="mf'+i+'">' + esc(f.label) + '</label><input class="text" id="mf'+i+'" type="'+(f.type||"text")+'" autocomplete="off" enterkeyhint="' + (last ? (fields.length === 1 ? "go" : "done") : "next") + '" '+(f.type==="url"?'inputmode="url" autocapitalize="off"':'autocapitalize="sentences"')+' placeholder="'+esc(f.placeholder||"")+'" value="'+esc(draft ? draft[i] : (f.value||""))+'">'; });
-    h += '<div class="btns">' + (opts.cancel === false ? '' : '<button type="button" class="no">' + esc(opts.cancel||"Cancel") + '</button>') + '<button type="submit" class="ok' + (opts.danger?' red':'') + '">' + esc(opts.ok||"OK") + '</button></div></form>';
+    if (opts.choices) h += '<div class="choices">' + opts.choices.map(function(c, i){ return '<button type="button" data-choice="' + i + '" class="' + esc(c.cls || "") + '">' + esc(c.label) + (c.why ? '<span class="why">' + esc(c.why) + '</span>' : '') + '</button>'; }).join("") + '</div>';
+    h += '<div class="btns">' + (opts.cancel === false ? '' : '<button type="button" class="no">' + esc(opts.cancel||"Cancel") + '</button>') + (opts.choices && !opts.ok ? '' : '<button type="submit" class="ok' + (opts.danger?' red':'') + '">' + esc(opts.ok||"OK") + '</button>') + '</div></form>';
     m.innerHTML = h; m.classList.add("show");
     var form = $("form", m), closing = false, id;
     var first = $("#mf0", m);
-    if (first){ setTimeout(function(){ if (closing || m.contains(document.activeElement)) return; first.focus(); try { first.select(); } catch(e){} }, 30); } else { setTimeout(function(){ var o = $(".ok", m); if (o) o.focus(); }, 30); }
+    if (first){ setTimeout(function(){ if (closing || m.contains(document.activeElement)) return; first.focus(); try { first.select(); } catch(e){} }, 30); } else { setTimeout(function(){ var o = $(".ok", m) || $(".choices button", m); if (o) o.focus(); }, 30); }
     function values(){ return fields.map(function(f, i){ return $("#mf"+i, m).value; }); }
     function edited(){ var v = values(); return fields.some(function(f, i){ return cleanTitle(v[i]) !== cleanTitle(f.value || ""); }); }
     function done(val, keepDraft){
@@ -576,19 +598,22 @@ function modal(opts){
       sheetClosed(id).then(function(){ resolve(val); setTimeout(freeModal, 0); });  /* let any screen change from this answer happen before the next pop-up opens */
     }
     function cancel(){ done(null, true); }
-    function ok(){ if (!fields.length) return done(true); var vals = values(); if (fields.length === 1 && !cleanTitle(vals[0]) && fields[0].required !== false){ $("#mf0", m).focus(); return; } done(fields.length === 1 ? vals[0] : vals, false); }
+    /* run() and onOk() are called right inside the tap, so the phone lets them open a file picker or the share menu. */
+    function runNow(fn){ var r; try { r = fn(); } catch(e){ r = Promise.reject(e); } return r; }
+    function ok(){ if (opts.choices && !opts.ok) return; if (opts.onOk && !fields.length) return done({ result: runNow(opts.onOk) }); if (!fields.length) return done(true); var vals = values(); if (fields.length === 1 && !cleanTitle(vals[0]) && fields[0].required !== false){ $("#mf0", m).focus(); return; } done(fields.length === 1 ? vals[0] : vals, false); }
     /* Enter (or Go / Next on a phone keyboard): next field, or OK from the last one. */
     function enter(el){ var i = fields.length ? Array.prototype.indexOf.call(m.querySelectorAll("input.text"), el) : -1; if (i >= 0 && i < fields.length - 1){ var nx = $("#mf"+(i+1), m); nx.focus(); try { nx.select(); } catch(e){} } else ok(); }
     function key(e){ if (closing) return; if (e.key === "Escape") cancel(); else if (e.key === "Enter" && e.target.tagName === "INPUT" && m.contains(e.target)){ e.preventDefault(); enter(e.target); } }
     document.addEventListener("keydown", key);
     form.addEventListener("submit", function(e){ e.preventDefault(); var a = document.activeElement; if (a && a.tagName === "INPUT" && m.contains(a)) enter(a); else ok(); });
     var no = $(".no", m); if (no) no.onclick = cancel;
+    m.querySelectorAll("[data-choice]").forEach(function(btn){ btn.onclick = function(){ var c = opts.choices[+btn.getAttribute("data-choice")]; done({ value: c.value, result: c.run ? runNow(c.run) : undefined }); }; });
     m.onclick = function(e){ if (e.target === m && opts.cancel !== false) cancel(); };
     id = sheetOpened(cancel);
   }); });
 }
 function ask(title, label, value, okText){ return modal({title:title, fields:[{label:label, value:value||""}], ok:okText||"Save"}).then(function(v){ return v == null ? null : cleanTitle(v); }); }
-function confirmDelete(what){ return modal({title:"Delete " + what + "?", message:"This can't be undone. (Tip: if you're unsure, make a backup first with 🛟 Back up / Save all on the main screen.)", ok:"Delete", cancel:"Keep it", danger:true}); }
+function confirmDelete(what){ return modal({title:"Delete " + what + "?", message:"This can't be undone. (Tip: if you're unsure, make a backup first with 🛟 Back up on the main screen.)", ok:"Delete", cancel:"Keep it", danger:true}); }
 function info(title, message){ return modal({title:title, message:message, ok:"OK", cancel:false}); }
 var toastTimer;
 function toast(t, ms){ var el = $("#toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(function(){ el.classList.remove("show"); }, ms || 3200); }
@@ -658,8 +683,9 @@ function viewHome(){
   var h = header(null, "", "My Witnessing Notes", right) + '<main>';
   var n = data.sections.length;
   h += '<button class="searchbar" data-act="nav" data-to="#/search" aria-label="Search your notes">🔍 <span>Search your notes</span></button>';
-  if (needsReminder()){ var lb = lastBackupTime(); h += '<div class="remind" id="remind"><p>' + (lb == null ? 'You haven’t made a backup file yet.' : 'Your last backup file was ' + plural(daysSince(lb), "day", "days") + ' ago.') + ' It keeps your notes safe.</p><div class="two"><button class="go" data-act="nav" data-to="#/backup">Back up now</button><button data-act="snooze">Not now</button></div></div>'; }
-  h += '<button class="plain backup" data-act="nav" data-to="#/backup">🛟 Back up / Save all</button>';
+  if (needsReminder()){ var lb = lastBackupTime(); h += '<div class="remind" id="remind"><p>' + (lb == null ? 'You haven’t made a backup file yet.' : 'Your last backup file was ' + plural(daysSince(lb), "day", "days") + ' ago.') + ' It keeps your notes safe.' + (lb != null && changedSinceBackup() ? ' <b id="remindChanged">You have changes since then.</b>' : '') + '</p><div class="two"><button class="go" data-act="smartBackup" id="bkbtn-remind">🛟 Back up now</button><button data-act="snooze">Not now</button></div></div>'; }
+  if (!needsReminder()) h += backupBlock("home");   /* when the reminder shows, its "Back up now" is the same button */
+  h += '<button class="plain backup" data-act="nav" data-to="#/backup">📄 PDF and more backup choices</button>';
   h += '<p class="lead intro">Keep your witnessing notes here. <b>Sections</b> hold <b>topics</b>, and each topic is made of <b>parts</b>. Your notes stay on this phone. Tap a section to open it.</p><p class="ver" id="ver">Version ' + esc(APP_VERSION.split(" ")[0]) + '</p>';
   if (!n) h += '<div class="empty">No sections yet.<br>Tap the green button to make your first one.</div>';
   h += '<ul class="list" data-list="section">';
@@ -667,6 +693,7 @@ function viewHome(){
     h += '<li data-item="'+s.id+'" class="row' + (ui.arrange?' arr':'') + '"><button class="open" data-act="nav" data-to="#/s/'+s.id+'"><span class="name">' + esc(s.title) + (s.sample?'<span class="badge">Sample</span>':'') + '</span><span class="meta">' + plural(s.topics.length, "topic", "topics") + '</span></button>' + (ui.arrange ? ctrls("section", s.id, i, n) : '<span class="chev">›</span>') + '</li>';
   });
   h += '</ul><button class="big" data-act="newSection">＋ New section</button>' + arrangeBtn(n, "sections");
+  h += restorePanel();
   h += '</main>';
   return h;
 }
@@ -744,20 +771,21 @@ function viewShare(){
 }
 function viewHelp(){
   var h = header("#/", "Sections", "How to use") + '<main class="help">';
-  h += '<section class="panel"><h2 style="margin-top:0">Writing</h2><ol><li><b>Sections</b> are your big groups (for example “The Deity of Christ”). Tap <b>＋ New section</b>.</li><li>Open a section and tap <b>＋ New topic</b>. Give it a name and start typing right away.</li><li>A topic is made of <b>parts</b>, like the pieces of a tract. Tap <b>＋ Add a part</b> for the next piece, and <b>✎ Edit</b> to change one.</li><li>While editing, use the buttons for <b>Bold</b>, <i>Italic</i>, <b>Heading</b>, <b>Subheading</b>, <b>Quote</b> (a box for Bible verses), lists, <b>Link</b>, and <b>Picture</b>. Pictures are made smaller automatically so files stay small. Tap a picture while editing to make it small, medium, or full width, or to add a caption.</li><li>To rename, reorder, or delete, tap <b>✎ Change order, names, or delete</b> at the bottom of a list. Move things with the ↑ ↓ buttons, or press and drag the <b>≡ Drag</b> handle. Tap <b>✓ Done changing</b> when finished.</li><li>The phone’s <b>Back</b> button closes a pop-up first (anything you typed in it is kept for next time), then goes back one screen at a time.</li><li>To find something, tap <b>🔍 Search your notes</b> on the main screen and type a word. Tap a result to open it. If a word is spelled a little differently, close matches are shown.</li></ol></section>';
+  h += '<section class="panel"><h2 style="margin-top:0">Writing</h2><ol><li><b>Sections</b> are your big groups (for example “The Deity of Christ”). Tap <b>＋ New section</b>.</li><li>Open a section and tap <b>＋ New topic</b>. Give it a name and start typing right away.</li><li>Tap the heading or the writing box to start typing.</li><li>A topic is made of <b>parts</b>, like the pieces of a tract. Tap <b>＋ Add a part</b> for the next piece, and <b>✎ Edit</b> to change one.</li><li>While editing, use the buttons for <b>Bold</b>, <i>Italic</i>, <b>Heading</b>, <b>Subheading</b>, <b>Quote</b> (a box for Bible verses), lists, <b>Link</b>, and <b>Picture</b>. Pictures are made smaller automatically so files stay small. Tap a picture while editing to make it small, medium, or full width, or to add a caption.</li><li>To rename, reorder, or delete, tap <b>✎ Change order, names, or delete</b> at the bottom of a list. Move things with the ↑ ↓ buttons, or press and drag the <b>≡ Drag</b> handle. Tap <b>✓ Done changing</b> when finished.</li><li>The phone’s <b>Back</b> button closes a pop-up first (anything you typed in it is kept for next time), then goes back one screen at a time.</li><li>To find something, tap <b>🔍 Search your notes</b> on the main screen and type a word. Tap a result to open it. If a word is spelled a little differently, close matches are shown.</li></ol></section>';
   h += '<section class="panel"><h2 style="margin-top:0">Put it on your home screen</h2><p>Open the app’s web address once while online. Then add it to your home screen: on <b>iPhone</b> (Safari), tap Share (the square with an arrow), then <b>Add to Home Screen</b>. On <b>Android</b> (Chrome), tap ⋮, then <b>Install and create shortcut</b>, then <b>Install</b> (not “Create shortcut”). On some phones the menu item is called <b>Install app</b> or <b>Add to Home screen</b>. After that it opens like an app and works with no internet.</p><p id="iphonepointer">On iPhone: if you already wrote notes in Safari, see <b>Keeping your notes safe</b> below first.</p><p id="installtip">If you don’t see the icon on your home screen, look in your app drawer. To put it on your home screen, long-press the icon and pick Add to Home.</p>' + (HOSTED ? '<p>This app’s web address (send it to anyone who wants the app):<br><span class="addr" id="addr">' + esc(location.origin + location.pathname) + '</span></p>' : '<p>You opened this app as a saved file, so it has no web address here. To give it to someone, use <b>⇪ Share</b> → “Blank app”.</p>') + '</section>';
-  h += '<section class="panel"><h2 style="margin-top:0">Backing up</h2><p>Your notes are kept inside this browser on this phone. Now and then, tap <b>🛟 Back up / Save all</b> on the main screen.</p><ul><li><b>Save as PDF (readable)</b> makes a booklet of all your notes, with pictures and full link addresses, that anyone can open.</li><li><b>Full backup file (can restore)</b> saves everything in one file this app can bring back, with <b>Bring in notes from a file</b> in ⇪ Share.</li></ul><p>Keep the file somewhere other than this phone, for example email it to yourself or put it in Google Drive. If you haven’t saved a full backup file for 30 days, the main screen reminds you (a PDF or readable copy doesn’t count, because it can’t be brought back).</p><p id="olderHelp">' + OLDER_BACKUP + '</p></section>';
+  h += '<section class="panel" id="backHelp"><h2 style="margin-top:0">Backing up</h2><p>Your notes are kept inside this browser on this phone. Now and then, tap <b>🛟 Back up</b> on the main screen. It saves everything in one backup file that this app can bring back.</p><ul><li><b>On Android (Chrome):</b> the first time, your phone asks where to keep the file (for example Downloads or Google Drive). After that, each tap updates that same file, with no questions. After a restart, your phone may ask once more: tap <b>Allow</b>. To use a different place, open <b>📄 PDF and more backup choices</b> and tap <b>Change save spot</b> or <b>Forget save spot</b>.</li><li><b>On iPhone and other browsers:</b> each tap opens the share menu. Choose <b>Save to Files</b>, Google Drive, or email it to yourself.</li><li>When you have changed something since your last backup, the button turns yellow and says <b>You have changes since your last backup</b>.</li><li><b>Save as PDF (readable)</b>, in PDF and more backup choices, makes a booklet of all your notes that anyone can open. Before your phone’s print screen opens, the app tells you which button saves the PDF.</li></ul><p>Keep the file somewhere other than this phone. If you haven’t made a backup for 30 days, the main screen reminds you (a PDF doesn’t count, because it can’t be brought back).</p></section>';
+  h += '<section class="panel" id="restoreHelp"><h2 style="margin-top:0">Restoring</h2><p>At the bottom of the main screen, tap <b>⤒ Choose a backup file</b> under <b>Restore from a backup</b>. Then pick one of two choices:</p><ul><li><b>Add to my notes</b> (safe, recommended). Nothing on this phone is changed or removed. Anything in the backup that isn’t here is added. Each part is compared word for word: an exact copy is skipped, and if a part differs even by one word, both versions are kept, with the backup’s version marked “(from backup)” right after yours. Afterward you see how many parts were added, kept twice, or skipped.</li><li><b>Replace everything with this backup</b>. This replaces ALL notes on this phone with the backup, so changes made since that backup are lost. It’s offered only for a full backup file: one from <b>🛟 Back up</b>, from <b>⇪ Send a copy somewhere else (email, Drive)…</b> or <b>⤓ Save a dated copy</b> on the <b>Back up / Save all</b> screen (on Android, these show after the first save), or from <b>⇪ Share</b> with every section checked. The file says inside how many sections and parts it has, and Replace is offered only if that still matches. A file with only some sections, like one shared from a section, can only be added to your notes. So can a backup made before version 0.11, because it looks the same inside as a shared file. The warning shows how many sections and parts the backup has compared with this phone, and warns you in bold when the backup is much smaller.</li></ul><p id="safetyHelp"><b>Safety copies.</b> Before each replace, the app keeps a copy of your notes as they were. It keeps the last 3, each with its date and how many sections and parts it has, listed under <b>Safety copies</b> in Restore on the main screen. For each one you can <b>Restore this copy</b>, <b>Save as a file</b>, or <b>Delete</b> it (the app asks first). <b>Undo last replace</b> puts back the newest one. Putting a copy back keeps the notes you had a moment ago as a copy in its place, so you can always switch back. If you already have 3, a replace first asks you to save the oldest one as a file. Only then is it removed from the app to make room, so a replace or undo never loses your notes. Safety copies are kept on this phone only, in the same place as your notes, so they don’t replace a backup file kept somewhere else.</p><p id="olderHelp">' + OLDER_BACKUP + '</p></section>';
   h += '<section class="panel" id="safety"><h2 style="margin-top:0">Keeping your notes safe</h2><div class="storageStatus">' + storageHtml() + '</div><p><b>What can erase your notes on Android (Chrome):</b></p><ul>' +
     '<li><b>Clearing Chrome’s data.</b> “Delete browsing data” with <b>Cookies and site data</b> checked, or deleting this site’s data in Chrome’s settings. So does Android <b>Settings → Apps → Chrome → Storage → Clear storage</b>, uninstalling Chrome, or a cleaner app that clears Chrome’s data.</li>' +
     '<li><b>Blocking on-device site data</b> for this site in Chrome’s Site settings hides your notes from the app (and may erase them).</li>' +
     '<li><b>Removing the app’s icon</b> (uninstalling the app) doesn’t erase the notes by itself. They’re kept in Chrome, not in the icon.</li>' +
     '<li><b>Phone very low on space:</b> if your notes aren’t protected (see above), Chrome may clear them by itself. This is rare.</li>' +
-    '<li><b>Factory reset or a new phone:</b> notes don’t move by themselves, and signing in to Chrome doesn’t copy them. Bring your backup file across and use <b>Bring in notes from a file</b>.</li>' +
+    '<li><b>Factory reset or a new phone:</b> notes don’t move by themselves, and signing in to Chrome doesn’t copy them. Bring your backup file across and use <b>Restore from a backup</b> on the main screen.</li>' +
     '<li><b>Each browser and each web address keeps its own notes.</b> Notes in Chrome aren’t in Samsung Internet, a saved copy of the app has its own notes, and if the app ever moves to a new web address, it starts empty there. Use a backup file to move them.</li>' +
     '<li><b>Incognito</b> (private) tabs forget everything when they’re closed.</li>' +
     '<li><b>Safe:</b> updates to this app, to Chrome, and to Android don’t erase your notes.</li></ul>' +
     '<p id="iphonehelp"><b>On iPhone:</b> ' + IPHONE_NOTE + '</p></section>';
-  h += '<section class="panel"><h2 style="margin-top:0">Sharing</h2><ul><li><b>Some notes:</b> in Share, check the sections or topics you want and tap Send or Save. The other person opens the file with <b>Bring in notes</b> in their copy. It is added next to their notes; nothing of theirs is replaced.</li><li><b>The app itself:</b> “Blank app” gives a clean copy. “App with the checked notes built in” gives a copy that already has those notes.</li><li>If something you send has the same name as something they already have but different words, it is added as “… (imported)” so both are kept.</li><li><b>Copies of the app:</b> a copy saved from Share (“Blank app” or “App with the checked notes built in”) keeps its own notes, so it won’t mix with yours, even on the same phone. But the <b>same</b> app opened twice (two tabs, or the same file opened again) shares one set of notes on that phone. That’s fine: changes from both are combined, and nothing is lost.</li></ul></section>';
+  h += '<section class="panel"><h2 style="margin-top:0">Sharing</h2><ul><li><b>Some notes:</b> in Share, check the sections or topics you want and tap Send or Save. The other person opens the file with <b>Bring in notes</b> in their copy. It is added next to their notes; nothing of theirs is replaced.</li><li><b>The app itself:</b> “Blank app” gives a clean copy. “App with the checked notes built in” gives a copy that already has those notes.</li><li>If a part you send has different words from a part they already have, both are kept: yours is added right after theirs, marked “(imported)”. Exact copies are skipped.</li><li><b>Copies of the app:</b> a copy saved from Share (“Blank app” or “App with the checked notes built in”) keeps its own notes, so it won’t mix with yours, even on the same phone. But the <b>same</b> app opened twice (two tabs, or the same file opened again) shares one set of notes on that phone. That’s fine: changes from both are combined, and nothing is lost.</li></ul></section>';
   h += '<p class="ver" id="helpver">Version ' + esc(APP_VERSION) + '. When a new version is ready, a green note at the top says “New version ready — tap to update”.</p>';
   h += '<section class="panel"><h2 style="margin-top:0">Samples</h2><p>The “Sample” sections show how things work. Delete them whenever you like. Scripture in the samples is from the King James Version.</p><button class="plain" data-act="addSamples">Put the sample sections back</button></section>';
   h += '</main>';
@@ -784,7 +812,7 @@ function storageHtml(){
   if (storageInfo.usage) h += '<p class="hint">The app and your notes use about ' + fmtSize(storageInfo.usage) + ' on this device.</p>';
   return h;
 }
-var IPHONE_NOTE = 'The app on your Home Screen keeps its own notes, separate from Safari’s. Before you switch, save a full backup file in Safari, then open the Home Screen app and use <b>Bring in notes from a file</b> (in ⇪ Share). Safari also erases a website’s notes after 7 days of using Safari without opening that site; apps on the Home Screen aren’t erased this way.';
+var IPHONE_NOTE = 'The app on your Home Screen keeps its own notes, separate from Safari’s. Before you switch, tap <b>🛟 Back up</b> in Safari and save the file to Files, then open the Home Screen app and use <b>Restore from a backup</b> on the main screen. Safari also erases a website’s notes after 7 days of using Safari without opening that site; apps on the Home Screen aren’t erased this way.';
 function browserName(){ var u = navigator.userAgent || ""; if (/SamsungBrowser/i.test(u)) return "Samsung Internet"; if (/EdgA?\/|EdgiOS/.test(u)) return "Edge"; if (/Firefox|FxiOS/.test(u)) return "Firefox"; if (/CriOS/.test(u)) return "Chrome"; if (/OPR\//.test(u)) return ""; if (/Chrome\//.test(u)) return "Chrome"; if (/Safari\//.test(u) && /AppleWebKit/.test(u)) return "Safari"; return ""; }
 function browserLabel(){ var n = browserName(); return n ? "this browser (" + n + ")" : "this browser"; }
 function isIOS(){ return /iPhone|iPad|iPod/.test(navigator.userAgent || "") || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1); }
@@ -805,12 +833,102 @@ function needsReminder(){
 function fmtDate(t){ try { return new Date(t).toLocaleDateString("en-US", {day:"numeric", month:"long", year:"numeric"}); } catch(e){ return new Date(t).toDateString(); } }
 function whenText(t){ var d = daysSince(t); return fmtDate(t) + (d === 0 ? " (today)" : d === 1 ? " (yesterday)" : " (" + d + " days ago)"); }
 function backupName(){ return "witnessing-notes-backup-" + today() + ".witness.json"; }
-function doBackup(wantShare){
+/* ---------- the one "Back up" button ----------
+   Where the phone lets a web app keep updating one chosen file (Chrome on Android and computers), the first tap asks
+   where to keep it, and each later tap replaces that same file. Everywhere else (iPhone, Firefox…), each tap opens the
+   share menu with a full backup file, or saves a dated copy if sharing isn't available. */
+var SPOT_NAME = "my-witnessing-notes.witness.json";
+var spot = { handle:null, ready:false };
+function pickerOK(){ return typeof window.showSaveFilePicker === "function" && store.mode() === "idb"; }
+function isStandalone(){ try { return !!((window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true); } catch(e){ return false; } }
+function iosApp(){ return isIOS() && isStandalone(); }
+function dataSig(){ var t = snap(); return hashStr(t) + "-" + t.length; }
+function changedSinceBackup(){ if (!meta.backupSig) return hasOwnNotes(); return meta.backupSig !== dataSig(); }
+function fullBackupText(){ return JSON.stringify(fullExport(JSON.parse(snap()).sections), null, 1); }
+function spotName(){ return spot.handle ? (spot.handle.name || (meta.saveSpot && meta.saveSpot.name) || SPOT_NAME) : ""; }
+function backupDone(how, sig){ meta.backupSig = sig; meta.backupHow = how; noteBackup("full"); render(); }
+function named(name, msg){ var e = new Error(msg || name); e.name = name; return e; }
+function smartBackup(){
   flushEditor();
-  if (!data.sections.length) return info("Nothing to back up yet", "You have no sections yet.");
-  var blob = new Blob([JSON.stringify(exportObject(JSON.parse(JSON.stringify(data.sections))), null, 1)], {type:"application/json"});
-  noteBackup("full"); render();
-  return shareOrSave(blob, backupName(), "application/json", wantShare, "backup");
+  if (!data.sections.length){ info("Nothing to back up yet", "You have no sections yet."); return Promise.resolve(false); }
+  var text = fullBackupText(), sig = dataSig();
+  if (pickerOK() && !spot.ready){ toast("One moment, the app is still opening…"); return Promise.resolve(false); }
+  if (pickerOK()) return spot.handle ? saveToSpot(text, sig) : firstSpot(text, sig);
+  return shareBackup(text, sig);
+}
+function firstSpot(text, sig){
+  return modal({ title:"Choose where to keep your backup", message:"Your phone will ask where to save the backup file. Pick a place you can find again, like Downloads or Google Drive, and tap Save.\n\nAfter that, each time you tap Back up, the app updates that same file. You won’t have to choose again.", ok:"Choose a spot", cancel:"Cancel", onOk:function(){ return pickAndSave(text, sig); } })
+    .then(function(r){ return r ? r.result : false; });
+}
+function writeHandle(h, text){
+  return Promise.resolve(h.createWritable()).then(function(w){ return Promise.resolve(w.write(text)).then(function(){ return w.close(); }, function(e){ try { w.abort(); } catch(x){} throw e; }); });
+}
+function pickAndSave(text, sig){
+  var p; try { p = window.showSaveFilePicker({ suggestedName:SPOT_NAME, types:[{ description:"Notes backup file", accept:{ "application/json":[".json"] } }] }); } catch(e){ p = Promise.reject(e); }
+  return Promise.resolve(p).then(function(h){
+    return writeHandle(h, text).then(function(){
+      spot.handle = h; meta.saveSpot = { name: h.name || SPOT_NAME, at: now() };
+      return store.set("saveHandle", h).catch(function(e){ console.warn("save spot not kept", e); });
+    }).then(function(){ backupDone("file", sig); toast("Backed up to “" + spotName() + "”."); return true; });
+  }, function(e){ if (e && e.name === "AbortError"){ toast("No save spot chosen, so nothing was saved."); return false; } throw e; })
+  .catch(function(e){ return saveFailed(e, text, sig, false); });
+}
+function saveToSpot(text, sig){
+  var h = spot.handle, mode = { mode:"readwrite" };
+  return Promise.resolve().then(function(){ return h.queryPermission ? h.queryPermission(mode) : "granted"; }).then(function(st){
+    if (st === "granted") return;
+    if (st === "denied") throw named("NotAllowedError");
+    /* After a restart (or many hours in the background) the phone asks once more. This must happen inside the tap. */
+    toast("Your phone asks once after a restart. Tap Allow.", 6000);
+    return Promise.resolve(h.requestPermission(mode)).then(function(s2){ if (s2 !== "granted") throw named("NotAllowedError"); });
+  }).then(function(){ return writeHandle(h, text); }).then(function(){
+    meta.saveSpot = { name: spotName(), at: now() }; backupDone("file", sig); toast("Backed up to “" + spotName() + "”."); return true;
+  }).catch(function(e){ return saveFailed(e, text, sig, true); });
+}
+function saveFailed(e, text, sig, hadSpot){
+  console.warn("backup save", e);
+  var n = e && e.name, f = "“" + (spotName() || SPOT_NAME) + "”", title, msg;
+  if (n === "NotAllowedError"){ title = "Saving wasn’t allowed"; msg = "Your phone didn’t let the app update " + f + ". You can try again and tap Allow, choose a new save spot, or save a copy another way."; }
+  else if (n === "NotFoundError" || n === "NotReadableError" || n === "InvalidStateError"){ title = "Couldn’t find your backup file"; msg = f + " may have been moved, renamed, or deleted. Choose a save spot again, or save a copy another way."; }
+  else if (n === "SecurityError"){ title = "One more tap, please"; msg = "Your phone needs one more tap before it can save."; }
+  else { title = "Couldn’t save the backup"; msg = "Something went wrong while saving" + (hadSpot ? " to " + f : "") + ". Your notes are still safe in the app. Try again, choose another save spot, or save a copy another way."; }
+  var ch = [];
+  if (hadSpot && n !== "NotFoundError" && n !== "NotReadableError" && n !== "InvalidStateError") ch.push({ label:"Try again", cls:"go", run:function(){ return saveToSpot(text, sig); } });
+  if (!hadSpot && n === "SecurityError") ch.push({ label:"Choose a spot", cls:"go", run:function(){ return pickAndSave(text, sig); } });
+  else ch.push({ label:"Choose a save spot", cls: ch.length ? "" : "go", run:function(){ return pickAndSave(text, sig); } });
+  ch.push({ label: canShareFiles() ? "Share or save a copy instead" : "Download a copy instead", run:function(){ return shareBackup(text, sig); } });
+  return modal({ title:title, message:msg, choices:ch, cancel:"Not now" }).then(function(r){ return r ? r.result : false; });
+}
+/* Share menu (Save to Files, Google Drive, email…), or a dated download where sharing isn't available. */
+function shareBackup(text, sig){
+  var name = backupName(), blob = new Blob([text], {type:"application/json"});
+  if (canShareFiles()){
+    var file = new File([blob], name, {type:"application/json"});
+    if (navigator.canShare({files:[file]})) return Promise.resolve().then(function(){ return navigator.share({files:[file], title:name}); }).then(function(){
+      backupDone("share", sig); toast("Backup file sent. Keep it somewhere safe."); return true;
+    }, function(e){
+      if (e && e.name === "AbortError"){ toast("Backup canceled, so nothing was saved."); return false; }
+      if (iosApp() || (e && e.name === "NotAllowedError")) return modal({ title:"One more tap, please", message:"Your phone needs one more tap to open the share menu.", ok:"Share the backup", onOk:function(){ return shareBackup(text, sig); } }).then(function(r){ return r ? r.result : false; });
+      return downloadBackup(blob, name, sig);
+    });
+  }
+  return downloadBackup(blob, name, sig);
+}
+function downloadBackup(blob, name, sig){ download(blob, name); backupDone("download", sig); saved(name, "backup"); return Promise.resolve(true); }
+function forgetSpot(){
+  var f = spotName();
+  return modal({ title:"Forget the save spot?", message:"The app will stop updating “" + f + "”. The file itself stays where it is.\n\nNext time you tap Back up, you’ll choose a spot again.", ok:"Forget it", cancel:"Keep it" }).then(function(ok){
+    if (!ok) return; spot.handle = null; meta.saveSpot = null; saveMeta(); store.set("saveHandle", null).catch(function(){}); render(); toast("Save spot forgotten.");
+  });
+}
+function changeSpot(){ flushEditor(); if (!data.sections.length) return info("Nothing to back up yet", "You have no sections yet."); return pickAndSave(fullBackupText(), dataSig()); }
+function backupBlock(where){
+  var ch = changedSinceBackup(), t = lastBackupTime(), h = '<div class="bk" id="bk-' + where + '">';
+  h += '<button class="bkbtn' + (ch ? ' changed' : '') + '" data-act="smartBackup" id="bkbtn-' + where + '">🛟 Back up' + (ch ? '<span class="bksub">You have changes since your last backup</span>' : '') + '</button>';
+  h += '<p class="bkinfo"' + (where === "page" ? ' id="lastBackup"' : '') + '>' + (t == null ? 'No backup yet.' : 'Last backup: <b>' + esc(whenText(t)) + '</b>.') + ' ';
+  if (pickerOK()) h += spot.handle ? 'Saves to <b>“' + esc(spotName()) + '”</b>.' : 'The first time, you choose where to keep the backup file.';
+  else h += 'Opens your phone’s share menu. Choose <b>Save to Files</b>, <b>Google Drive</b>, or email.';
+  return h + '</p></div>';
 }
 function printSections(){ ui.pexcl = ui.pexcl || {}; return data.sections.filter(function(s){ return !ui.pexcl[s.id]; }); }
 function printingAll(){ return printSections().length === data.sections.length; }
@@ -842,24 +960,22 @@ function docHtml(secs){
   });
   return h + '<p class="pfoot">Made with My Witnessing Notes, version ' + esc(APP_VERSION) + '.</p></article>';
 }
-var OLDER_BACKUP = 'Bringing in an <b>older</b> backup also brings back anything you deleted since then. Delete it again if you don’t want it. A topic you changed since then comes back as a second copy named “… (imported)” (or “(imported 2)” if that name is taken), next to your newer version.';
-var PDF_HOW = 'On <b>Android</b>, the print screen opens. At the top, choose <b>Save as PDF</b> as the printer, then tap the round <b>PDF</b> button and pick where to save it. On <b>iPhone</b>, in the print screen tap <b>Share</b> (at the top), then <b>Save to Files</b>. On a computer, choose <b>Save as PDF</b> as the printer.';
+var OLDER_BACKUP = 'Adding an <b>older</b> backup to your notes also brings back anything you deleted since then. Delete it again if you don’t want it. A part you changed since then comes back as a second version marked “(from backup)”, right after your newer one. Differences in spacing alone (extra spaces or line breaks) don’t count as a change.';
+var PDF_HOW = 'On <b>Android</b>, the print screen opens. At the top, choose <b>Save as PDF</b> as the printer, then tap the yellow round <b>PDF</b> button and pick where to save it. On <b>iPhone</b>, in the print screen tap <b>Share</b> (at the top), then <b>Save to Files</b>. On a computer, choose <b>Save as PDF</b> as the printer.';
 function viewBackup(){
   var h = header("#/", "Sections", "Back up / Save all") + '<main>';
-  var b = meta.backup || {}, t = lastBackupTime();
-  h += '<section class="panel"><p class="lead" style="margin:0" id="lastBackup">' + (t == null ? 'No full backup file made yet.' : 'Last full backup file: <b>' + esc(whenText(t)) + '</b>.') + '</p>' +
-    (b.readable ? '<p class="hint" id="lastReadable">Last readable copy (PDF or file): ' + esc(whenText(Date.parse(b.readable))) + '.</p>' : '') +
-    '<p class="hint">Only a full backup file (B) counts for the 30-day reminder, because only it can be brought back into the app. A PDF or readable copy doesn’t.</p></section>';
-  h += '<section class="panel"><h2>A. Save as PDF (readable)</h2><p>All your notes laid out like a booklet: every section, topic, and part, with the pictures, and links written out in full. Anyone can open a PDF, with or without this app. (A PDF can’t be brought back into the app. For that, use B.)</p>';
+  var b = meta.backup || {};
+  h += '<section class="panel"><h2>Back up (can restore)</h2><p>Saves all your notes in one backup file that this app can bring back.</p>' + backupBlock("page");
+  if (pickerOK() && spot.handle) h += '<div class="two"><button class="plain" data-act="changeSpot">Change save spot</button><button class="plain" data-act="forgetSpot">Forget save spot</button></div><p class="hint">After a restart, your phone may ask once before it saves. Tap <b>Allow</b>.</p>';
+  if (pickerOK()) h += '<button class="plain" data-act="backupCopy">' + (canShareFiles() ? '⇪ Send a copy somewhere else (email, Drive)…' : '⤓ Save a dated copy') + '</button>';
+  h += (b.readable ? '<p class="hint" id="lastReadable">Last readable copy (PDF or file): ' + esc(whenText(Date.parse(b.readable))) + '.</p>' : '') +
+    '<p class="hint">Keep a copy somewhere other than this phone, for example Google Drive or an email to yourself. Only a backup file counts for the 30-day reminder, because only it can be brought back into the app. A PDF or readable copy doesn’t.</p><p class="hint">To bring a backup back, use <b>Restore from a backup</b> at the bottom of the main screen.</p><p class="hint" id="olderNote">' + OLDER_BACKUP + '</p></section>';
+  h += '<section class="panel"><h2>Save as PDF (readable)</h2><p>All your notes laid out like a booklet: every section, topic, and part, with the pictures, and links written out in full. Anyone can open a PDF, with or without this app. (A PDF can’t be brought back into the app. For that, use Back up.)</p>';
   if (data.sections.length > 1){
     ui.pexcl = ui.pexcl || {};
     h += '<p class="hint">Sections to include:</p><ul class="pick" id="ppick">' + data.sections.map(function(s){ return '<li><label><input type="checkbox" data-ppick="' + s.id + '"' + (ui.pexcl[s.id] ? '' : ' checked') + '><span class="sname">' + esc(s.title) + '</span></label></li>'; }).join("") + '</ul>';
   }
   h += '<button class="big blue" data-act="nav" data-to="#/print">📄 Open the printable view</button><p class="hint">Then tap <b>Save as PDF or print</b>. ' + PDF_HOW + '</p></section>';
-  h += '<section class="panel"><h2>B. Full backup file (can restore)</h2><p>Saves everything in one file that this app can bring back. It’s named like <b style="overflow-wrap:anywhere">' + esc(backupName()) + '</b>.</p>';
-  if (canShareFiles()) h += '<button class="big blue" data-act="backupShare">⇪ Save or send the backup file…</button>';
-  h += '<button class="big' + (canShareFiles() ? ' light' : ' blue') + '" data-act="backupSave">⤓ Save the backup file</button>';
-  h += '<p class="hint">Keep it somewhere other than this phone: email it to yourself or put it in Google Drive. To restore, go to <b>⇪ Share</b>, then <b>Bring in notes from a file</b>, and choose it. It’s added to the notes already there. Nothing is replaced, and notes that are already there aren’t doubled.</p><p class="hint" id="olderNote">' + OLDER_BACKUP + '</p></section>';
   h += '<section class="panel"><h2>Is this phone keeping your notes safe?</h2><div class="storageStatus">' + storageHtml() + '</div><button class="plain" data-act="nav" data-to="#/help">What can erase notes (Help)</button></section>';
   return h + '</main>';
 }
@@ -869,6 +985,8 @@ function viewPrint(){
   h += '<div class="panel noprint" id="ptools"><button class="big blue" data-act="print">📄 Save as PDF or print</button><p class="hint">' + PDF_HOW + '</p><button class="plain" data-act="saveReadable">⤓ Or save it as a readable file (.html)</button><p class="hint">If the print screen doesn’t open, save the readable file instead. Open it from your Downloads in Chrome, then tap ⋮, Share, Print, and choose Save as PDF.</p></div>';
   return h + docHtml(secs) + '</main>';
 }
+var PDF_NOTICE = "Your phone’s print screen will open next. To save a PDF, tap the yellow round PDF button (on Android, choose “Save as PDF” at the top if needed).";
+function printNotice(){ return modal({ title:"Save as PDF", message:PDF_NOTICE, ok:"Continue", cancel:"Cancel" }).then(function(ok){ if (ok) doPrint(); }); }
 function doPrint(){
   var all = printingAll(), fired = false, timer;
   function seen(){ if (fired) return; fired = true; clearTimeout(timer); window.removeEventListener("beforeprint", seen); window.removeEventListener("afterprint", seen); if (all) noteBackup("readable"); }
@@ -914,6 +1032,25 @@ function selectedSections(){
   return out;
 }
 function exportObject(sections){ return { app: FORMAT, format: 1, appVersion: APP_VERSION, exportedAt: now(), sections: sections }; }
+/* A whole-app backup is marked, so Restore knows it may replace everything. A shared file (some sections) is not. */
+/* A full backup says what's in it: how many sections and parts, and a checksum of the notes. When it's read back,
+   Replace is offered only if all of that still matches, so a hand-edited, damaged, or mislabeled file can only be added. */
+function fullExport(sections){
+  var o = exportObject(sections), c = rawCounts(sections);
+  o.kind = "full-backup"; o.sectionCount = c.s; o.partCount = c.p; o.checksum = checksumOf(sections);
+  return o;
+}
+function rawCounts(sections){
+  var p = 0; if (!Array.isArray(sections)) return { s:0, p:0, ok:false };
+  var ok = sections.every(function(s){ return s && Array.isArray(s.topics) && s.topics.every(function(t){ if (!t || !Array.isArray(t.subsections)) return false; p += t.subsections.length; return true; }); });
+  return { s:sections.length, p:p, ok:ok };
+}
+/* FNV-1a (32-bit) over the notes as saved in the file. Not security, just a check that nothing was changed or cut off. */
+function checksumOf(sections){
+  var str = JSON.stringify(sections), h = 0x811c9dc5;
+  for (var i = 0; i < str.length; i++){ h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193); }
+  return "fnv1a32:" + ("0000000" + (h >>> 0).toString(16)).slice(-8);
+}
 function canShareFiles(){ try { return !!(navigator.share && navigator.canShare && window.File && navigator.canShare({files:[new File(["x"], "t.json", {type:"application/json"})]})); } catch(e){ return false; } }
 function exportName(sel){ return (sel.length === 1 ? slug(sel[0].title) : "witnessing-notes") + "-" + today() + ".witness.json"; }
 function download(blob, name){
@@ -922,7 +1059,7 @@ function download(blob, name){
   setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); }, 60000);
 }
 var NEXT = {
-  backup: "It’s in your Downloads (on iPhone: the Files app, then Downloads).\n\nNext: keep a copy somewhere other than this phone. For example, email it to yourself or put it in Google Drive. To restore it, use “Bring in notes from a file” in ⇪ Share.",
+  backup: "It’s in your Downloads (on iPhone: the Files app, then Downloads).\n\nNext: keep a copy somewhere other than this phone. For example, email it to yourself or put it in Google Drive. To restore it, use “Restore from a backup” at the bottom of the main screen.",
   readable: "It’s in your Downloads (on iPhone: the Files app, then Downloads).\n\nOpen it to read it in the browser. To turn it into a PDF on Android: open it in Chrome, tap ⋮, then Share, then Print, and choose Save as PDF.",
   notes: "It’s in your Downloads (on iPhone: the Files app, then Downloads).\n\nNext: keep it somewhere safe as a backup, or send it to someone by email or message. They open it in their copy of the app with “Bring in notes from a file”.",
   blank: "It’s in your Downloads (on iPhone: the Files app, then Downloads).\n\nNext: send this file to the other person by email or message. They open it in their phone’s browser. It starts with no notes.",
@@ -933,19 +1070,21 @@ function saved(name, kind){
   if (HOSTED && (kind === "blank" || kind === "bundle")) m += "\n\nOr simply send them this app’s web address: " + location.origin + location.pathname;
   return info("File saved", m);
 }
+/* Resolves true when the file was sent or saved, false when the share menu was canceled.
+   In an iPhone Home Screen app a plain download can open a full-screen preview with no way back, so the share menu is used there. */
 function shareOrSave(blob, name, type, wantShare, kind){
-  if (wantShare && canShareFiles()){
+  if ((wantShare || iosApp()) && canShareFiles()){
     var file = new File([blob], name, {type:type});
-    if (navigator.canShare({files:[file]})) return navigator.share({files:[file], title:name}).then(function(){ toast("Sent."); }, function(e){ if (e && e.name === "AbortError") return; download(blob, name); saved(name, kind); });
+    if (navigator.canShare({files:[file]})) return Promise.resolve().then(function(){ return navigator.share({files:[file], title:name}); }).then(function(){ toast("Sent."); return true; }, function(e){ if (e && e.name === "AbortError") return false; download(blob, name); saved(name, kind); return true; });
   }
   download(blob, name); saved(name, kind);
-  return Promise.resolve();
+  return Promise.resolve(true);
 }
 function doExport(wantShare){
   var sel = selectedSections(); if (!sel.length) return info("Nothing checked", "Check at least one section or topic first.");
-  var blob = new Blob([JSON.stringify(exportObject(sel), null, 1)], {type:"application/json"});
-  if (data.sections.every(function(s){ return s.topics.length ? s.topics.every(function(t){ return ui.sel.topics[t.id]; }) : ui.sel.empty[s.id]; })) noteBackup("full");
-  return shareOrSave(blob, exportName(sel), "application/json", wantShare, "notes");
+  var all = data.sections.every(function(s){ return s.topics.length ? s.topics.every(function(t){ return ui.sel.topics[t.id]; }) : ui.sel.empty[s.id]; }), sig = dataSig();
+  var blob = new Blob([JSON.stringify(all ? fullExport(sel) : exportObject(sel), null, 1)], {type:"application/json"});
+  return shareOrSave(blob, exportName(sel), "application/json", wantShare, "notes").then(function(done){ if (done && all){ meta.backupSig = sig; noteBackup("full"); } return done; });
 }
 function appHtml(bundle){
   var clone = PRISTINE.cloneNode(true);
@@ -978,56 +1117,81 @@ function normalizeImport(obj){
     return sec;
   });
 }
-function baseTitle(t){ return norm(String(t).replace(/\s*\(imported(?: \d+)?\)$/i, "")); }
+var MARK_RE = /\s*\((?:imported|from backup|sample)(?: \d+)?\)$/i;
+function stripMark(t){ return String(t == null ? "" : t).replace(MARK_RE, ""); }
+function baseTitle(t){ return norm(stripMark(t)); }
 /* The built-in sample picture is drawn by the phone, so its bytes can differ a little between phones and browsers.
    When comparing notes, every copy of it counts as the same picture. */
+/* For comparing parts only: differences in spacing alone (extra spaces, line breaks, non-breaking spaces, spaces between
+   paragraphs) don't count. Any change to the words still counts. */
+var BLOCK_TAG = "(?:p|div|br|li|ul|ol|h[1-6]|blockquote|figure|figcaption)";
+var BLOCK_GAP = new RegExp("\\s*(</?" + BLOCK_TAG + "\\b[^>]*>)\\s*", "gi");
+function spacingFree(h){ return String(h).replace(/&nbsp;|\u00a0/g, " ").replace(/\s+/g, " ").replace(BLOCK_GAP, "$1").trim(); }
 function fpHtml(h){ return String(h).replace(/<img src="data:image\/[^"]*" alt="Sample picture">/g, '<img alt="Sample picture">'); }
-function fingerprint(t){ return baseTitle(t.title) + "\u0001" + t.subsections.map(function(u){ return norm(u.title) + "\u0002" + fpHtml(u.html); }).join("\u0003"); }
 function freshIds(obj, ids){
   function fix(x){ if (ids[x.id]) x.id = uid(); ids[x.id] = 1; }
   fix(obj); (obj.topics||[]).forEach(function(t){ fix(t); t.subsections.forEach(fix); }); (obj.subsections||[]).forEach(fix);
   return obj;
 }
-function uniqueTitle(list, base){ var t = base, n = 2; while (list.some(function(x){ return norm(x.title) === norm(t); })) { t = base.replace(/\)$/, " " + n + ")"); n++; } return t; }
-function sameParts(a, b){ return same(a.subsections.map(function(u){ return [norm(u.title), fpHtml(u.html)]; }), b.subsections.map(function(u){ return [norm(u.title), fpHtml(u.html)]; })); }
-function merge(sections){
-  var sum = { newSections:[], newTopics:0, already:0, copies:[], changed:[], intoExisting:[] };
+/* Bring notes from a file in next to the notes already here. Nothing here is changed or removed.
+   Sections and topics that match (same id, or same name) are combined. Inside them, every part is compared word for word:
+   an exact copy is skipped, a new part is added, and a part that differs in any way is added as a second version right
+   after yours, marked "(from backup)" or "(imported)", so both are kept. */
+function merge(sections, label){
+  label = label || "imported";
+  var sum = { label:label, newSections:[], newTopics:0, newParts:0, keptBoth:0, already:0, otherName:0 };
   var ids = allIds();
+  function partKey(u){ return baseTitle(u.title) + "\u0002" + spacingFree(fpHtml(u.html)); }
+  function marked(title){ var t = cleanTitle(stripMark(title)); return (t ? t + " " : "") + "(" + label + ")"; }
+  function fresh(u){ var c = JSON.parse(JSON.stringify(u)); if (!okId(c.id) || ids[c.id]) c.id = uid(); ids[c.id] = 1; return c; }
   sections.forEach(function(s){
-    var local = findSection(s.id) || data.sections.filter(function(x){ return norm(x.title) === norm(s.title); })[0];
+    var local = findSection(s.id) || data.sections.filter(function(x){ return baseTitle(x.title) === baseTitle(s.title); })[0];
     if (!local){
-      var fresh = freshIds(JSON.parse(JSON.stringify(s)), ids); fresh.imported = now();
-      data.sections.push(fresh); sum.newSections.push(fresh.title); sum.newTopics += fresh.topics.length; return;
+      var ns = freshIds(JSON.parse(JSON.stringify(s)), ids); ns.imported = now();
+      data.sections.push(ns); sum.newSections.push(ns.title); sum.newTopics += ns.topics.length;
+      ns.topics.forEach(function(t){ sum.newParts += t.subsections.length; }); return;
     }
-    var added = 0;
+    if (baseTitle(local.title) !== baseTitle(s.title)) sum.otherName++;
     s.topics.forEach(function(t){
-      var fp = fingerprint(t), mineT = findTopic(t.id);
-      /* Same topic (same id) that only got a new name here, or is identical: nothing to add. */
-      if ((mineT && sameParts(mineT.topic, t)) || local.topics.some(function(x){ return fingerprint(x) === fp; })) { sum.already++; return; }
-      var copy = freshIds(JSON.parse(JSON.stringify(t)), ids); copy.imported = now();
-      var plainT = cleanTitle(t.title.replace(/\s*\(imported(?: \d+)?\)$/i, ""));
-      if (mineT){ copy.title = uniqueTitle(local.topics, plainT + " (imported)"); sum.changed.push("“" + mineT.topic.title + "” (the file’s version is “" + copy.title + "”)"); }
-      else if (local.topics.some(function(x){ return baseTitle(x.title) === baseTitle(t.title); })){ copy.title = uniqueTitle(local.topics, plainT + " (imported)"); sum.copies.push(copy.title); }
-      local.topics.push(copy); sum.newTopics++; added++;
+      var found = findTopic(t.id), T = found ? found.topic : null;
+      if (!T) T = local.topics.filter(function(x){ return baseTitle(x.title) === baseTitle(t.title); })[0] || null;
+      if (!T){
+        var nt = freshIds(JSON.parse(JSON.stringify(t)), ids); nt.imported = now();
+        local.topics.push(nt); sum.newTopics++; sum.newParts += nt.subsections.length; return;
+      }
+      if (baseTitle(T.title) !== baseTitle(t.title)) sum.otherName++;
+      t.subsections.forEach(function(u){
+        var k = partKey(u), orig = findSub(u.id);
+        function has(list){ return list.some(function(x){ return partKey(x) === k; }); }
+        if (has(T.subsections) || (orig && has(orig.topic.subsections))){ sum.already++; return; }   /* exactly the same: skip */
+        var c = fresh(u);
+        if (orig){   /* the same part, but the words differ: keep both, the file's version right after yours */
+          c.title = marked(u.title || orig.sub.title);
+          var arr = orig.topic.subsections; arr.splice(idx(arr, orig.sub.id) + 1, 0, c); sum.keptBoth++;
+        } else {
+          var twin = baseTitle(u.title) ? T.subsections.filter(function(x){ return baseTitle(x.title) === baseTitle(u.title); }).pop() : null;
+          if (twin){ c.title = marked(u.title); T.subsections.splice(idx(T.subsections, twin.id) + 1, 0, c); sum.keptBoth++; }   /* same heading, other words: keep both, side by side */
+          else { T.subsections.push(c); sum.newParts++; }
+        }
+      });
     });
-    if (added) sum.intoExisting.push(local.title);
   });
   return sum;
 }
 function summaryText(sum){
-  var lines = [];
-  if (sum.newSections.length) lines.push("New sections: " + sum.newSections.join(", ") + ".");
-  if (sum.newTopics) lines.push(plural(sum.newTopics, "topic was", "topics were") + " added.");
-  if (sum.intoExisting.length) lines.push("Some were put into your existing section" + (sum.intoExisting.length>1?"s":"") + ": " + sum.intoExisting.join(", ") + ".");
-  if (sum.changed.length) lines.push("You have a newer version of " + (sum.changed.length === 1 ? "this topic" : "these topics") + " (you changed " + (sum.changed.length === 1 ? "it" : "them") + " after the file was saved): " + sum.changed.join(", ") + ". Yours was left as it is, and the file’s version was added next to it so you can compare. Delete whichever you don’t need.");
-  if (sum.copies.length) lines.push("You already had a different topic with the same name, so these were added alongside yours: " + sum.copies.join(", ") + ".");
+  var lines = [], mark = "“" + (sum.label || "imported") + "”";
+  if (sum.newSections && sum.newSections.length) lines.push("Added " + plural(sum.newSections.length, "new section", "new sections") + ": " + sum.newSections.join(", ") + ".");
+  if (sum.newTopics) lines.push("Added " + plural(sum.newTopics, "new topic", "new topics") + ".");
+  if (sum.newParts) lines.push("Added " + plural(sum.newParts, "new part", "new parts") + ".");
+  if (sum.keptBoth) lines.push("Kept both versions of " + plural(sum.keptBoth, "part", "parts") + " that differed (the file’s version is marked " + mark + " and placed right after yours).");
+  if (sum.already) lines.push("Skipped " + plural(sum.already, "part", "parts") + " that " + (sum.already === 1 ? "was" : "were") + " already here.");
+  if (sum.otherName) lines.push(plural(sum.otherName, "section or topic has", "sections or topics have") + " a different name in the file. Your current name was kept.");
   if (sum.oldGone) lines.push("Old sample sections from an earlier version of the app were left out.");
   if (sum.oldKept && sum.oldKept.length) lines.push("Old sample sections that had been changed were brought in without the Sample label: " + sum.oldKept.join(", ") + ".");
   if (sum.picsBig) lines.push(plural(sum.picsBig, "picture was", "pictures were") + " too large (over 2 MB) and " + (sum.picsBig === 1 ? "was" : "were") + " left out.");
   if (sum.picsWeb) lines.push(plural(sum.picsWeb, "picture", "pictures") + " from the internet " + (sum.picsWeb === 1 ? "was" : "were") + " left out (the app only keeps pictures stored inside the notes).");
-  if (sum.already) lines.push(plural(sum.already, "topic was", "topics were") + " already in your notes, so " + (sum.already===1?"it was":"they were") + " skipped.");
-  if (!lines.length) lines.push("There was nothing new to add.");
-  lines.push("None of your own notes were changed.");
+  if (!sum.newTopics && !sum.newParts && !sum.keptBoth && !(sum.newSections && sum.newSections.length)) lines.push("There was nothing new to add. Everything in the file is already here.");
+  lines.push("Nothing on this phone was changed or removed.");
   return lines.join("\n");
 }
 function parseImportText(text){
@@ -1040,22 +1204,201 @@ function parseImportText(text){
   }
   return JSON.parse(text);
 }
+/* Is this a whole-app backup (so Replace may be offered)? 0.11 and later mark it with kind "full-backup", plus its counts
+   and checksum. Up to 0.10 a backup and a shared file were exactly the same inside (only the file name differed, and names
+   can change), so any unmarked file can only be added to your notes. A marked file counts only if it has at least
+   1 section and its counts and checksum match what's really in it.
+   Returns "full", "unmarked", "empty", or "mismatch". */
+function backupCheck(obj){
+  if (!obj || obj.kind !== "full-backup") return "unmarked";
+  var c = rawCounts(obj.sections);
+  if (!c.ok) return "mismatch";
+  if (c.s < 1) return "empty";
+  if (obj.sectionCount !== c.s || obj.partCount !== c.p || typeof obj.checksum !== "string" || obj.checksum !== checksumOf(obj.sections)) return "mismatch";
+  return "full";
+}
+function isFullBackup(obj){ return backupCheck(obj) === "full"; }
+/* Read and check a notes file. Nothing is changed until the file has been fully read and checked. */
+function readNotesFile(file){
+  return new Promise(function(resolve, reject){
+    function bad(m){ var e = new Error(m); e.userMessage = m; reject(e); }
+    if (!file) return reject(named("AbortError"));
+    if (file.size > 60*1024*1024) return bad("That file is larger than 60 MB, so it was not brought in.");
+    var reader = new FileReader();
+    reader.onload = function(){
+      var rep = { removed:0, kept:[], updated:0 }, sections, obj, check;
+      dropped.big = 0; dropped.web = 0;
+      try { obj = parseImportText(reader.result); if (!obj || obj.app !== FORMAT) throw new Error("not ours"); check = backupCheck(obj); sections = tidyOldSamples(normalizeImport(obj), rep); }
+      catch(e){ return bad(e.userMessage || "Please choose a notes file saved from this app (it usually ends in .witness.json). Nothing was changed."); }
+      var tc = 0, pc = 0; sections.forEach(function(s){ tc += s.topics.length; s.topics.forEach(function(t){ pc += t.subsections.length; }); });
+      resolve({ name:file.name || "the file", full: check === "full" && sections.length > 0, check: check, sections:sections, rep:rep, picsBig:dropped.big, picsWeb:dropped.web, savedAt: Date.parse(obj.exportedAt || ""), counts:{ s:sections.length, t:tc, p:pc } });
+    };
+    reader.onerror = function(){ bad("That file couldn’t be opened. Please try again. Nothing was changed."); };
+    reader.readAsText(file);
+  });
+}
+function mergeIn(r, label){
+  var sum = merge(r.sections, label); sum.oldGone = r.rep.removed; sum.oldKept = r.rep.kept; sum.picsBig = r.picsBig; sum.picsWeb = r.picsWeb;
+  saveSoon(0); ui.sel = null; render();
+  return sum;
+}
 function importFile(file){
   if (!file) return;
-  if (file.size > 60*1024*1024) return info("File too big", "That file is larger than 60 MB, so it was not brought in.");
-  var reader = new FileReader();
-  reader.onload = function(){
-    var sections, rep = { removed:0, kept:[], updated:0 };
-    dropped.big = 0; dropped.web = 0;
-    try { var obj = parseImportText(reader.result); if (!obj || obj.app !== FORMAT) throw new Error("not ours"); sections = tidyOldSamples(normalizeImport(obj), rep); }
-    catch(e){ return info("Couldn't read that file", e.userMessage || "Please choose a notes file saved from this app (it usually ends in .witness.json)."); }
-    var sum = merge(sections); sum.oldGone = rep.removed; sum.oldKept = rep.kept; sum.picsBig = dropped.big; sum.picsWeb = dropped.web;
-    saveSoon(0); ui.sel = null; render();
-    info("Notes brought in", summaryText(sum));
-  };
-  reader.onerror = function(){ info("Couldn't open that file", "Please try again."); };
-  reader.readAsText(file);
+  return readNotesFile(file).then(function(r){ info("Notes brought in", summaryText(mergeIn(r, "imported"))); }, function(e){ if (e.name !== "AbortError") info("Couldn't read that file", e.userMessage || "Please try again."); });
 }
+/* ---------- Restore from a backup (main screen) ---------- */
+/* Safety copies: before every replace (and every undo), the notes as they are are kept in IndexedDB, newest first, up to 3.
+   A copy is only ever taken out by a replace after it has been saved as a file (or by Delete, after a question). Each one can be put back, saved as a file, or deleted (after a question). */
+var SAFETY_MAX = 3, safety = [], safetyReady = false;
+function countAll(sections){ var t = 0, p = 0; sections.forEach(function(s){ t += s.topics.length; s.topics.forEach(function(x){ p += x.subsections.length; }); }); return { s:sections.length, t:t, p:p }; }
+function countText(c){ return plural(c.s, "section", "sections") + ", " + plural(c.t, "topic", "topics") + ", and " + plural(c.p, "part", "parts"); }
+function countShort(c){ return plural(c.s, "section", "sections") + ", " + plural(c.p, "part", "parts"); }
+function fmtWhen(t){ try { return new Date(t).toLocaleString("en-US", {day:"numeric", month:"long", year:"numeric", hour:"numeric", minute:"2-digit"}); } catch(e){ return fmtDate(t); } }
+function copyWhen(c){ var t = Date.parse(c.at); try { return new Date(t).toLocaleString("en-US", {day:"numeric", month:"long", year:"numeric", hour:"numeric", minute:"2-digit", second:"2-digit"}); } catch(e){ return fmtWhen(t); } }
+var COPY_KIND = { restore:"Before a replace", undo:"Before an undo", copy:"Before putting back a safety copy" };
+function restorePanel(){
+  var h = '<section class="panel restore" id="restorePanel"><h2>Restore from a backup</h2><p>Bring back notes from a backup file (it usually ends in .witness.json).</p><button class="big light" data-act="restorePick">⤒ Choose a backup file</button>';
+  if (safety.length){
+    h += '<h3 class="sch" id="safetyHead">Safety copies</h3><p class="hint" id="beforeInfo">Before each replace, the app keeps a copy of your notes as they were (up to ' + SAFETY_MAX + ', newest first). They stay on this phone only.</p>';
+    h += '<button class="plain" data-act="undoReplace">↶ Undo last replace</button><ul class="safety" id="safetyList">';
+    safety.forEach(function(c, i){
+      h += '<li data-copy="' + esc(c.id) + '"><p><b>' + esc(COPY_KIND[c.kind] || "Safety copy") + '</b><br>' + esc(copyWhen(c)) + '<br><span class="hint">' + esc(countShort(c.counts)) + (c.savedAt ? '<br>Saved as a file on ' + esc(copyWhen({ at: c.savedAt })) : '') + '</span></p>' +
+        '<button class="plain" data-act="copyRestore" data-id="' + esc(c.id) + '">Restore this copy</button><div class="two"><button class="plain" data-act="copySave" data-id="' + esc(c.id) + '">⤓ Save as a file</button><button class="plain redtext" data-act="copyDelete" data-id="' + esc(c.id) + '">🗑 Delete</button></div></li>';
+    });
+    h += '</ul>';
+  }
+  return h + '</section>';
+}
+function findCopy(id){ return safety.filter(function(c){ return c.id === id; })[0] || null; }
+function loadSafety(){
+  return store.get("safetyCopies").catch(function(){ return null; }).then(function(list){
+    if (Array.isArray(list)){ safety = list.filter(function(c){ return c && Array.isArray(c.sections); }); return; }
+    /* from an earlier 0.11 test build: one copy under "beforeRestore" */
+    if (!meta.beforeRestore) return;
+    return store.get("beforeRestore").catch(function(){ return null; }).then(function(old){
+      if (!old || !Array.isArray(old.sections)) return;
+      var c = { id: uid(), at: old.at || now(), kind: meta.beforeRestore.kind || "restore", counts: countAll(old.sections), sections: old.sections };
+      return store.set("safetyCopies", [c]).then(function(){ safety = [c]; delete meta.beforeRestore; saveMeta(); return store.set("beforeRestore", null); });
+    });
+  }).then(function(){ safetyReady = true; });
+}
+function saveSafety(fn){ return store.update("safetyCopies", function(list){ return fn(Array.isArray(list) ? list : []); }).then(function(list){ safety = list; return list; }); }
+function restoreFile(file){
+  if (!file) return;
+  flushEditor();
+  return readNotesFile(file).then(function(r){
+    var when = isFinite(r.savedAt) ? ", saved on " + fmtDate(r.savedAt) : "";
+    var add = { label:"✓ Add to my notes", why:"Safe, recommended: nothing here is lost", cls:"go", value:"add" };
+    var msg = "“" + r.name + "” has " + countText(r.counts) + when + ".\n\nAdd to my notes is the safe choice: nothing on this phone is changed or removed. Anything in the backup that isn’t here is added. If a part differs even by one word, both versions are kept.";
+    if (!r.full) msg += "\n\n" + notFullLine(r);
+    return modal({ title:"Restore from this backup?", message:msg,
+      choices: r.full ? [ add, { label:"Replace everything with this backup…", cls:"redline", value:"replace" } ] : [ add ], cancel:"Cancel" })
+    .then(function(c){
+      if (!c) return;
+      if (c.value === "add"){ var sum = mergeIn(r, "from backup"); return info("Notes restored", summaryText(sum)); }
+      if (r.full) return askReplace(r);
+    });
+  }, function(e){ if (e.name !== "AbortError") info("Couldn’t use that file", e.userMessage || "Please try again. Nothing was changed."); });
+}
+/* Why a file can't replace your notes, in plain words. */
+function notFullLine(r){
+  if (!r.counts.s) return "This file has no sections in it, so it can’t replace your notes.";
+  if (r.check === "mismatch" || r.check === "empty") return "This file is labeled as a full backup, but what’s inside doesn’t match the label (it may have been changed or only partly saved), so it can only be added to your notes.";
+  return "This file was made before version 0.11 (or is a shared file), so it can only be added to your notes.";
+}
+/* The file compared with the phone, for the Replace warning. Much smaller = fewer than half the parts or sections. */
+function compareLine(r, phone){
+  phone = phone || data.sections;
+  var now = countAll(phone), b = r.counts;
+  var line = "This backup has " + plural(b.s, "section", "sections") + " and " + plural(b.p, "part", "parts") + ". This phone has " + plural(now.s, "section", "sections") + " and " + plural(now.p, "part", "parts") + ".";
+  var goneList = phone.filter(function(s){ return !r.sections.some(function(x){ return x.id === s.id || normTitle(x.title) === normTitle(s.title); }); }), gone = goneList.length;
+  if (gone){
+    /* Up to 5 titles, then "and N more". The message is plain text (the modal escapes it), so titles can't add markup. */
+    var names = goneList.slice(0, 5).map(function(s){ return String(s.title || "").trim() || "(untitled)"; }), more = gone - names.length;
+    if (more) names.push(more + " more");
+    var list = names.length === 1 ? names[0] : names.slice(0, -1).join(", ") + " and " + names[names.length - 1];
+    line += " Replacing removes " + plural(gone, "section", "sections") + " that " + (gone === 1 ? "isn’t" : "aren’t") + " in the backup: " + list + ".";
+  }
+  var small = (now.p > 0 && b.p * 2 < now.p) || (now.s > 0 && b.s * 2 < now.s);
+  return { line: line, small: small };
+}
+function normTitle(t){ return String(t || "").trim().toLowerCase(); }
+/* What happens to the safety copies already kept, said in the warning. */
+function keptLine(){
+  if (!safety.length) return "";
+  if (safety.length < SAFETY_MAX) return safety.length === 1 ? " Your earlier safety copy from " + copyWhen(safety[0]) + " is kept too." : " Your " + safety.length + " earlier safety copies are kept too.";
+  var o = safety[safety.length - 1];
+  if (o.savedAt) return "\n\nYou already have " + SAFETY_MAX + " safety copies. The oldest one (from " + copyWhen(o) + ") was saved as a file, so it will be removed from the app to make room.";
+  return "\n\nYou already have " + SAFETY_MAX + " safety copies. To make room, first save the oldest one (from " + copyWhen(o) + ") as a file. Then it can be removed from the app and you can replace.";
+}
+function askReplace(r){
+  if (!r.sections.length || !r.full) return info("Nothing was changed", "This file can’t replace your notes, so nothing was changed. You can still add it to your notes.");
+  if (!safetyReady) return loadSafety().then(function(){ return askReplace(r); });
+  var full = safety.length >= SAFETY_MAX, oldest = full ? safety[safety.length - 1] : null, blocked = full && !oldest.savedAt, cmp = compareLine(r);
+  return modal({ title:"Replace ALL notes?", alert: cmp.small ? "⚠ This backup is much smaller than the notes on this phone. Check that it’s the right file." : null,
+    message:"This replaces ALL notes on this phone with the backup. Any changes made since that backup will be lost.\n\n" + cmp.line + "\n\nA safety copy of your notes now is kept first, so you can undo this from Restore on the main screen." + keptLine(),
+    choices: blocked ? [ { label:"⤓ Save the oldest copy as a file first", value:"saveOld", run:function(){ return saveCopy(oldest); } } ] : null,
+    ok: blocked ? null : "Replace everything", cancel:"Keep my notes", danger:true })
+  .then(function(ok){
+    if (ok && ok.value === "saveOld") return Promise.resolve(ok.result).then(function(){ return askReplace(r); });
+    if (ok) return doReplace(r.sections, "restore", full ? "oldest" : null);
+  });
+}
+/* Keep the notes as they are now as the newest safety copy. "drop" is the id of a copy to take out at the same time
+   (the one being put back, so nothing is lost), or "oldest" to make room, which only works if the oldest copy was saved as a file. */
+function keepSafetyCopy(kind, drop){
+  var c = { id: uid(), at: now(), kind: kind, sections: JSON.parse(snap()).sections }; c.counts = countAll(c.sections);
+  return saveSafety(function(list){
+    if (drop && drop !== "oldest") list = list.filter(function(x){ return x.id !== drop; });
+    list = [c].concat(list);
+    if (list.length > SAFETY_MAX){ if (drop !== "oldest" || !list[list.length - 1].savedAt) throw new Error("too many safety copies"); list = list.slice(0, SAFETY_MAX); }
+    return list;
+  }).then(function(){ return c; });
+}
+function doReplace(sections, kind, drop, fromAt){
+  flushEditor();
+  if (store.mode() === "memory") return info("Nothing was changed", "This browser isn’t keeping notes, so the app can’t keep a safety copy. Nothing was replaced. Use Add to my notes instead.");
+  return keepSafetyCopy(kind, drop).then(function(c){
+    data.sections = JSON.parse(JSON.stringify(sections)); ui.sel = null; saveSoon(0); go("#/"); render();
+    return modal({ title: kind === "restore" ? "Notes replaced" : kind === "undo" ? "Replace undone" : "Safety copy put back",
+      message:(kind === "restore" ? "Your notes now match the backup." : "Your notes are back the way they were on " + fmtWhen(Date.parse(fromAt)) + ".") + "\n\nWhat you had a moment ago is kept as a safety copy. To switch back, tap Undo last replace in Restore on the main screen.",
+      choices:[ { label:"⤓ Save the safety copy as a file", value:"save", run:function(){ return saveCopy(c); } } ], cancel:"OK" });
+  }, function(e){
+    console.warn("safety copy", e);
+    if (e && e.message === "too many safety copies"){ render(); return info("Nothing was changed", "Another window kept a safety copy just now, so nothing was replaced. Please try again."); }
+    return info("Nothing was changed", "The app couldn’t keep a safety copy of your notes (the phone may be out of space), so it didn’t replace anything.");
+  });
+}
+/* Put a safety copy back. The notes on the phone now take its place in the list, so the list doesn't grow and nothing is lost. */
+function restoreCopy(c, undo){
+  if (!c) return info("Nothing to undo", "There is no safety copy from a replace.");
+  return modal({ title: undo ? "Undo the last replace?" : "Restore this safety copy?", message:"This puts back the notes you had on " + copyWhen(c) + " (" + countText(c.counts) + ").\n\nThe notes on this phone now are kept as a safety copy in its place, so you can switch back again.", ok: undo ? "Undo the replace" : "Restore this copy", cancel:"Cancel", danger:true })
+    .then(function(ok){ if (!ok) return; var cur = findCopy(c.id); if (!cur) return info("Nothing was changed", "That safety copy is no longer here."); return doReplace(cur.sections, undo ? "undo" : "copy", cur.id, cur.at); });
+}
+function undoReplace(){ return restoreCopy(safety[0], true); }
+function deleteCopy(c){
+  if (!c) return;
+  return modal({ title:"Delete this safety copy?", message:"The safety copy from " + copyWhen(c) + " (" + countText(c.counts) + ") will be deleted. Your notes on this phone now aren’t changed.\n\nThis can’t be undone. Save it as a file first if you might need it.", ok:"Delete", cancel:"Keep it", danger:true,
+    choices:[ { label:"⤓ Save it as a file first", value:"save", run:function(){ return saveCopy(c); } } ] })
+  .then(function(ok){
+    if (ok && ok.value === "save") return Promise.resolve(ok.result).then(function(){ return deleteCopy(findCopy(c.id)); });
+    if (!ok) return;
+    return saveSafety(function(list){ return list.filter(function(x){ return x.id !== c.id; }); }).then(function(){ render(); toast("Safety copy deleted."); },
+      function(e){ console.warn("delete safety copy", e); render(); return info("Couldn’t delete the copy", "Couldn’t delete the copy. It’s still kept."); });
+  });
+}
+function copyFileName(c){ var d = new Date(Date.parse(c.at)); function z(n){ return (n < 10 ? "0" : "") + n; } return "safety-copy-" + d.getFullYear() + "-" + z(d.getMonth()+1) + "-" + z(d.getDate()) + "-" + z(d.getHours()) + z(d.getMinutes()) + ".witness.json"; }
+function saveCopy(c){
+  c = c || safety[0]; if (!c) return Promise.resolve(false);
+  var blob = new Blob([JSON.stringify(fullExport(c.sections), null, 1)], {type:"application/json"});
+  return shareOrSave(blob, copyFileName(c), "application/json", true, "backup").then(function(done){
+    if (!done) return false;
+    var id = c.id, at = now();
+    return saveSafety(function(list){ return list.map(function(x){ if (x.id === id){ x = Object.assign({}, x); x.savedAt = at; } return x; }); })
+      .then(function(){ render(); return true; }, function(){ return true; });
+  });
+}
+$("#pickRestore").addEventListener("change", function(e){ var f = e.target.files && e.target.files[0]; e.target.value = ""; restoreFile(f); });
 $("#pickImport").addEventListener("change", function(e){ var f = e.target.files && e.target.files[0]; e.target.value = ""; importFile(f); });
 
 /* ---------- making new things ---------- */
@@ -1095,15 +1438,22 @@ document.addEventListener("click", function(e){
   if (act === "selNone"){ selectAll(false); return updatePicker(); }
   if (act === "exportShare") return doExport(true);
   if (act === "exportSave") return doExport(false);
-  if (act === "backupSave") return doBackup(false);
-  if (act === "backupShare") return doBackup(true);
-  if (act === "print") return doPrint();
+  if (act === "print") return printNotice();
+  if (act === "smartBackup") return smartBackup();
+  if (act === "changeSpot") return changeSpot();
+  if (act === "forgetSpot") return forgetSpot();
+  if (act === "backupCopy"){ flushEditor(); if (!data.sections.length) return info("Nothing to back up yet", "You have no sections yet."); return shareBackup(fullBackupText(), dataSig()); }
+  if (act === "restorePick") return $("#pickRestore").click();
+  if (act === "undoReplace") return undoReplace();
+  if (act === "copyRestore") return restoreCopy(findCopy(id), false);
+  if (act === "copySave") return saveCopy(findCopy(id));
+  if (act === "copyDelete") return deleteCopy(findCopy(id));
   if (act === "saveReadable") return saveReadable();
   if (act === "snooze"){ meta.remindSnooze = new Date(Date.now() + 7*86400000).toISOString(); saveMeta(); render(); return toast("OK. You’ll be reminded again in a week."); }
   if (act === "import"){ return $("#pickImport").click(); }
   if (act === "appBlank") return doAppCopy(false);
   if (act === "appBundle") return doAppCopy(true);
-  if (act === "addSamples"){ var sum = merge(makeSamples()); saveSoon(0); info("Samples", sum.newTopics ? "The sample sections are back on your main screen." : "The samples are already there."); return; }
+  if (act === "addSamples"){ var sum = merge(makeSamples(), "sample"); saveSoon(0); info("Samples", (sum.newTopics || sum.newParts || sum.keptBoth) ? "The sample sections are back on your main screen." : "The samples are already there."); return; }
 });
 document.addEventListener("change", function(e){
   var pp = e.target.closest && e.target.closest("[data-ppick]"); if (pp){ ui.pexcl = ui.pexcl || {}; if (pp.checked) delete ui.pexcl[pp.getAttribute("data-ppick")]; else ui.pexcl[pp.getAttribute("data-ppick")] = 1; return; }
@@ -1541,6 +1891,8 @@ store.init(COPY_ID).then(function(){ return Promise.all([store.get("data"), stor
     try { var brep = { removed:0, kept:[], updated:0 }; var sum = merge(tidyOldSamples(normalizeImport(bundle.data), brep)); sum.oldGone = brep.removed; sum.oldKept = brep.kept; message = summaryText(sum); } catch(e){ console.warn(e); }
     meta.appliedBundles.push(String(bundle.bundleId).slice(0, 64)); saveSoon(0); saveMeta();
   }
+  /* Upgrading from 0.10: backupSig stays empty, so the button shows "changes since your last backup" until the first 0.11 backup
+     (0.10 can't tell whether a change came after its last backup). */
   askPersist();
   navStack = [location.hash || "#/"];
   render();
@@ -1563,8 +1915,13 @@ store.init(COPY_ID).then(function(){ return Promise.all([store.get("data"), stor
     } else if (!meta.lastVersion || meta.lastVersion !== APP_VERSION){ meta.lastVersion = APP_VERSION; saveMeta(); }
   }
   tellOthers({t:"hello"});
+  /* the remembered save spot and the safety copy from the last replace */
+  return Promise.all([ pickerOK() ? store.get("saveHandle").catch(function(){ return null; }) : null, loadSafety().catch(function(e){ console.warn(e); }) ]).then(function(x){
+    if (x[0] && typeof x[0].createWritable === "function") spot.handle = x[0];
+    spot.ready = true; if (spot.handle || safety.length) render();
+  });
 }).catch(function(e){ console.error(e); $("#main") && ($("#main").innerHTML = '<p class="lead">Something went wrong while opening your notes. Please reload the page.</p>'); });
-window.__wa = { get data(){ return data; }, cmpVer: cmpVer, revealCaret: function(){ revealCaret(); }, noteBackup: function(k){ noteBackup(k); }, testOfferUpdate: function(){ offerUpdate({ postMessage: function(){ window.__skipAsked = (window.__skipAsked || 0) + 1; } }); }, checkForUpdate: function(){ checkForUpdate(); }, info: function(t, m){ return info(t, m); }, get meta(){ return meta; }, saveMeta: function(){ return saveMeta(); }, render: function(){ render(); }, storageInfo: storageInfo, needsReminder: function(){ return needsReminder(); }, backupName: function(){ return backupName(); }, readableHtml: function(){ return readableHtml(printSections()); }, copyId: COPY_ID, get movedFromShared(){ return movedFromShared; }, get rev(){ return rev; }, sanitize: sanitize, merge: merge, merge3: merge3, normalizeImport: normalizeImport, saveNow: saveNow, doSearch: doSearch, makeSamples: makeSamples, sampleSig: sampleSig, tidyOldSamples: tidyOldSamples, checkForNewer: checkForNewer, safeHref: safeHref, version: APP_VERSION };
+window.__wa = { get data(){ return data; }, compareLine: compareLine, cmpVer: cmpVer, revealCaret: function(){ revealCaret(); }, noteBackup: function(k){ noteBackup(k); }, testOfferUpdate: function(){ offerUpdate({ postMessage: function(){ window.__skipAsked = (window.__skipAsked || 0) + 1; } }); }, checkForUpdate: function(){ checkForUpdate(); }, info: function(t, m){ return info(t, m); }, get meta(){ return meta; }, saveMeta: function(){ return saveMeta(); }, render: function(){ render(); }, storageInfo: storageInfo, needsReminder: function(){ return needsReminder(); }, backupName: function(){ return backupName(); }, readableHtml: function(){ return readableHtml(printSections()); }, copyId: COPY_ID, get movedFromShared(){ return movedFromShared; }, get rev(){ return rev; }, sanitize: sanitize, merge: merge, merge3: merge3, normalizeImport: normalizeImport, saveNow: saveNow, doSearch: doSearch, makeSamples: makeSamples, sampleSig: sampleSig, tidyOldSamples: tidyOldSamples, checkForNewer: checkForNewer, safeHref: safeHref, version: APP_VERSION, dataSig: function(){ return dataSig(); }, changed: function(){ return changedSinceBackup(); }, get spot(){ return spot; }, get safety(){ return safety.map(function(c){ return { id:c.id, at:c.at, kind:c.kind, counts:c.counts, data:JSON.stringify(c.sections) }; }); }, isFullBackup: isFullBackup, summaryText: summaryText, pickerOK: function(){ return pickerOK(); }, saveSoon: function(d){ saveSoon(d); } };
 })();
 </script>
 </body>
