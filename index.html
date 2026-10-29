@@ -173,6 +173,23 @@ html{scroll-padding-top:calc(var(--hdr) + var(--tbh) + 10px);scroll-padding-bott
 #updlater{flex:none;min-height:44px;min-width:64px;border:1px solid #9cc3a2;border-radius:10px;background:#fff;color:#1e4d2b;font-weight:650}
 #updnote[hidden]{display:none}
 .ver{color:var(--muted);font-size:13px;margin:-8px 2px 12px}
+.verrow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:-21px 0 0}
+.verrow .ver{margin:0 2px}
+.tourlink{flex:none;min-height:44px;min-width:44px;padding:0 10px;border:0;background:none;color:var(--accent);font-size:15px;font-weight:650;text-decoration:underline;text-underline-offset:3px}
+.tourcard{background:#eef4fa;border:1px solid #b7cde3;border-radius:var(--radius);padding:8px 10px;margin:0 0 12px;color:#1f3b57;font-size:16px;line-height:1.35}
+.tourcard[hidden]{display:none}
+.tourcard p{margin:0 0 6px}
+.tourcard button{flex:1;min-height:48px;border-radius:10px;border:1px solid #9fbad6;background:#fff;font-weight:650;color:#1f3b57;font-size:16px}
+.tourcard button.go{background:var(--go);color:#fff;border-color:var(--go)}
+.sheet.tour{max-height:min(100%, calc(100dvh - 20px))}
+.sheet.tour .tstep{margin:0 0 4px;color:var(--muted);font-size:14px;font-weight:650}
+.sheet.tour h2{outline:none}
+.sheet.tour .tbody p{margin:0 0 10px}
+.sheet.tour .tbody ol,.sheet.tour .tbody ul{margin:0 0 10px;padding-left:22px}
+.sheet.tour .tbody li{margin:4px 0}
+.sheet.tour .btns{flex-wrap:wrap}
+.sheet.tour .btns button{min-height:48px;font-size:17px;padding:0 6px}
+.sheet.tour .btns button[hidden]{display:none}
 #banner button{display:block;margin:6px 0 0 auto;min-height:48px;min-width:96px;border-radius:10px;border:1px solid #c9a93a;background:#fff;font-weight:700}
 .addr{overflow-wrap:anywhere;font-weight:650}
 .bk{margin:0 0 12px}
@@ -211,7 +228,7 @@ html{scroll-padding-top:calc(var(--hdr) + var(--tbh) + 10px);scroll-padding-bott
 "use strict";
 /* Copy of the untouched page, captured before anything is drawn. Used for "give someone the app". */
 var PRISTINE = document.documentElement.cloneNode(true);
-var APP_VERSION = "0.11 (proof of concept)";
+var APP_VERSION = "0.12 (proof of concept)";
 /* When the app is opened from a web address (not a saved file), let it be installed and work offline. */
 var HOSTED = /^https?:$/.test(location.protocol);
 if (HOSTED){
@@ -225,6 +242,7 @@ window.addEventListener("appinstalled", function(){ setTimeout(function(){ if (t
 /* Updates: look for a new version when the app opens and whenever it comes back to the screen.
    A new version is never switched in by itself: a note offers it, and tapping the note saves any open text first,
    then switches to the new version and reloads once. */
+var tourOpen = false, startupMsg = false;   /* first-time tour (0.12) */
 var swReg = null, waitingWorker = null, updateTapped = false, updateReloaded = false, updateLater = false;
 function setupUpdates(){
   navigator.serviceWorker.register("sw.js").then(function(reg){
@@ -251,7 +269,8 @@ function offerUpdate(w){ waitingWorker = w; updateLater = false; refreshUpdateNo
 function refreshUpdateNote(){
   var b = document.getElementById("updnote"); if (!b) return;
   var editing = (location.hash || "").indexOf("#/e/") === 0;
-  b.hidden = !(waitingWorker && (updateTapped || (!updateLater && !editing)));
+  b.hidden = !(waitingWorker && (updateTapped || (!updateLater && !editing && !tourOpen)));
+  var tc = document.getElementById("tourCard"); if (tc && !b.hidden) tc.hidden = true;   /* one thing at a time */
   var go = document.getElementById("updgo"), later = document.getElementById("updlater");
   if (go) go.onclick = applyUpdate;
   if (later){ later.hidden = updateTapped; later.onclick = function(){ updateLater = true; refreshUpdateNote(); toast("OK. The new version will be used next time you open the app."); }; }
@@ -619,7 +638,111 @@ var toastTimer;
 function toast(t, ms){ var el = $("#toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(function(){ el.classList.remove("show"); }, ms || 3200); }
 function hideToast(){ clearTimeout(toastTimer); var el = $("#toast"); if (el) el.classList.remove("show"); }
 /* A notice that doesn't block anything (used when the app is open in another tab or window). */
-function banner(t){ var el = $("#banner"); el.innerHTML = '<span></span><button type="button">OK</button>'; el.firstChild.textContent = t; el.classList.add("show"); el.querySelector("button").onclick = function(){ el.classList.remove("show"); }; }
+function banner(t){ var tc = $("#tourCard"); if (tc) tc.hidden = true; var el = $("#banner"); el.innerHTML = '<span></span><button type="button">OK</button>'; el.firstChild.textContent = t; el.classList.add("show"); el.querySelector("button").onclick = function(){ el.classList.remove("show"); }; }
+
+/* ---------- first-time tour (0.12) ---------- */
+/* A short, optional tour. New copies get a small card on the main screen offering it, once. It never changes notes,
+   backups or the reminder, and it never opens over another pop-up, the update note or the "open in another tab" notice. */
+var TOUR_LATER = "You can take the tour any time: tap Take the tour next to the version number.";
+var TOUR_LATER_NO = "OK. " + TOUR_LATER;
+var TOUR_YELLOW = "When you have changed something since your last backup, the button turns yellow and says <b>You have changes since your last backup</b>.";
+function tourPhone(){ return isIOS() || /Android/i.test(navigator.userAgent || ""); }
+function tourInstallKind(){
+  if (!HOSTED || !tourPhone() || isStandalone()) return "";
+  if (isIOS()) return "iphone";
+  var bn = browserName(); return bn === "Chrome" ? "chrome" : bn === "Samsung Internet" ? "samsung" : "other";
+}
+function tourSteps(){
+  var ios = isIOS(), android = !ios && /Android/i.test(navigator.userAgent || ""), steps = [], k = tourInstallKind();
+  steps.push({ key:"welcome", title:"Welcome to My Witnessing Notes", body:
+    '<p>Your notes are kept in three levels:</p><ul><li><b>Sections</b> are your big groups.</li><li>Each section holds <b>topics</b>.</li><li>Each topic is made of <b>parts</b>, like the pieces of a tract.</li></ul>' +
+    '<p>Your notes stay on this phone. The app has no account and sends your notes nowhere. After your first visit, it works without internet.</p>' +
+    '<p>The sections marked <b>Sample</b> show how it works. Delete them whenever you like.</p>' });
+  var sf = !/CriOS|FxiOS|EdgiOS/.test(navigator.userAgent || "");
+  if (k === "iphone") steps.push({ key:"install-iphone", title:"Put it on your Home Screen", body:
+    '<p>Do this before you write notes: the app on your Home Screen keeps its own notes, separate from ' + (sf ? 'Safari’s' : 'this browser’s') + '.</p>' +
+    '<ol><li>' + (sf ? 'In Safari, tap <b>Share</b> (the square with an arrow).' : 'Tap <b>Share</b> (in the address bar or the menu).') + ' If you don’t see it, tap <b>⋯</b> first.</li><li>Tap <b>Add to Home Screen</b>, then <b>Add</b>.</li></ol>' +
+    '<p>Then open the app from its new icon.</p>' });
+  else if (k) steps.push({ key:"install-" + k, title:"Put it on your home screen", body:
+    '<p>Then it opens like an app, even with no internet.</p>' +
+    (k === "chrome" ? '<p>In Chrome, tap <b>⋮</b> (top right), then <b>Install app</b> or <b>Add to Home screen</b>. If you see <b>Install and create shortcut</b>, tap it, then <b>Install</b> (not “Create shortcut”).</p>'
+     : k === "samsung" ? '<p>In Samsung Internet, tap <b>☰</b> (bottom right), then <b>Add page to</b>, then <b>Home screen</b>.</p>'
+     : '<p>Open your browser’s menu, then tap <b>Install app</b> or <b>Add to Home screen</b>.</p>') +
+    '<p>' + esc(INSTALL_TIP) + '</p>' });
+  var how;
+  if (pickerOK()) how = '<p>The first time, your phone asks where to save it. Pick <b>Downloads</b> or <b>Google Drive</b> and tap <b>Save</b>. After that, each tap updates the same file. After a restart, your phone may ask once more: tap <b>Allow</b>.</p>';
+  else if (ios) how = '<p>Each tap opens your phone’s share menu. Choose <b>Save to Files</b>, <b>Google Drive</b>, or email it to yourself.</p>';
+  else if (android && canShareFiles()) how = '<p>Each tap opens your phone’s share menu. Choose <b>Google Drive</b>, or email it to yourself.</p>';
+  else if (canShareFiles()) how = '<p>Each tap opens the share menu. Choose where to save or send the file.</p>';
+  else how = '<p>Each tap saves a backup file with today’s date to your Downloads.</p>';
+  steps.push({ key:"backup", title:"Back up your notes", body:
+    '<p>Your notes live only on this phone. Once you have written some, tap <b>🛟 Back up</b> on the main screen to save a copy in a file.</p>' + how +
+    '<p>' + TOUR_YELLOW + ' That means it’s time to tap it again.</p>' +
+    '<p>To bring notes back later, use <b>Restore from a backup</b> at the bottom of the main screen.</p>' });
+  steps.push({ key:"pdf", title:"Make a PDF", body:
+    '<p>A PDF is a printable booklet of your notes, easy to read or share. It can’t be brought back into the app, so it doesn’t replace a backup.</p>' +
+    '<ol><li>On the main screen, tap <b>📄 PDF and more backup choices</b>.</li><li>Tap <b>📄 Open the printable view</b> (choose which sections to include, if asked), then <b>📄 Save as PDF or print</b>.</li>' +
+    '<li>A notice says: “' + esc(PDF_NOTICE) + '” Tap <b>Continue</b>.</li></ol>' +
+    (ios ? '<p>On iPhone, in the print screen tap <b>Share</b> (at the top), then <b>Save to Files</b>.</p>' : '') +
+    '<p>You can take this tour again any time: tap <b>Take the tour</b> next to the version number on the main screen.</p>' });
+  return steps;
+}
+function setTour(how){ meta.tour = { state:"done", how:how, at:now() }; saveMeta(); }
+/* The card shows only when nothing else wants attention. */
+function tourCardOK(){
+  var t = meta.tour; if (!t || t.state !== "offer") return false;
+  if (hasOwnNotes()){ setTour("ignored"); return false; }   /* they started writing: don't offer it any more */
+  if (!spot.ready || startupMsg || modalBusy || tourOpen || store.mode() === "memory" || needsReminder()) return false;
+  var u = document.getElementById("updnote"); if (u && !u.hidden) return false;
+  var b = document.getElementById("banner"); if (b && b.classList.contains("show")) return false;
+  return true;
+}
+function tourCardHtml(){ var n = tourSteps().length; return '<div class="tourcard" id="tourCard"><p>👋 <b>New here?</b> A short tour shows how the app works (' + n + ' quick screens).</p><div class="two"><button type="button" class="go" data-act="tourStart">Start the tour</button><button type="button" data-act="tourNo">No thanks</button></div></div>'; }
+function startTour(fromLink){
+  if (tourOpen) return;
+  var a = document.activeElement; if (a && (/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) || a.isContentEditable)) return;
+  tourOpen = true;   /* set now, so a second tap can't queue a second tour */
+  whenFree(function(){
+    var m = $("#modal"), steps = tourSteps(), i = 0, closing = false, id, offer = !!(meta.tour && meta.tour.state === "offer");
+    refreshUpdateNote();
+    function draw(){
+      var st = steps[i], last = i === steps.length - 1;
+      m.innerHTML = '<div class="sheet tour"><p class="tstep" id="tourStep">Step ' + (i + 1) + ' of ' + steps.length + '</p><h2 id="tourTitle" tabindex="-1">' + esc(st.title) + '</h2><div class="tbody" data-step="' + st.key + '">' + st.body + '</div>' +
+        '<div class="btns"><button type="button" class="tskip" data-tour="skip">Skip tour</button><button type="button" class="tback" data-tour="back" aria-label="Previous step"' + (i ? '' : ' hidden') + '>‹ Back</button><button type="button" class="ok tnext" data-tour="next">' + (last ? 'Done' : 'Next ›') + '</button></div></div>';
+      var sh = $(".sheet", m); if (sh) sh.scrollTop = 0;
+      fitSheet(); var t = $("#tourTitle", m); if (t) t.focus();
+    }
+    function close(how, viaBack){
+      if (closing) return; closing = true; tourOpen = false;
+      document.removeEventListener("keydown", key, true);
+      m.classList.remove("show"); m.innerHTML = ""; m.onclick = null; m.removeAttribute("aria-labelledby"); m.removeAttribute("aria-describedby");
+      if (offer) setTour(how); else if (meta.tour && how === "finished"){ meta.tour.replayed = now(); saveMeta(); }
+      if (how === "skipped") toast(TOUR_LATER, 4000);
+      (viaBack ? Promise.resolve() : sheetClosed(id)).then(function(){
+        setTimeout(freeModal, 0); refreshUpdateNote();
+        if (route().view === "home"){ render(); var f = $("#tourLink"); if (f) try { f.focus({ preventScroll:true }); } catch(e){ f.focus(); } }
+      });
+    }
+    function step(d){ var j = i + d; if (j < 0) return; if (j >= steps.length) return close("finished"); i = j; draw(); }
+    function key(e){
+      if (closing) return;
+      if (e.key === "Escape"){ e.preventDefault(); close("skipped"); }
+      else if (e.key === "ArrowRight"){ e.preventDefault(); step(1); }
+      else if (e.key === "ArrowLeft"){ e.preventDefault(); step(-1); }
+      else if (e.key === "Tab"){   /* keep focus inside the tour */
+        var f = Array.prototype.filter.call(m.querySelectorAll("button"), function(b){ return !b.hidden; }); if (!f.length) return;
+        var at = f.indexOf(document.activeElement); e.preventDefault();
+        f[e.shiftKey ? (at <= 0 ? f.length - 1 : at - 1) : (at < 0 || at === f.length - 1 ? 0 : at + 1)].focus();
+      }
+    }
+    m.onclick = function(e){ var b = e.target.closest && e.target.closest("[data-tour]"); if (!b || !m.contains(b)) return;   /* a tap outside the box does nothing */
+      var w = b.getAttribute("data-tour"); if (w === "skip") close("skipped"); else if (w === "back") step(-1); else step(1); };
+    document.addEventListener("keydown", key, true);
+    m.setAttribute("aria-labelledby", "tourTitle"); m.setAttribute("aria-describedby", "tourStep");
+    m.classList.add("show"); draw();
+    id = sheetOpened(function(){ close("skipped", true); });   /* the phone's Back closes the tour */
+  });
+}
 
 /* ---------- moving around ---------- */
 var ui = { arrange:false, sel:null, leave:null, lastView:"" };
@@ -686,7 +809,8 @@ function viewHome(){
   if (needsReminder()){ var lb = lastBackupTime(); h += '<div class="remind" id="remind"><p>' + (lb == null ? 'You haven’t made a backup file yet.' : 'Your last backup file was ' + plural(daysSince(lb), "day", "days") + ' ago.') + ' It keeps your notes safe.' + (lb != null && changedSinceBackup() ? ' <b id="remindChanged">You have changes since then.</b>' : '') + '</p><div class="two"><button class="go" data-act="smartBackup" id="bkbtn-remind">🛟 Back up now</button><button data-act="snooze">Not now</button></div></div>'; }
   if (!needsReminder()) h += backupBlock("home");   /* when the reminder shows, its "Back up now" is the same button */
   h += '<button class="plain backup" data-act="nav" data-to="#/backup">📄 PDF and more backup choices</button>';
-  h += '<p class="lead intro">Keep your witnessing notes here. <b>Sections</b> hold <b>topics</b>, and each topic is made of <b>parts</b>. Your notes stay on this phone. Tap a section to open it.</p><p class="ver" id="ver">Version ' + esc(APP_VERSION.split(" ")[0]) + '</p>';
+  if (tourCardOK()) h += tourCardHtml();
+  h += '<p class="lead intro">Keep your witnessing notes here. <b>Sections</b> hold <b>topics</b>, and each topic is made of <b>parts</b>. Your notes stay on this phone. Tap a section to open it.</p><div class="verrow"><p class="ver" id="ver">Version ' + esc(APP_VERSION.split(" ")[0]) + '</p><button type="button" class="tourlink" id="tourLink" data-act="tour">Take the tour</button></div>';
   if (!n) h += '<div class="empty">No sections yet.<br>Tap the green button to make your first one.</div>';
   h += '<ul class="list" data-list="section">';
   data.sections.forEach(function(s, i){
@@ -927,6 +1051,7 @@ function backupBlock(where){
   h += '<button class="bkbtn' + (ch ? ' changed' : '') + '" data-act="smartBackup" id="bkbtn-' + where + '">🛟 Back up' + (ch ? '<span class="bksub">You have changes since your last backup</span>' : '') + '</button>';
   h += '<p class="bkinfo"' + (where === "page" ? ' id="lastBackup"' : '') + '>' + (t == null ? 'No backup yet.' : 'Last backup: <b>' + esc(whenText(t)) + '</b>.') + ' ';
   if (pickerOK()) h += spot.handle ? 'Saves to <b>“' + esc(spotName()) + '”</b>.' : 'The first time, you choose where to keep the backup file.';
+  else if (!isIOS() && /Android/i.test(navigator.userAgent || "")) h += 'Opens your phone’s share menu. Choose <b>Google Drive</b>, or email.';
   else h += 'Opens your phone’s share menu. Choose <b>Save to Files</b>, <b>Google Drive</b>, or email.';
   return h + '</p></div>';
 }
@@ -1414,6 +1539,8 @@ document.addEventListener("click", function(e){
   if (act === "back") return goBack(b.getAttribute("data-to"));
   if (act === "arrange"){ ui.arrange = !ui.arrange; return render(); }
   if (act === "newSection") return newSection();
+  if (act === "tourStart" || act === "tour") return startTour(act === "tour");
+  if (act === "tourNo"){ setTour("declined"); render(); toast(TOUR_LATER_NO, 5000); return; }
   if (act === "newTopic") return newTopic(id);
   if (act === "newSub") return newSub(id);
   if (act === "up" || act === "down"){
@@ -1893,6 +2020,10 @@ store.init(COPY_ID).then(function(){ return Promise.all([store.get("data"), stor
   }
   /* Upgrading from 0.10: backupSig stays empty, so the button shows "changes since your last backup" until the first 0.11 backup
      (0.10 can't tell whether a change came after its last backup). */
+  /* First-time tour (0.12): offered once, only to a brand-new copy with no notes of its own. Anyone updating
+     (or a copy that came with notes built in) never sees the card; they get one line in the "Updated" message instead. */
+  if (!meta.tour){ meta.tour = (!wasUser && !hasOwnNotes() && !movedFromShared) ? { state:"offer" } : { state:"done", how:"upgrade", at:now() }; saveMeta(); }
+  if (store.mode() === "memory" || message || (oldRep.kept.length && !meta.oldSampleAsked)) startupMsg = true;   /* a startup message comes first; the card waits for the next visit */
   askPersist();
   navStack = [location.hash || "#/"];
   render();
@@ -1911,17 +2042,17 @@ store.init(COPY_ID).then(function(){ return Promise.all([store.get("data"), stor
     if (cmpVer(APP_VERSION, last) !== 0){
       var announce = (last ? cmpVer(APP_VERSION, last) > 0 : wasUser) && store.mode() !== "memory";
       meta.lastVersion = APP_VERSION; saveMeta(); try { localStorage.setItem(lsKey, APP_VERSION); } catch(e){}
-      if (announce) toast("Updated to version " + APP_VERSION.split(" ")[0] + ". Your notes are kept.", 6000);
+      if (announce) toast("Updated to version " + APP_VERSION.split(" ")[0] + ". Your notes are kept. New: a short tour. Tap Take the tour next to the version number.", 8000);
     } else if (!meta.lastVersion || meta.lastVersion !== APP_VERSION){ meta.lastVersion = APP_VERSION; saveMeta(); }
   }
   tellOthers({t:"hello"});
   /* the remembered save spot and the safety copy from the last replace */
   return Promise.all([ pickerOK() ? store.get("saveHandle").catch(function(){ return null; }) : null, loadSafety().catch(function(e){ console.warn(e); }) ]).then(function(x){
     if (x[0] && typeof x[0].createWritable === "function") spot.handle = x[0];
-    spot.ready = true; if (spot.handle || safety.length) render();
+    spot.ready = true; if (spot.handle || safety.length || (meta.tour && meta.tour.state === "offer")) refreshView();
   });
 }).catch(function(e){ console.error(e); $("#main") && ($("#main").innerHTML = '<p class="lead">Something went wrong while opening your notes. Please reload the page.</p>'); });
-window.__wa = { get data(){ return data; }, compareLine: compareLine, cmpVer: cmpVer, revealCaret: function(){ revealCaret(); }, noteBackup: function(k){ noteBackup(k); }, testOfferUpdate: function(){ offerUpdate({ postMessage: function(){ window.__skipAsked = (window.__skipAsked || 0) + 1; } }); }, checkForUpdate: function(){ checkForUpdate(); }, info: function(t, m){ return info(t, m); }, get meta(){ return meta; }, saveMeta: function(){ return saveMeta(); }, render: function(){ render(); }, storageInfo: storageInfo, needsReminder: function(){ return needsReminder(); }, backupName: function(){ return backupName(); }, readableHtml: function(){ return readableHtml(printSections()); }, copyId: COPY_ID, get movedFromShared(){ return movedFromShared; }, get rev(){ return rev; }, sanitize: sanitize, merge: merge, merge3: merge3, normalizeImport: normalizeImport, saveNow: saveNow, doSearch: doSearch, makeSamples: makeSamples, sampleSig: sampleSig, tidyOldSamples: tidyOldSamples, checkForNewer: checkForNewer, safeHref: safeHref, version: APP_VERSION, dataSig: function(){ return dataSig(); }, changed: function(){ return changedSinceBackup(); }, get spot(){ return spot; }, get safety(){ return safety.map(function(c){ return { id:c.id, at:c.at, kind:c.kind, counts:c.counts, data:JSON.stringify(c.sections) }; }); }, isFullBackup: isFullBackup, summaryText: summaryText, pickerOK: function(){ return pickerOK(); }, saveSoon: function(d){ saveSoon(d); } };
+window.__wa = { get data(){ return data; }, compareLine: compareLine, cmpVer: cmpVer, revealCaret: function(){ revealCaret(); }, noteBackup: function(k){ noteBackup(k); }, testOfferUpdate: function(){ offerUpdate({ postMessage: function(){ window.__skipAsked = (window.__skipAsked || 0) + 1; } }); }, checkForUpdate: function(){ checkForUpdate(); }, info: function(t, m){ return info(t, m); }, get meta(){ return meta; }, saveMeta: function(){ return saveMeta(); }, render: function(){ render(); }, storageInfo: storageInfo, needsReminder: function(){ return needsReminder(); }, backupName: function(){ return backupName(); }, readableHtml: function(){ return readableHtml(printSections()); }, copyId: COPY_ID, get movedFromShared(){ return movedFromShared; }, get rev(){ return rev; }, sanitize: sanitize, merge: merge, merge3: merge3, normalizeImport: normalizeImport, saveNow: saveNow, doSearch: doSearch, makeSamples: makeSamples, sampleSig: sampleSig, tidyOldSamples: tidyOldSamples, checkForNewer: checkForNewer, safeHref: safeHref, version: APP_VERSION, dataSig: function(){ return dataSig(); }, changed: function(){ return changedSinceBackup(); }, get spot(){ return spot; }, get safety(){ return safety.map(function(c){ return { id:c.id, at:c.at, kind:c.kind, counts:c.counts, data:JSON.stringify(c.sections) }; }); }, isFullBackup: isFullBackup, summaryText: summaryText, pickerOK: function(){ return pickerOK(); }, saveSoon: function(d){ saveSoon(d); }, get tour(){ return { state: meta.tour && meta.tour.state, how: meta.tour && meta.tour.how, open: tourOpen, steps: tourSteps().map(function(x){ return x.key; }), card: !!document.getElementById("tourCard"), mode: store.mode() }; }, startTour: function(){ startTour(true); } };
 })();
 </script>
 </body>
