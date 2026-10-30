@@ -165,6 +165,7 @@ html{scroll-padding-top:calc(var(--hdr) + var(--tbh) + 10px);scroll-padding-bott
 @media(min-width:700px){#modal{align-items:center}}
 #toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#222;color:#fff;padding:12px 18px;border-radius:12px;font-size:16px;max-width:92vw;z-index:120;opacity:0;pointer-events:none;transition:opacity .2s}
 #toast.show{opacity:1}
+html.touring #toast{bottom:auto;top:calc(10px + env(safe-area-inset-top))}   /* 0.12.1: while the tour is open, a message shows at the top so it never covers Skip tour / Next */
 .sr{position:absolute;left:-9999px}
 #banner{position:relative;background:#fff3cd;color:#4d3b00;border-bottom:1px solid #e6cf7a;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;display:none;font-size:16px}
 #banner.show{display:block}
@@ -173,14 +174,8 @@ html{scroll-padding-top:calc(var(--hdr) + var(--tbh) + 10px);scroll-padding-bott
 #updlater{flex:none;min-height:44px;min-width:64px;border:1px solid #9cc3a2;border-radius:10px;background:#fff;color:#1e4d2b;font-weight:650}
 #updnote[hidden]{display:none}
 .ver{color:var(--muted);font-size:13px;margin:-8px 2px 12px}
-.verrow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:-21px 0 0}
-.verrow .ver{margin:0 2px}
-.tourlink{flex:none;min-height:44px;min-width:44px;padding:0 10px;border:0;background:none;color:var(--accent);font-size:15px;font-weight:650;text-decoration:underline;text-underline-offset:3px}
-.tourcard{background:#eef4fa;border:1px solid #b7cde3;border-radius:var(--radius);padding:8px 10px;margin:0 0 12px;color:#1f3b57;font-size:16px;line-height:1.35}
-.tourcard[hidden]{display:none}
-.tourcard p{margin:0 0 6px}
-.tourcard button{flex:1;min-height:48px;border-radius:10px;border:1px solid #9fbad6;background:#fff;font-weight:650;color:#1f3b57;font-size:16px}
-.tourcard button.go{background:var(--go);color:#fff;border-color:var(--go)}
+.ver.homever{margin:-6px 2px 18px}   /* 0.12.1: the version line is the last thing on the main screen */
+.plain.tourhelp{margin:0 0 12px;font-size:18px}
 .sheet.tour{max-height:min(100%, calc(100dvh - 20px))}
 .sheet.tour .tstep{margin:0 0 4px;color:var(--muted);font-size:14px;font-weight:650}
 .sheet.tour h2{outline:none}
@@ -228,7 +223,7 @@ html{scroll-padding-top:calc(var(--hdr) + var(--tbh) + 10px);scroll-padding-bott
 "use strict";
 /* Copy of the untouched page, captured before anything is drawn. Used for "give someone the app". */
 var PRISTINE = document.documentElement.cloneNode(true);
-var APP_VERSION = "0.12 (proof of concept)";
+var APP_VERSION = "0.12.1 (proof of concept)";
 /* When the app is opened from a web address (not a saved file), let it be installed and work offline. */
 var HOSTED = /^https?:$/.test(location.protocol);
 if (HOSTED){
@@ -270,7 +265,6 @@ function refreshUpdateNote(){
   var b = document.getElementById("updnote"); if (!b) return;
   var editing = (location.hash || "").indexOf("#/e/") === 0;
   b.hidden = !(waitingWorker && (updateTapped || (!updateLater && !editing && !tourOpen)));
-  var tc = document.getElementById("tourCard"); if (tc && !b.hidden) tc.hidden = true;   /* one thing at a time */
   var go = document.getElementById("updgo"), later = document.getElementById("updlater");
   if (go) go.onclick = applyUpdate;
   if (later){ later.hidden = updateTapped; later.onclick = function(){ updateLater = true; refreshUpdateNote(); toast("OK. The new version will be used next time you open the app."); }; }
@@ -638,13 +632,13 @@ var toastTimer;
 function toast(t, ms){ var el = $("#toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(function(){ el.classList.remove("show"); }, ms || 3200); }
 function hideToast(){ clearTimeout(toastTimer); var el = $("#toast"); if (el) el.classList.remove("show"); }
 /* A notice that doesn't block anything (used when the app is open in another tab or window). */
-function banner(t){ var tc = $("#tourCard"); if (tc) tc.hidden = true; var el = $("#banner"); el.innerHTML = '<span></span><button type="button">OK</button>'; el.firstChild.textContent = t; el.classList.add("show"); el.querySelector("button").onclick = function(){ el.classList.remove("show"); }; }
+function banner(t){ var el = $("#banner"); el.innerHTML = '<span></span><button type="button">OK</button>'; el.firstChild.textContent = t; el.classList.add("show"); el.querySelector("button").onclick = function(){ el.classList.remove("show"); maybeAutoTour(); }; }   /* 0.12.1: a first-use tour waiting for this notice opens right after OK */
 
 /* ---------- first-time tour (0.12) ---------- */
-/* A short, optional tour. New copies get a small card on the main screen offering it, once. It never changes notes,
-   backups or the reminder, and it never opens over another pop-up, the update note or the "open in another tab" notice. */
-var TOUR_LATER = "You can take the tour any time: tap Take the tour next to the version number.";
-var TOUR_LATER_NO = "OK. " + TOUR_LATER;
+/* A short tour. Since 0.12.1 it opens by itself once, the first time a brand-new copy is used (no card first); Skip tour,
+   Done or the phone's Back ends it for good. Help > Take the tour replays it. It never changes notes, backups or the
+   reminder, and it never opens over another pop-up, a message, the update note or the "open in another tab" notice. */
+var TOUR_LATER = "You can take the tour any time: tap ? Help, then Take the tour.";
 var TOUR_YELLOW = "When you have changed something since your last backup, the button turns yellow and says <b>You have changes since your last backup</b>.";
 function tourPhone(){ return isIOS() || /Android/i.test(navigator.userAgent || ""); }
 function tourInstallKind(){
@@ -678,32 +672,52 @@ function tourSteps(){
   steps.push({ key:"backup", title:"Back up your notes", body:
     '<p>Your notes live only on this phone. Once you have written some, tap <b>🛟 Back up</b> on the main screen to save a copy in a file.</p>' + how +
     '<p>' + TOUR_YELLOW + ' That means it’s time to tap it again.</p>' +
-    '<p>To bring notes back later, use <b>Restore from a backup</b> at the bottom of the main screen.</p>' });
+    '<p>To bring notes back later, use <b>Restore from a backup</b> near the bottom of the main screen, under your sections.</p>' });
   steps.push({ key:"pdf", title:"Make a PDF", body:
     '<p>A PDF is a printable booklet of your notes, easy to read or share. It can’t be brought back into the app, so it doesn’t replace a backup.</p>' +
-    '<ol><li>On the main screen, tap <b>📄 PDF and more backup choices</b>.</li><li>Tap <b>📄 Open the printable view</b> (choose which sections to include, if asked), then <b>📄 Save as PDF or print</b>.</li>' +
+    '<ol><li>Scroll to the bottom of the main screen and tap <b>📄 PDF and more backup choices</b>.</li><li>Tap <b>📄 Open the printable view</b> (choose which sections to include, if asked), then <b>📄 Save as PDF or print</b>.</li>' +
     '<li>A notice says: “' + esc(PDF_NOTICE) + '” Tap <b>Continue</b>.</li></ol>' +
     (ios ? '<p>On iPhone, in the print screen tap <b>Share</b> (at the top), then <b>Save to Files</b>.</p>' : '') +
-    '<p>You can take this tour again any time: tap <b>Take the tour</b> next to the version number on the main screen.</p>' });
+    '<p>You can take this tour again any time: tap <b>? Help</b> (top right of the main screen), then <b>Take the tour</b>.</p>' });
   return steps;
 }
 function setTour(how){ meta.tour = { state:"done", how:how, at:now() }; saveMeta(); }
-/* The card shows only when nothing else wants attention. */
-function tourCardOK(){
+/* The tour opens by itself only when nothing else wants attention. */
+function tourAutoOK(){
   var t = meta.tour; if (!t || t.state !== "offer") return false;
   if (hasOwnNotes()){ setTour("ignored"); return false; }   /* they started writing: don't offer it any more */
+  if (t.autoAt && !tourOpen && !tourResumeKey()){   /* it opened once and the app was closed during it: never again, but say where it went (once) */
+    setTour("skipped"); setTimeout(tourLaterMsg, 0); return false; }
   if (!spot.ready || startupMsg || modalBusy || tourOpen || store.mode() === "memory" || needsReminder()) return false;
   var u = document.getElementById("updnote"); if (u && !u.hidden) return false;
   var b = document.getElementById("banner"); if (b && b.classList.contains("show")) return false;
   return true;
 }
-function tourCardHtml(){ var n = tourSteps().length; return '<div class="tourcard" id="tourCard"><p>👋 <b>New here?</b> A short tour shows how the app works (' + n + ' quick screens).</p><div class="two"><button type="button" class="go" data-act="tourStart">Start the tour</button><button type="button" data-act="tourNo">No thanks</button></div></div>'; }
-function startTour(fromLink){
+/* The "closed during the tour" message waits until no start-up message, pop-up or other message is showing, so it never replaces one. */
+function tourLaterMsg(n){
+  n = n || 0; var t = $("#toast");
+  if (modalBusy || (t && t.classList.contains("show") && n < 30)){ setTimeout(function(){ tourLaterMsg(n + 1); }, 700); return; }
+  toast(TOUR_LATER, 5000);
+}
+/* 0.12.1: step 2 says "open the app from its new icon". On Android the installed app shares its notes (and this answer)
+   with the browser, so if the tour was left on that step, the next open picks it up again at the backup step, once. */
+function tourResumeKey(){ var t = meta.tour; return t && t.state === "offer" && t.autoAt && !t.resumed && /^install/.test(t.step || "") ? "backup" : ""; }
+var autoTourTimer = null;
+function maybeAutoTour(){
+  clearTimeout(autoTourTimer); autoTourTimer = null;
+  if (route().view !== "home" || document.hidden || !tourAutoOK()) return;
+  var t = $("#toast"); if (t && t.classList.contains("show")){ autoTourTimer = setTimeout(maybeAutoTour, 700); return; }   /* let a message finish first */
+  var a = document.activeElement; if (a && (/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) || a.isContentEditable)) return;
+  startTour(false, tourResumeKey());
+}
+function startTour(fromLink, resumeKey){
   if (tourOpen) return;
   var a = document.activeElement; if (a && (/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) || a.isContentEditable)) return;
   tourOpen = true;   /* set now, so a second tap can't queue a second tour */
   whenFree(function(){
     var m = $("#modal"), steps = tourSteps(), i = 0, closing = false, id, offer = !!(meta.tour && meta.tour.state === "offer");
+    if (offer && resumeKey){ for (var k = 0; k < steps.length; k++) if (steps[k].key === resumeKey){ i = k; break; } meta.tour.resumed = now(); }
+    document.documentElement.classList.add("touring");
     refreshUpdateNote();
     function draw(){
       var st = steps[i], last = i === steps.length - 1;
@@ -711,16 +725,27 @@ function startTour(fromLink){
         '<div class="btns"><button type="button" class="tskip" data-tour="skip">Skip tour</button><button type="button" class="tback" data-tour="back" aria-label="Previous step"' + (i ? '' : ' hidden') + '>‹ Back</button><button type="button" class="ok tnext" data-tour="next">' + (last ? 'Done' : 'Next ›') + '</button></div></div>';
       var sh = $(".sheet", m); if (sh) sh.scrollTop = 0;
       fitSheet(); var t = $("#tourTitle", m); if (t) t.focus();
+      /* remember that it was shown, and which step it is on (saved only now that it is on screen) */
+      if (offer && meta.tour && meta.tour.state === "offer"){ meta.tour.autoAt = meta.tour.autoAt || now(); meta.tour.step = st.key;
+        /* another window (say, the installed app) may have finished or skipped the tour meanwhile: then close this one and keep that answer */
+        store.get("meta").then(function(sm){
+          if (closing) return;
+          if (sm && sm.tour && sm.tour.state === "done"){ meta.tour = sm.tour; offer = false; close("elsewhere"); return; }
+          if (meta.tour && meta.tour.state === "offer") saveMeta();
+        }, function(){ if (!closing) saveMeta(); }); }
     }
     function close(how, viaBack){
       if (closing) return; closing = true; tourOpen = false;
+      document.documentElement.classList.remove("touring");
       document.removeEventListener("keydown", key, true);
       m.classList.remove("show"); m.innerHTML = ""; m.onclick = null; m.removeAttribute("aria-labelledby"); m.removeAttribute("aria-describedby");
       if (offer) setTour(how); else if (meta.tour && how === "finished"){ meta.tour.replayed = now(); saveMeta(); }
       if (how === "skipped") toast(TOUR_LATER, 4000);
       (viaBack ? Promise.resolve() : sheetClosed(id)).then(function(){
         setTimeout(freeModal, 0); refreshUpdateNote();
-        if (route().view === "home"){ render(); var f = $("#tourLink"); if (f) try { f.focus({ preventScroll:true }); } catch(e){ f.focus(); } }
+        var rv = route().view, f = rv === "help" ? $("#tourHelp") : null;
+        if (rv === "home"){ render(); f = $(".searchbar"); }
+        if (f) try { f.focus({ preventScroll:true }); } catch(e){ f.focus(); }
       });
     }
     function step(d){ var j = i + d; if (j < 0) return; if (j >= steps.length) return close("finished"); i = j; draw(); }
@@ -789,6 +814,7 @@ function render(navigated){
   window.scrollTo(0, same ? y : 0);
   if (r.view !== "e") watchBars();
   refreshUpdateNote();
+  if (r.view === "home" && meta.tour && meta.tour.state === "offer" && !tourOpen){ clearTimeout(autoTourTimer); autoTourTimer = setTimeout(maybeAutoTour, 400); }
   if (r.view === "t" && r.sub && navigated){ var card = document.querySelector('.card[data-sub="' + r.sub + '"]'); if (card){ card.scrollIntoView({block:"center"}); card.classList.add("flash"); } }
 }
 
@@ -808,9 +834,6 @@ function viewHome(){
   h += '<button class="searchbar" data-act="nav" data-to="#/search" aria-label="Search your notes">🔍 <span>Search your notes</span></button>';
   if (needsReminder()){ var lb = lastBackupTime(); h += '<div class="remind" id="remind"><p>' + (lb == null ? 'You haven’t made a backup file yet.' : 'Your last backup file was ' + plural(daysSince(lb), "day", "days") + ' ago.') + ' It keeps your notes safe.' + (lb != null && changedSinceBackup() ? ' <b id="remindChanged">You have changes since then.</b>' : '') + '</p><div class="two"><button class="go" data-act="smartBackup" id="bkbtn-remind">🛟 Back up now</button><button data-act="snooze">Not now</button></div></div>'; }
   if (!needsReminder()) h += backupBlock("home");   /* when the reminder shows, its "Back up now" is the same button */
-  h += '<button class="plain backup" data-act="nav" data-to="#/backup">📄 PDF and more backup choices</button>';
-  if (tourCardOK()) h += tourCardHtml();
-  h += '<p class="lead intro">Keep your witnessing notes here. <b>Sections</b> hold <b>topics</b>, and each topic is made of <b>parts</b>. Your notes stay on this phone. Tap a section to open it.</p><div class="verrow"><p class="ver" id="ver">Version ' + esc(APP_VERSION.split(" ")[0]) + '</p><button type="button" class="tourlink" id="tourLink" data-act="tour">Take the tour</button></div>';
   if (!n) h += '<div class="empty">No sections yet.<br>Tap the green button to make your first one.</div>';
   h += '<ul class="list" data-list="section">';
   data.sections.forEach(function(s, i){
@@ -818,6 +841,9 @@ function viewHome(){
   });
   h += '</ul><button class="big" data-act="newSection">＋ New section</button>' + arrangeBtn(n, "sections");
   h += restorePanel();
+  /* 0.12.1: the PDF button, the welcome text and the version line sit at the bottom */
+  h += '<button class="plain backup" data-act="nav" data-to="#/backup">📄 PDF and more backup choices</button>';
+  h += '<p class="lead intro">Keep your witnessing notes here. <b>Sections</b> hold <b>topics</b>, and each topic is made of <b>parts</b>. Your notes stay on this phone. Tap a section to open it.</p><p class="ver homever" id="ver">Version ' + esc(APP_VERSION.split(" ")[0]) + '</p>';
   h += '</main>';
   return h;
 }
@@ -895,10 +921,11 @@ function viewShare(){
 }
 function viewHelp(){
   var h = header("#/", "Sections", "How to use") + '<main class="help">';
+  h += '<button type="button" class="plain tourhelp" id="tourHelp" data-act="tour">🧭 Take the tour</button>';
   h += '<section class="panel"><h2 style="margin-top:0">Writing</h2><ol><li><b>Sections</b> are your big groups (for example “The Deity of Christ”). Tap <b>＋ New section</b>.</li><li>Open a section and tap <b>＋ New topic</b>. Give it a name and start typing right away.</li><li>Tap the heading or the writing box to start typing.</li><li>A topic is made of <b>parts</b>, like the pieces of a tract. Tap <b>＋ Add a part</b> for the next piece, and <b>✎ Edit</b> to change one.</li><li>While editing, use the buttons for <b>Bold</b>, <i>Italic</i>, <b>Heading</b>, <b>Subheading</b>, <b>Quote</b> (a box for Bible verses), lists, <b>Link</b>, and <b>Picture</b>. Pictures are made smaller automatically so files stay small. Tap a picture while editing to make it small, medium, or full width, or to add a caption.</li><li>To rename, reorder, or delete, tap <b>✎ Change order, names, or delete</b> at the bottom of a list. Move things with the ↑ ↓ buttons, or press and drag the <b>≡ Drag</b> handle. Tap <b>✓ Done changing</b> when finished.</li><li>The phone’s <b>Back</b> button closes a pop-up first (anything you typed in it is kept for next time), then goes back one screen at a time.</li><li>To find something, tap <b>🔍 Search your notes</b> on the main screen and type a word. Tap a result to open it. If a word is spelled a little differently, close matches are shown.</li></ol></section>';
   h += '<section class="panel"><h2 style="margin-top:0">Put it on your home screen</h2><p>Open the app’s web address once while online. Then add it to your home screen: on <b>iPhone</b> (Safari), tap Share (the square with an arrow), then <b>Add to Home Screen</b>. On <b>Android</b> (Chrome), tap ⋮, then <b>Install and create shortcut</b>, then <b>Install</b> (not “Create shortcut”). On some phones the menu item is called <b>Install app</b> or <b>Add to Home screen</b>. After that it opens like an app and works with no internet.</p><p id="iphonepointer">On iPhone: if you already wrote notes in Safari, see <b>Keeping your notes safe</b> below first.</p><p id="installtip">If you don’t see the icon on your home screen, look in your app drawer. To put it on your home screen, long-press the icon and pick Add to Home.</p>' + (HOSTED ? '<p>This app’s web address (send it to anyone who wants the app):<br><span class="addr" id="addr">' + esc(location.origin + location.pathname) + '</span></p>' : '<p>You opened this app as a saved file, so it has no web address here. To give it to someone, use <b>⇪ Share</b> → “Blank app”.</p>') + '</section>';
-  h += '<section class="panel" id="backHelp"><h2 style="margin-top:0">Backing up</h2><p>Your notes are kept inside this browser on this phone. Now and then, tap <b>🛟 Back up</b> on the main screen. It saves everything in one backup file that this app can bring back.</p><ul><li><b>On Android (Chrome):</b> the first time, your phone asks where to keep the file (for example Downloads or Google Drive). After that, each tap updates that same file, with no questions. After a restart, your phone may ask once more: tap <b>Allow</b>. To use a different place, open <b>📄 PDF and more backup choices</b> and tap <b>Change save spot</b> or <b>Forget save spot</b>.</li><li><b>On iPhone and other browsers:</b> each tap opens the share menu. Choose <b>Save to Files</b>, Google Drive, or email it to yourself.</li><li>When you have changed something since your last backup, the button turns yellow and says <b>You have changes since your last backup</b>.</li><li><b>Save as PDF (readable)</b>, in PDF and more backup choices, makes a booklet of all your notes that anyone can open. Before your phone’s print screen opens, the app tells you which button saves the PDF.</li></ul><p>Keep the file somewhere other than this phone. If you haven’t made a backup for 30 days, the main screen reminds you (a PDF doesn’t count, because it can’t be brought back).</p></section>';
-  h += '<section class="panel" id="restoreHelp"><h2 style="margin-top:0">Restoring</h2><p>At the bottom of the main screen, tap <b>⤒ Choose a backup file</b> under <b>Restore from a backup</b>. Then pick one of two choices:</p><ul><li><b>Add to my notes</b> (safe, recommended). Nothing on this phone is changed or removed. Anything in the backup that isn’t here is added. Each part is compared word for word: an exact copy is skipped, and if a part differs even by one word, both versions are kept, with the backup’s version marked “(from backup)” right after yours. Afterward you see how many parts were added, kept twice, or skipped.</li><li><b>Replace everything with this backup</b>. This replaces ALL notes on this phone with the backup, so changes made since that backup are lost. It’s offered only for a full backup file: one from <b>🛟 Back up</b>, from <b>⇪ Send a copy somewhere else (email, Drive)…</b> or <b>⤓ Save a dated copy</b> on the <b>Back up / Save all</b> screen (on Android, these show after the first save), or from <b>⇪ Share</b> with every section checked. The file says inside how many sections and parts it has, and Replace is offered only if that still matches. A file with only some sections, like one shared from a section, can only be added to your notes. So can a backup made before version 0.11, because it looks the same inside as a shared file. The warning shows how many sections and parts the backup has compared with this phone, and warns you in bold when the backup is much smaller.</li></ul><p id="safetyHelp"><b>Safety copies.</b> Before each replace, the app keeps a copy of your notes as they were. It keeps the last 3, each with its date and how many sections and parts it has, listed under <b>Safety copies</b> in Restore on the main screen. For each one you can <b>Restore this copy</b>, <b>Save as a file</b>, or <b>Delete</b> it (the app asks first). <b>Undo last replace</b> puts back the newest one. Putting a copy back keeps the notes you had a moment ago as a copy in its place, so you can always switch back. If you already have 3, a replace first asks you to save the oldest one as a file. Only then is it removed from the app to make room, so a replace or undo never loses your notes. Safety copies are kept on this phone only, in the same place as your notes, so they don’t replace a backup file kept somewhere else.</p><p id="olderHelp">' + OLDER_BACKUP + '</p></section>';
+  h += '<section class="panel" id="backHelp"><h2 style="margin-top:0">Backing up</h2><p>Your notes are kept inside this browser on this phone. Now and then, tap <b>🛟 Back up</b> on the main screen. It saves everything in one backup file that this app can bring back.</p><ul><li>' + backupHelpHow() + '</li><li>When you have changed something since your last backup, the button turns yellow and says <b>You have changes since your last backup</b>.</li><li><b>Save as PDF (readable)</b>, in PDF and more backup choices (at the bottom of the main screen), makes a booklet of all your notes that anyone can open. Before your phone’s print screen opens, the app tells you which button saves the PDF.</li></ul><p>Keep the file somewhere other than this phone. If you haven’t made a backup for 30 days, the main screen reminds you (a PDF doesn’t count, because it can’t be brought back).</p></section>';
+  h += '<section class="panel" id="restoreHelp"><h2 style="margin-top:0">Restoring</h2><p>Near the bottom of the main screen, under your sections, tap <b>⤒ Choose a backup file</b> under <b>Restore from a backup</b>. Then pick one of two choices:</p><ul><li><b>Add to my notes</b> (safe, recommended). Nothing on this phone is changed or removed. Anything in the backup that isn’t here is added. Each part is compared word for word: an exact copy is skipped, and if a part differs even by one word, both versions are kept, with the backup’s version marked “(from backup)” right after yours. Afterward you see how many parts were added, kept twice, or skipped.</li><li><b>Replace everything with this backup</b>. This replaces ALL notes on this phone with the backup, so changes made since that backup are lost. It’s offered only for a full backup file: one from <b>🛟 Back up</b>, from <b>⇪ Send a copy somewhere else (email, Drive)…</b> or <b>⤓ Save a dated copy</b> on the <b>Back up / Save all</b> screen (on Android, these show after the first save), or from <b>⇪ Share</b> with every section checked. The file says inside how many sections and parts it has, and Replace is offered only if that still matches. A file with only some sections, like one shared from a section, can only be added to your notes. So can a backup made before version 0.11, because it looks the same inside as a shared file. The warning shows how many sections and parts the backup has compared with this phone, and warns you in bold when the backup is much smaller.</li></ul><p id="safetyHelp"><b>Safety copies.</b> Before each replace, the app keeps a copy of your notes as they were. It keeps the last 3, each with its date and how many sections and parts it has, listed under <b>Safety copies</b> in Restore on the main screen. For each one you can <b>Restore this copy</b>, <b>Save as a file</b>, or <b>Delete</b> it (the app asks first). <b>Undo last replace</b> puts back the newest one. Putting a copy back keeps the notes you had a moment ago as a copy in its place, so you can always switch back. If you already have 3, a replace first asks you to save the oldest one as a file. Only then is it removed from the app to make room, so a replace or undo never loses your notes. Safety copies are kept on this phone only, in the same place as your notes, so they don’t replace a backup file kept somewhere else.</p><p id="olderHelp">' + OLDER_BACKUP + '</p></section>';
   h += '<section class="panel" id="safety"><h2 style="margin-top:0">Keeping your notes safe</h2><div class="storageStatus">' + storageHtml() + '</div><p><b>What can erase your notes on Android (Chrome):</b></p><ul>' +
     '<li><b>Clearing Chrome’s data.</b> “Delete browsing data” with <b>Cookies and site data</b> checked, or deleting this site’s data in Chrome’s settings. So does Android <b>Settings → Apps → Chrome → Storage → Clear storage</b>, uninstalling Chrome, or a cleaner app that clears Chrome’s data.</li>' +
     '<li><b>Blocking on-device site data</b> for this site in Chrome’s Site settings hides your notes from the app (and may erase them).</li>' +
@@ -1049,12 +1076,28 @@ function changeSpot(){ flushEditor(); if (!data.sections.length) return info("No
 function backupBlock(where){
   var ch = changedSinceBackup(), t = lastBackupTime(), h = '<div class="bk" id="bk-' + where + '">';
   h += '<button class="bkbtn' + (ch ? ' changed' : '') + '" data-act="smartBackup" id="bkbtn-' + where + '">🛟 Back up' + (ch ? '<span class="bksub">You have changes since your last backup</span>' : '') + '</button>';
-  h += '<p class="bkinfo"' + (where === "page" ? ' id="lastBackup"' : '') + '>' + (t == null ? 'No backup yet.' : 'Last backup: <b>' + esc(whenText(t)) + '</b>.') + ' ';
-  if (pickerOK()) h += spot.handle ? 'Saves to <b>“' + esc(spotName()) + '”</b>.' : 'The first time, you choose where to keep the backup file.';
-  else if (!isIOS() && /Android/i.test(navigator.userAgent || "")) h += 'Opens your phone’s share menu. Choose <b>Google Drive</b>, or email.';
+  h += '<p class="bkinfo"' + (where === "page" ? ' id="lastBackup"' : '') + '>' + (t == null ? 'No backup yet.' : 'Last backup: <b>' + esc(whenText(t)) + '</b>.');
+  if (where === "home") return h + '</p></div>';   /* 0.12.1: the main screen shows only the date; where it saves is on the backup choices screen and in Help */
+  h += ' ';
+  var k = backupKind();
+  if (k === "picker") h += spot.handle ? 'Saves to <b>“' + esc(spotName()) + '”</b>.' : 'The first time, you choose where to keep the backup file.';
+  else if (k === "android") h += 'Opens your phone’s share menu. Choose <b>Google Drive</b>, or email.';
+  else if (k === "download") h += 'Saves a file with today’s date to your Downloads.';
   else h += 'Opens your phone’s share menu. Choose <b>Save to Files</b>, <b>Google Drive</b>, or email.';
   return h + '</p></div>';
 }
+/* How Back up works in this browser; the backup choices screen and Help both use it (0.12.1). */
+function backupHelpHow(){
+  var k = backupKind();
+  if (k === "picker") return '<b>On this phone:</b> the first time, your phone asks where to keep the file (for example Downloads or Google Drive). After that, each tap updates that same file, with no questions. After a restart, your phone may ask once more: tap <b>Allow</b>. To use a different place, open <b>📄 PDF and more backup choices</b> (at the bottom of the main screen) and tap <b>Change save spot</b> or <b>Forget save spot</b>.';
+  if (k === "download") return '<b>On this phone:</b> each tap saves a backup file with today’s date to your Downloads. Then send it to Google Drive or email it to yourself, so a copy is kept off this phone.';
+  if (k === "android") return '<b>On this phone:</b> each tap opens your phone’s share menu. Choose <b>Google Drive</b>, or email it to yourself.';
+  return '<b>On this phone:</b> each tap opens your phone’s share menu. Choose <b>Save to Files</b>, <b>Google Drive</b>, or email it to yourself.';
+}
+function backupKind(){   /* same rule as the tour's backup step: the save spot, else the share menu if this browser can share the file, else a download */
+  if (pickerOK()) return "picker"; if (isIOS()) return "share";
+  if (!canShareFiles()) return "download";   /* Chrome-based Android browsers won't share a .json file; Firefox for Android shares no files */
+  return /Android/i.test(navigator.userAgent || "") ? "android" : "share"; }
 function printSections(){ ui.pexcl = ui.pexcl || {}; return data.sections.filter(function(s){ return !ui.pexcl[s.id]; }); }
 function printingAll(){ return printSections().length === data.sections.length; }
 /* Write each link's full address after its words, so it can be read on paper. */
@@ -1094,7 +1137,7 @@ function viewBackup(){
   if (pickerOK() && spot.handle) h += '<div class="two"><button class="plain" data-act="changeSpot">Change save spot</button><button class="plain" data-act="forgetSpot">Forget save spot</button></div><p class="hint">After a restart, your phone may ask once before it saves. Tap <b>Allow</b>.</p>';
   if (pickerOK()) h += '<button class="plain" data-act="backupCopy">' + (canShareFiles() ? '⇪ Send a copy somewhere else (email, Drive)…' : '⤓ Save a dated copy') + '</button>';
   h += (b.readable ? '<p class="hint" id="lastReadable">Last readable copy (PDF or file): ' + esc(whenText(Date.parse(b.readable))) + '.</p>' : '') +
-    '<p class="hint">Keep a copy somewhere other than this phone, for example Google Drive or an email to yourself. Only a backup file counts for the 30-day reminder, because only it can be brought back into the app. A PDF or readable copy doesn’t.</p><p class="hint">To bring a backup back, use <b>Restore from a backup</b> at the bottom of the main screen.</p><p class="hint" id="olderNote">' + OLDER_BACKUP + '</p></section>';
+    '<p class="hint">Keep a copy somewhere other than this phone, for example Google Drive or an email to yourself. Only a backup file counts for the 30-day reminder, because only it can be brought back into the app. A PDF or readable copy doesn’t.</p><p class="hint">To bring a backup back, use <b>Restore from a backup</b> near the bottom of the main screen.</p><p class="hint" id="olderNote">' + OLDER_BACKUP + '</p></section>';
   h += '<section class="panel"><h2>Save as PDF (readable)</h2><p>All your notes laid out like a booklet: every section, topic, and part, with the pictures, and links written out in full. Anyone can open a PDF, with or without this app. (A PDF can’t be brought back into the app. For that, use Back up.)</p>';
   if (data.sections.length > 1){
     ui.pexcl = ui.pexcl || {};
@@ -1184,7 +1227,7 @@ function download(blob, name){
   setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); }, 60000);
 }
 var NEXT = {
-  backup: "It’s in your Downloads (on iPhone: the Files app, then Downloads).\n\nNext: keep a copy somewhere other than this phone. For example, email it to yourself or put it in Google Drive. To restore it, use “Restore from a backup” at the bottom of the main screen.",
+  backup: "It’s in your Downloads (on iPhone: the Files app, then Downloads).\n\nNext: keep a copy somewhere other than this phone. For example, email it to yourself or put it in Google Drive. To restore it, use “Restore from a backup” near the bottom of the main screen.",
   readable: "It’s in your Downloads (on iPhone: the Files app, then Downloads).\n\nOpen it to read it in the browser. To turn it into a PDF on Android: open it in Chrome, tap ⋮, then Share, then Print, and choose Save as PDF.",
   notes: "It’s in your Downloads (on iPhone: the Files app, then Downloads).\n\nNext: keep it somewhere safe as a backup, or send it to someone by email or message. They open it in their copy of the app with “Bring in notes from a file”.",
   blank: "It’s in your Downloads (on iPhone: the Files app, then Downloads).\n\nNext: send this file to the other person by email or message. They open it in their phone’s browser. It starts with no notes.",
@@ -1539,8 +1582,7 @@ document.addEventListener("click", function(e){
   if (act === "back") return goBack(b.getAttribute("data-to"));
   if (act === "arrange"){ ui.arrange = !ui.arrange; return render(); }
   if (act === "newSection") return newSection();
-  if (act === "tourStart" || act === "tour") return startTour(act === "tour");
-  if (act === "tourNo"){ setTour("declined"); render(); toast(TOUR_LATER_NO, 5000); return; }
+  if (act === "tour") return startTour(true);
   if (act === "newTopic") return newTopic(id);
   if (act === "newSub") return newSub(id);
   if (act === "up" || act === "down"){
@@ -2041,8 +2083,9 @@ store.init(COPY_ID).then(function(){ return Promise.all([store.get("data"), stor
     if (said && cmpVer(said, last) > 0) last = said; /* an older tab may have saved settings without the mark */
     if (cmpVer(APP_VERSION, last) !== 0){
       var announce = (last ? cmpVer(APP_VERSION, last) > 0 : wasUser) && store.mode() !== "memory";
+      if (last && cmpVer(APP_VERSION, last) > 0 && meta.tour && meta.tour.state === "offer") setTour("upgrade");   /* 0.12.1: an update never opens the tour by itself (a 0.12 copy that never answered the card) */
       meta.lastVersion = APP_VERSION; saveMeta(); try { localStorage.setItem(lsKey, APP_VERSION); } catch(e){}
-      if (announce) toast("Updated to version " + APP_VERSION.split(" ")[0] + ". Your notes are kept. New: a short tour. Tap Take the tour next to the version number.", 8000);
+      if (announce) toast("Updated to version " + APP_VERSION.split(" ")[0] + ". " + (hasOwnNotes() ? "Your notes are kept. " : "") + (!last || cmpVer(last, "0.12") < 0 ? "New: a short tour. Tap ? Help, then Take the tour." : "The PDF button and intro are now at the bottom of the main screen, and Take the tour is in Help."), 8000);
     } else if (!meta.lastVersion || meta.lastVersion !== APP_VERSION){ meta.lastVersion = APP_VERSION; saveMeta(); }
   }
   tellOthers({t:"hello"});
@@ -2052,7 +2095,7 @@ store.init(COPY_ID).then(function(){ return Promise.all([store.get("data"), stor
     spot.ready = true; if (spot.handle || safety.length || (meta.tour && meta.tour.state === "offer")) refreshView();
   });
 }).catch(function(e){ console.error(e); $("#main") && ($("#main").innerHTML = '<p class="lead">Something went wrong while opening your notes. Please reload the page.</p>'); });
-window.__wa = { get data(){ return data; }, compareLine: compareLine, cmpVer: cmpVer, revealCaret: function(){ revealCaret(); }, noteBackup: function(k){ noteBackup(k); }, testOfferUpdate: function(){ offerUpdate({ postMessage: function(){ window.__skipAsked = (window.__skipAsked || 0) + 1; } }); }, checkForUpdate: function(){ checkForUpdate(); }, info: function(t, m){ return info(t, m); }, get meta(){ return meta; }, saveMeta: function(){ return saveMeta(); }, render: function(){ render(); }, storageInfo: storageInfo, needsReminder: function(){ return needsReminder(); }, backupName: function(){ return backupName(); }, readableHtml: function(){ return readableHtml(printSections()); }, copyId: COPY_ID, get movedFromShared(){ return movedFromShared; }, get rev(){ return rev; }, sanitize: sanitize, merge: merge, merge3: merge3, normalizeImport: normalizeImport, saveNow: saveNow, doSearch: doSearch, makeSamples: makeSamples, sampleSig: sampleSig, tidyOldSamples: tidyOldSamples, checkForNewer: checkForNewer, safeHref: safeHref, version: APP_VERSION, dataSig: function(){ return dataSig(); }, changed: function(){ return changedSinceBackup(); }, get spot(){ return spot; }, get safety(){ return safety.map(function(c){ return { id:c.id, at:c.at, kind:c.kind, counts:c.counts, data:JSON.stringify(c.sections) }; }); }, isFullBackup: isFullBackup, summaryText: summaryText, pickerOK: function(){ return pickerOK(); }, saveSoon: function(d){ saveSoon(d); }, get tour(){ return { state: meta.tour && meta.tour.state, how: meta.tour && meta.tour.how, open: tourOpen, steps: tourSteps().map(function(x){ return x.key; }), card: !!document.getElementById("tourCard"), mode: store.mode() }; }, startTour: function(){ startTour(true); } };
+window.__wa = { get data(){ return data; }, compareLine: compareLine, cmpVer: cmpVer, revealCaret: function(){ revealCaret(); }, noteBackup: function(k){ noteBackup(k); }, testOfferUpdate: function(){ offerUpdate({ postMessage: function(){ window.__skipAsked = (window.__skipAsked || 0) + 1; } }); }, checkForUpdate: function(){ checkForUpdate(); }, info: function(t, m){ return info(t, m); }, get meta(){ return meta; }, saveMeta: function(){ return saveMeta(); }, render: function(){ render(); }, storageInfo: storageInfo, needsReminder: function(){ return needsReminder(); }, backupName: function(){ return backupName(); }, readableHtml: function(){ return readableHtml(printSections()); }, copyId: COPY_ID, get movedFromShared(){ return movedFromShared; }, get rev(){ return rev; }, sanitize: sanitize, merge: merge, merge3: merge3, normalizeImport: normalizeImport, saveNow: saveNow, doSearch: doSearch, makeSamples: makeSamples, sampleSig: sampleSig, tidyOldSamples: tidyOldSamples, checkForNewer: checkForNewer, safeHref: safeHref, version: APP_VERSION, dataSig: function(){ return dataSig(); }, changed: function(){ return changedSinceBackup(); }, get spot(){ return spot; }, get safety(){ return safety.map(function(c){ return { id:c.id, at:c.at, kind:c.kind, counts:c.counts, data:JSON.stringify(c.sections) }; }); }, isFullBackup: isFullBackup, summaryText: summaryText, pickerOK: function(){ return pickerOK(); }, saveSoon: function(d){ saveSoon(d); }, get tour(){ return { state: meta.tour && meta.tour.state, how: meta.tour && meta.tour.how, open: tourOpen, steps: tourSteps().map(function(x){ return x.key; }), card: !!document.getElementById("tourCard"), auto: !!(meta.tour && meta.tour.autoAt), step: meta.tour && meta.tour.step, resumed: !!(meta.tour && meta.tour.resumed), mode: store.mode() }; }, startTour: function(){ startTour(true); } };
 })();
 </script>
 </body>
