@@ -15,7 +15,9 @@
 <style>
 :root{--bg:#f7f3ec;--card:#fff;--ink:#1f2328;--muted:#5e6670;--line:#e3ddd2;--accent:#2f5d8a;--accent-soft:#e6eef6;--go:#2e7d4f;--go-dark:#256a42;--danger:#b3261e;--radius:14px}
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+/* 0.12.2: Chrome on Android paints the phone's bottom button bar in the page root's background-color, so that color is dark blue (white buttons).
+   A cream image layer covers it everywhere, so the page itself still looks cream: no blue edge on short pages, when scrolling past the end, behind dialogs, or while the page is still loading. */
+html{-webkit-text-size-adjust:100%;min-height:100%;background-color:var(--accent);background-image:linear-gradient(var(--bg),var(--bg))}
 body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;padding-bottom:env(safe-area-inset-bottom)}
 button,input{font:inherit;color:inherit}
 button{cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -223,7 +225,7 @@ html.touring #toast{bottom:auto;top:calc(10px + env(safe-area-inset-top))}   /* 
 "use strict";
 /* Copy of the untouched page, captured before anything is drawn. Used for "give someone the app". */
 var PRISTINE = document.documentElement.cloneNode(true);
-var APP_VERSION = "0.12.1 (proof of concept)";
+var APP_VERSION = "0.12.2 (proof of concept)";
 /* When the app is opened from a web address (not a saved file), let it be installed and work offline. */
 var HOSTED = /^https?:$/.test(location.protocol);
 if (HOSTED){
@@ -245,7 +247,12 @@ function setupUpdates(){
     if (reg.waiting && navigator.serviceWorker.controller) offerUpdate(reg.waiting);
     reg.addEventListener("updatefound", function(){
       var w = reg.installing; if (!w) return;
-      w.addEventListener("statechange", function(){ if (w.state === "installed" && navigator.serviceWorker.controller) offerUpdate(w); });
+      /* 0.12.2: decide now whether this is an update. On a brand-new copy no older version controls the page yet. Checking the
+         controller only at "installed" was wrong: in WebKit the first install can already control the page by then, which showed
+         a false "New version ready" note (and blocked the first-time tour). An update is offered only if an older version was in
+         control when it was found AND it is really the waiting one. */
+      var hadController = !!navigator.serviceWorker.controller;
+      w.addEventListener("statechange", function(){ if (w.state === "installed" && hadController && reg.waiting === w) offerUpdate(w); });
     });
   }).catch(function(e){ console.warn("offline helper not started", e); });
   navigator.serviceWorker.addEventListener("controllerchange", function(){
@@ -254,12 +261,14 @@ function setupUpdates(){
   });
   document.addEventListener("visibilitychange", function(){ if (document.visibilityState === "visible") checkForUpdate(); });
 }
+/* test hook: which updates were offered (0.12.2 tests check a brand-new copy never gets one) */
+var updatesOffered = 0;
 function checkForUpdate(){ if (swReg) { try { swReg.update().catch(function(){}); } catch(e){} } }
 /* Compare versions number by number, so 0.10 is newer than 0.9. */
 function cmpVer(a, b){ a = String(a || "").split(" ")[0].split(/[.-]/); b = String(b || "").split(" ")[0].split(/[.-]/);
   for (var i = 0; i < Math.max(a.length, b.length); i++){ var x = parseInt(a[i], 10), y = parseInt(b[i], 10); x = isNaN(x) ? -1 : x; y = isNaN(y) ? -1 : y; if (x !== y) return x < y ? -1 : 1; }
   return 0; }
-function offerUpdate(w){ waitingWorker = w; updateLater = false; refreshUpdateNote(); }
+function offerUpdate(w){ waitingWorker = w; updateLater = false; updatesOffered++; refreshUpdateNote(); }
 /* The note covers the title bar (so nothing on the page moves), and waits while a part is being edited. */
 function refreshUpdateNote(){
   var b = document.getElementById("updnote"); if (!b) return;
@@ -682,17 +691,23 @@ function tourSteps(){
   return steps;
 }
 function setTour(how){ meta.tour = { state:"done", how:how, at:now() }; saveMeta(); }
-/* The tour opens by itself only when nothing else wants attention. */
-function tourAutoOK(){
-  var t = meta.tour; if (!t || t.state !== "offer") return false;
-  if (hasOwnNotes()){ setTour("ignored"); return false; }   /* they started writing: don't offer it any more */
+/* The tour opens by itself only when nothing else wants attention.
+   0.12.2: "no" = not this time (already answered, notes written, memory-only, the 30-day reminder, already open);
+   "wait" = something that goes away by itself or with one tap is in the way (start-up message, a pop-up, the update note,
+   the "open in another tab" notice, a message at the bottom, the page loading its save spot); "" = it may open now. */
+function tourAutoState(){
+  var t = meta.tour; if (!t || t.state !== "offer") return "no";
+  if (hasOwnNotes()){ setTour("ignored"); return "no"; }   /* they started writing: don't offer it any more */
   if (t.autoAt && !tourOpen && !tourResumeKey()){   /* it opened once and the app was closed during it: never again, but say where it went (once) */
-    setTour("skipped"); setTimeout(tourLaterMsg, 0); return false; }
-  if (!spot.ready || startupMsg || modalBusy || tourOpen || store.mode() === "memory" || needsReminder()) return false;
-  var u = document.getElementById("updnote"); if (u && !u.hidden) return false;
-  var b = document.getElementById("banner"); if (b && b.classList.contains("show")) return false;
-  return true;
+    setTour("skipped"); setTimeout(tourLaterMsg, 0); return "no"; }
+  if (tourOpen || store.mode() === "memory" || needsReminder()) return "no";
+  if (!spot.ready || startupMsg || modalBusy) return "wait";
+  var u = document.getElementById("updnote"); if (u && !u.hidden) return "wait";
+  var b = document.getElementById("banner"); if (b && b.classList.contains("show")) return "wait";
+  var m = $("#toast"); if (m && m.classList.contains("show")) return "wait";   /* let a message finish first */
+  return "";
 }
+function tourAutoOK(){ return tourAutoState() === ""; }
 /* The "closed during the tour" message waits until no start-up message, pop-up or other message is showing, so it never replaces one. */
 function tourLaterMsg(n){
   n = n || 0; var t = $("#toast");
@@ -702,14 +717,22 @@ function tourLaterMsg(n){
 /* 0.12.1: step 2 says "open the app from its new icon". On Android the installed app shares its notes (and this answer)
    with the browser, so if the tour was left on that step, the next open picks it up again at the backup step, once. */
 function tourResumeKey(){ var t = meta.tour; return t && t.state === "offer" && t.autoAt && !t.resumed && /^install/.test(t.step || "") ? "backup" : ""; }
-var autoTourTimer = null;
+var autoTourTimer = null, autoTourSince = 0, AUTO_TOUR_WAIT = 30000;
+/* 0.12.2: if something that goes away is in the way (see tourAutoState), look again every 0.7 s for up to 30 s, instead of
+   giving up for this launch. It still never opens over a pop-up, the update note or anything else: it only opens once
+   nothing is in the way. After 30 s it stops; the next time the main screen is drawn it tries again. */
 function maybeAutoTour(){
   clearTimeout(autoTourTimer); autoTourTimer = null;
-  if (route().view !== "home" || document.hidden || !tourAutoOK()) return;
-  var t = $("#toast"); if (t && t.classList.contains("show")){ autoTourTimer = setTimeout(maybeAutoTour, 700); return; }   /* let a message finish first */
-  var a = document.activeElement; if (a && (/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) || a.isContentEditable)) return;
-  startTour(false, tourResumeKey());
+  if (route().view !== "home"){ autoTourSince = 0; return; }
+  var st = tourAutoState(); if (st === "no"){ autoTourSince = 0; return; }
+  var a = document.activeElement; if (a && (/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) || a.isContentEditable)){ autoTourSince = 0; return; }   /* they are typing: not now */
+  if (st === "" && !document.hidden){ autoTourSince = 0; startTour(false, tourResumeKey()); return; }
+  if (!autoTourSince) autoTourSince = Date.now();
+  if (Date.now() - autoTourSince < AUTO_TOUR_WAIT) autoTourTimer = setTimeout(maybeAutoTour, 700); else autoTourSince = 0;
 }
+/* back on screen (from another app or tab): try again, if the tour is still waiting to open */
+document.addEventListener("visibilitychange", function(){
+  if (document.visibilityState === "visible" && loaded && meta.tour && meta.tour.state === "offer" && !tourOpen && !meta.tour.autoAt){ clearTimeout(autoTourTimer); autoTourTimer = setTimeout(maybeAutoTour, 400); } });
 function startTour(fromLink, resumeKey){
   if (tourOpen) return;
   var a = document.activeElement; if (a && (/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) || a.isContentEditable)) return;
@@ -2085,7 +2108,7 @@ store.init(COPY_ID).then(function(){ return Promise.all([store.get("data"), stor
       var announce = (last ? cmpVer(APP_VERSION, last) > 0 : wasUser) && store.mode() !== "memory";
       if (last && cmpVer(APP_VERSION, last) > 0 && meta.tour && meta.tour.state === "offer") setTour("upgrade");   /* 0.12.1: an update never opens the tour by itself (a 0.12 copy that never answered the card) */
       meta.lastVersion = APP_VERSION; saveMeta(); try { localStorage.setItem(lsKey, APP_VERSION); } catch(e){}
-      if (announce) toast("Updated to version " + APP_VERSION.split(" ")[0] + ". " + (hasOwnNotes() ? "Your notes are kept. " : "") + (!last || cmpVer(last, "0.12") < 0 ? "New: a short tour. Tap ? Help, then Take the tour." : "The PDF button and intro are now at the bottom of the main screen, and Take the tour is in Help."), 8000);
+      if (announce) toast("Updated to version " + APP_VERSION.split(" ")[0] + ". " + (hasOwnNotes() ? "Your notes are kept. " : "") + (!last || cmpVer(last, "0.12") < 0 ? "New: a short tour. Tap ? Help, then Take the tour." : cmpVer(last, "0.12.1") < 0 ? "The PDF button and intro are now at the bottom of the main screen, and Take the tour is in Help." : "Fixes for the first-time tour and a wrong “New version ready” note. The phone’s bottom buttons now get a dark blue bar so they are easier to see (in the installed app, after Chrome updates it while the phone charges on Wi-Fi with the app closed, for example overnight)."), 8000);
     } else if (!meta.lastVersion || meta.lastVersion !== APP_VERSION){ meta.lastVersion = APP_VERSION; saveMeta(); }
   }
   tellOthers({t:"hello"});
@@ -2095,7 +2118,7 @@ store.init(COPY_ID).then(function(){ return Promise.all([store.get("data"), stor
     spot.ready = true; if (spot.handle || safety.length || (meta.tour && meta.tour.state === "offer")) refreshView();
   });
 }).catch(function(e){ console.error(e); $("#main") && ($("#main").innerHTML = '<p class="lead">Something went wrong while opening your notes. Please reload the page.</p>'); });
-window.__wa = { get data(){ return data; }, compareLine: compareLine, cmpVer: cmpVer, revealCaret: function(){ revealCaret(); }, noteBackup: function(k){ noteBackup(k); }, testOfferUpdate: function(){ offerUpdate({ postMessage: function(){ window.__skipAsked = (window.__skipAsked || 0) + 1; } }); }, checkForUpdate: function(){ checkForUpdate(); }, info: function(t, m){ return info(t, m); }, get meta(){ return meta; }, saveMeta: function(){ return saveMeta(); }, render: function(){ render(); }, storageInfo: storageInfo, needsReminder: function(){ return needsReminder(); }, backupName: function(){ return backupName(); }, readableHtml: function(){ return readableHtml(printSections()); }, copyId: COPY_ID, get movedFromShared(){ return movedFromShared; }, get rev(){ return rev; }, sanitize: sanitize, merge: merge, merge3: merge3, normalizeImport: normalizeImport, saveNow: saveNow, doSearch: doSearch, makeSamples: makeSamples, sampleSig: sampleSig, tidyOldSamples: tidyOldSamples, checkForNewer: checkForNewer, safeHref: safeHref, version: APP_VERSION, dataSig: function(){ return dataSig(); }, changed: function(){ return changedSinceBackup(); }, get spot(){ return spot; }, get safety(){ return safety.map(function(c){ return { id:c.id, at:c.at, kind:c.kind, counts:c.counts, data:JSON.stringify(c.sections) }; }); }, isFullBackup: isFullBackup, summaryText: summaryText, pickerOK: function(){ return pickerOK(); }, saveSoon: function(d){ saveSoon(d); }, get tour(){ return { state: meta.tour && meta.tour.state, how: meta.tour && meta.tour.how, open: tourOpen, steps: tourSteps().map(function(x){ return x.key; }), card: !!document.getElementById("tourCard"), auto: !!(meta.tour && meta.tour.autoAt), step: meta.tour && meta.tour.step, resumed: !!(meta.tour && meta.tour.resumed), mode: store.mode() }; }, startTour: function(){ startTour(true); } };
+window.__wa = { get data(){ return data; }, compareLine: compareLine, cmpVer: cmpVer, revealCaret: function(){ revealCaret(); }, noteBackup: function(k){ noteBackup(k); }, testOfferUpdate: function(){ offerUpdate({ postMessage: function(){ window.__skipAsked = (window.__skipAsked || 0) + 1; } }); }, checkForUpdate: function(){ checkForUpdate(); }, info: function(t, m){ return info(t, m); }, get meta(){ return meta; }, saveMeta: function(){ return saveMeta(); }, render: function(){ render(); }, storageInfo: storageInfo, needsReminder: function(){ return needsReminder(); }, backupName: function(){ return backupName(); }, readableHtml: function(){ return readableHtml(printSections()); }, copyId: COPY_ID, get movedFromShared(){ return movedFromShared; }, get rev(){ return rev; }, sanitize: sanitize, merge: merge, merge3: merge3, normalizeImport: normalizeImport, saveNow: saveNow, doSearch: doSearch, makeSamples: makeSamples, sampleSig: sampleSig, tidyOldSamples: tidyOldSamples, checkForNewer: checkForNewer, safeHref: safeHref, version: APP_VERSION, dataSig: function(){ return dataSig(); }, changed: function(){ return changedSinceBackup(); }, get spot(){ return spot; }, get safety(){ return safety.map(function(c){ return { id:c.id, at:c.at, kind:c.kind, counts:c.counts, data:JSON.stringify(c.sections) }; }); }, isFullBackup: isFullBackup, summaryText: summaryText, pickerOK: function(){ return pickerOK(); }, saveSoon: function(d){ saveSoon(d); }, get tour(){ return { state: meta.tour && meta.tour.state, how: meta.tour && meta.tour.how, open: tourOpen, steps: tourSteps().map(function(x){ return x.key; }), card: !!document.getElementById("tourCard"), auto: !!(meta.tour && meta.tour.autoAt), step: meta.tour && meta.tour.step, resumed: !!(meta.tour && meta.tour.resumed), mode: store.mode() }; }, startTour: function(){ startTour(true); }, get updatesOffered(){ return updatesOffered; }, get autoTourWaiting(){ return !!autoTourTimer; } };
 })();
 </script>
 </body>
