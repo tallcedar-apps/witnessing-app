@@ -12,29 +12,31 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232f5d8a'/%3E%3Cpath d='M12 18c8-3 14-2 20 2 6-4 12-5 20-2v30c-8-3-14-2-20 2-6-4-12-5-20-2z' fill='%23fff'/%3E%3Cpath d='M32 20v30' stroke='%232f5d8a' stroke-width='2'/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAADC0lEQVR4nO3c0WnbQACA4aZ0n3SHzpEuUOhbl2jfClkge2SHjNQHgSmJf0dx7NMFfd+jLOsO83M+WeCb27vfn+CYz1tPgHmJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJg/RR43h6+LX1FNZ6vP+59RTOdPOB/vv8aBBfv/8ZP5OVjmbx7cff8TM5z+xxrFwhZktk5WoxeSgzxvGer4zNKzn7S2TCUGaJ47J7iPGJXHZjMUkoW8Zx7U3lmESuvd/cMJTRcYy/y7heIuNvQwaHMiKOSW47L1jJDHenA0L5cu0B5rE0+s5EZshimB3FsTg7kV1lsdhdHIv1ieywiYOdxrE4bIaOVrLnLBa7juPg2UIii8VHffB2cf8vHpP8BrU5cZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZC+bD2BN/j6/c/Lg08Pv8bPZKVvP/6+PPh4/3P8TM4zexxHg3h5wmyJHM3i5UuThzJdHK/WcPpd21Zyook158/WyvZxnFfDq1cbXMlbs1hzkc1b2SaOywZxYohrJ3KRJtZcfJNQBsUxoIbT4168kqtm8epwY1q5ub37PWCYSZxI5Fm+9ekPbmJb2+85RnrPQrKrLBb7iuNgfSU7bOJgp3EcnNi37jmLxb72HLyJZyskcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQfoHO6aWlD6JHdkAAAAASUVORK5CYII=">
 <script type="application/json" id="wa-bundle"></script>
+<script>(function(){try{var s=localStorage.getItem("wa-textSize");if(!s)return;var m={s:"15px",m:"18px",l:"20px",xl:"22px",xx:"24px"};if(m[s])document.documentElement.style.setProperty("--fs",m[s]);}catch(e){}})();</script>
 <style>
-:root{--bg:#f7f3ec;--card:#fff;--ink:#1f2328;--muted:#5e6670;--line:#e3ddd2;--accent:#2f5d8a;--accent-soft:#e6eef6;--go:#2e7d4f;--go-dark:#256a42;--danger:#b3261e;--radius:14px}
+:root{--bg:#f7f3ec;--card:#fff;--ink:#1f2328;--muted:#5e6670;--line:#e3ddd2;--accent:#2f5d8a;--accent-soft:#e6eef6;--go:#2e7d4f;--go-dark:#256a42;--danger:#b3261e;--radius:14px;--fs:18px}
+html{font-size:var(--fs)}
 *{box-sizing:border-box}
 /* 0.12.2: Chrome on Android paints the phone's bottom button bar in the page root's background-color, so that color is dark blue (white buttons).
    A cream image layer covers it everywhere, so the page itself still looks cream: no blue edge on short pages, when scrolling past the end, behind dialogs, or while the page is still loading. */
 html{-webkit-text-size-adjust:100%;min-height:100%;background-color:var(--accent);background-image:linear-gradient(var(--bg),var(--bg))}
-body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;padding-bottom:env(safe-area-inset-bottom)}
+body{margin:0;background:var(--bg);color:var(--ink);font:1rem/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;padding-bottom:env(safe-area-inset-bottom)}
 button,input{font:inherit;color:inherit}
 button{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .top{position:sticky;top:0;z-index:20;background:var(--accent);color:#fff;padding:calc(6px + env(safe-area-inset-top)) 8px 6px;display:flex;align-items:center;gap:6px;min-height:60px;box-shadow:0 1px 4px rgba(0,0,0,.15)}
-.top h1{flex:1;margin:0 4px;font-size:19px;line-height:1.2;font-weight:650;overflow:hidden;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-.tbtn{background:rgba(255,255,255,.14);border:0;color:#fff;border-radius:10px;min-height:48px;min-width:48px;padding:2px 10px;font-size:16px;line-height:1.15;font-weight:600;display:inline-flex;align-items:center;gap:4px;max-width:40%;overflow:hidden;text-align:left;flex:none}
+.top h1{flex:1;margin:0 4px;font-size:1.06rem;line-height:1.2;font-weight:650;overflow:hidden;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.tbtn{background:rgba(255,255,255,.14);border:0;color:#fff;border-radius:10px;min-height:48px;min-width:48px;padding:2px 10px;font-size:.89rem;line-height:1.15;font-weight:600;display:inline-flex;align-items:center;gap:4px;max-width:40%;overflow:hidden;text-align:left;flex:none}
 .tbtn .bl{overflow:hidden;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .tbtn:active{background:rgba(255,255,255,.3)}
 .saved{font-size:13px;opacity:.85;min-width:44px;text-align:right}
 main{max-width:720px;margin:0 auto;padding:14px 14px 40px}
-.lead{color:var(--muted);margin:2px 2px 14px;font-size:17px}
+.lead{color:var(--muted);margin:2px 2px 14px;font-size:.94rem}
 .list{display:flex;flex-direction:column;gap:10px;margin:0 0 16px;padding:0;list-style:none}
 .row{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);display:flex;align-items:stretch;min-height:64px;overflow:hidden}
 .row .open{flex:1;background:none;border:0;text-align:left;padding:12px 14px;display:flex;flex-direction:column;justify-content:center;min-width:0}
 .row .open:active{background:var(--accent-soft)}
-.row .name{font-weight:650;font-size:19px;overflow-wrap:anywhere}
-.row .meta{color:var(--muted);font-size:15px}
+.row .name{font-weight:650;font-size:1.06rem;overflow-wrap:anywhere}
+.row .meta{color:var(--muted);font-size:.83rem}
 .row .chev{align-self:center;padding-right:14px;color:var(--muted);font-size:24px}
 .ctrls{display:flex;align-items:center;gap:4px;padding:6px;border-left:1px solid var(--line);background:#fbfaf7;flex-wrap:wrap;justify-content:flex-end;max-width:56%}
 .row.arr{flex-wrap:wrap}.row.arr .ctrls{flex-basis:100%;max-width:none;border-left:0;border-top:1px solid var(--line);gap:8px;justify-content:flex-end}.row.arr .ctrls .ibtn{min-width:56px}
@@ -43,27 +45,27 @@ main{max-width:720px;margin:0 auto;padding:14px 14px 40px}
 .ibtn:disabled{opacity:.3}
 .ibtn.del{color:var(--danger)}
 .badge{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;background:#fff3cd;color:#7a5b00;border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:2px}
-.big{display:flex;width:100%;align-items:center;justify-content:center;gap:8px;min-height:60px;border:0;border-radius:var(--radius);background:var(--go);color:#fff;font-size:20px;font-weight:700;margin:8px 0;box-shadow:0 2px 0 var(--go-dark)}
+.big{display:flex;width:100%;align-items:center;justify-content:center;gap:8px;min-height:60px;border:0;border-radius:var(--radius);background:var(--go);color:#fff;font-size:1.11rem;font-weight:700;margin:8px 0;box-shadow:0 2px 0 var(--go-dark)}
 .big:active{transform:translateY(1px);box-shadow:none}
 .big.blue{background:var(--accent);box-shadow:0 2px 0 #234a70}
 .big.light{background:#fff;color:var(--accent);border:2px solid var(--accent);box-shadow:none}
-.plain{display:flex;width:100%;align-items:center;justify-content:center;min-height:52px;border:1px solid var(--line);border-radius:var(--radius);background:#fff;font-size:17px;font-weight:600;margin:8px 0;color:var(--accent)}
+.plain{display:flex;width:100%;align-items:center;justify-content:center;min-height:52px;border:1px solid var(--line);border-radius:var(--radius);background:#fff;font-size:.94rem;font-weight:600;margin:8px 0;color:var(--accent)}
 .plain.on{background:var(--accent-soft);border-color:var(--accent)}
 .danger{color:var(--danger)}
 .empty{background:var(--card);border:2px dashed var(--line);border-radius:var(--radius);padding:22px 16px;text-align:center;color:var(--muted);margin-bottom:12px}
-.tract h2.ttl{font-size:26px;line-height:1.25;margin:4px 2px 12px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 16px 10px;margin:0 0 12px}
-.card .sub-title{font-size:21px;margin:4px 0 6px;color:var(--accent)}
-.card .cardbar{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:10px;padding-top:8px}
+.tract h2.ttl{font-size:1.35rem;line-height:1.25;margin:2px 2px 6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:8px 12px 6px;margin:0 0 6px}
+.card .sub-title{font-size:1.1rem;margin:2px 0 4px;color:var(--accent)}
+.card .cardbar{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:6px;padding-top:6px}
 .card .editbtn{min-height:48px;padding:0 16px;border-radius:10px;border:1px solid var(--accent);background:#fff;color:var(--accent);font-weight:650}
 .rich{overflow-wrap:anywhere}
-.rich h2{font-size:22px;margin:14px 0 6px;line-height:1.3}
-.rich h3{font-size:19px;margin:12px 0 4px}
-.rich h4{font-size:18px;margin:10px 0 4px}
-.rich p{margin:0 0 10px}
-.rich ul,.rich ol{margin:0 0 10px;padding-left:28px}
+.rich h2{font-size:1.15rem;margin:10px 0 4px;line-height:1.3}
+.rich h3{font-size:1.05rem;margin:8px 0 3px}
+.rich h4{font-size:1rem;margin:6px 0 3px}
+.rich p{margin:0 0 6px}
+.rich ul,.rich ol{margin:0 0 6px;padding-left:1.4rem}
 .rich li{margin:3px 0}
-.rich blockquote{margin:8px 0 12px;padding:8px 12px;border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 8px 8px 0}
+.rich blockquote{margin:4px 0 8px;padding:6px 10px;border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 8px 8px 0}
 .rich img{max-width:100%;height:auto;border-radius:8px;display:block;margin:8px 0}
 .rich figure{margin:12px auto;padding:0;max-width:100%}
 .rich figure.size-s{width:45%}.rich figure.size-m{width:72%}.rich figure.size-l{width:100%}
@@ -74,7 +76,7 @@ main{max-width:720px;margin:0 auto;padding:14px 14px 40px}
 .seg{display:flex;gap:6px}.seg button{flex:1;min-height:52px;border-radius:12px;border:1px solid #cfc7b8;background:#fff;font-weight:650;font-size:16px;padding:0 4px}
 .seg button[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
 .sheet .btns .warn{color:var(--danger)}
-.searchbar{display:flex;align-items:center;gap:10px;width:100%;min-height:54px;margin:0 0 14px;padding:0 14px;border:1px solid #cfc7b8;border-radius:var(--radius);background:#fff;color:var(--muted);font-size:18px;text-align:left}
+.searchbar{display:flex;align-items:center;gap:10px;width:100%;min-height:54px;margin:0 0 14px;padding:0 14px;border:1px solid #cfc7b8;border-radius:var(--radius);background:#fff;color:var(--muted);font-size:1rem;text-align:left}
 .res{display:block;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;margin:0 0 10px;min-height:60px}
 .res:active{background:var(--accent-soft)}
 .res .kind{display:inline-block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--accent);background:var(--accent-soft);border-radius:6px;padding:1px 6px;margin-right:6px;vertical-align:2px}
@@ -91,20 +93,20 @@ body.is-dragging{user-select:none;-webkit-user-select:none}
 .rich a{color:var(--accent);text-decoration:underline;word-break:break-word}
 .rich .empty-note{color:var(--muted);font-style:italic}
 label.fl{display:block;font-weight:650;margin:6px 2px 4px;font-size:16px;color:var(--muted)}
-input.text{width:100%;min-height:52px;border:1px solid #cfc7b8;border-radius:12px;padding:10px 12px;background:#fff;font-size:18px}
+input.text{width:100%;min-height:52px;border:1px solid #cfc7b8;border-radius:12px;padding:10px 12px;background:#fff;font-size:1rem}
 input.text:focus{outline:3px solid #9cc0e4;border-color:var(--accent)}
 :root{--hdr:60px;--tbh:0px}
 html{scroll-padding-top:calc(var(--hdr) + var(--tbh) + 10px);scroll-padding-bottom:16px}
 .toolbar{position:sticky;top:var(--hdr);z-index:15;display:flex;flex-wrap:wrap;gap:6px;background:var(--bg);padding:8px 0}
-.toolbar button{flex:1 1 auto;white-space:nowrap;min-width:48px;min-height:46px;padding:0 7px;border-radius:10px;border:1px solid #cfc7b8;background:#fff;font-size:15px;font-weight:600}
-@media(max-width:380px){.toolbar{gap:4px}.toolbar button{padding:0 4px;font-size:14px;min-width:44px}}
+.toolbar button{flex:1 1 auto;white-space:nowrap;min-width:48px;min-height:46px;padding:0 7px;border-radius:10px;border:1px solid #cfc7b8;background:#fff;font-size:.83rem;font-weight:600}
+@media(max-width:380px){.toolbar{gap:4px}.toolbar button{padding:0 4px;font-size:.78rem;min-width:44px}}
 .toolbar button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 .toolbar button:active{background:var(--accent-soft)}
 .editor{min-height:220px;scroll-margin-top:calc(var(--hdr) + var(--tbh) + 10px);background:#fff;border:1px solid #cfc7b8;border-radius:12px;padding:12px 14px;outline:none}
 .editor:focus{border-color:var(--accent);box-shadow:0 0 0 3px #9cc0e4}
 .editor:empty:before{content:attr(data-placeholder);color:#8a8f96}
-.hint{font-size:15px;color:var(--muted);margin:6px 2px}
-.plain.backup{border:2px solid var(--accent);font-size:18px}
+.hint{font-size:.83rem;color:var(--muted);margin:6px 2px}
+.plain.backup{border:2px solid var(--accent);font-size:1rem}
 .remind{background:#fff8e1;border:1px solid #e6c766;border-radius:var(--radius);padding:8px 10px;margin:0 0 10px;color:#4d3b00;font-size:16px;line-height:1.35}
 .remind p{margin:0 0 6px}
 @media(max-width:380px){.remind{font-size:15px;padding:6px 8px}.remind button{min-height:44px}.plain.backup{min-height:46px;margin:6px 0}}
@@ -139,7 +141,7 @@ html{scroll-padding-top:calc(var(--hdr) + var(--tbh) + 10px);scroll-padding-bott
   .doc .rich blockquote{background:#f1f4f8}
 }
 .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin:0 0 16px}
-.panel h2{margin:0 0 6px;font-size:21px}
+.panel h2{margin:0 0 6px;font-size:1.1rem}
 .panel p{margin:4px 0 10px}
 .pick{list-style:none;margin:6px 0 8px;padding:0}
 .pick li{margin:0}
@@ -149,23 +151,24 @@ html{scroll-padding-top:calc(var(--hdr) + var(--tbh) + 10px);scroll-padding-bott
 .pick .sname{font-weight:650}
 .two{display:flex;gap:8px}
 .two>*{flex:1}
-.help h2{font-size:21px;margin:18px 0 6px}
+.help h2{font-size:1.1rem;margin:18px 0 6px}
 .help ol,.help ul{padding-left:24px}
 .help li{margin:6px 0}
 #modal{position:fixed;inset:0;background:rgba(20,25,30,.5);display:none;align-items:flex-end;justify-content:center;z-index:100;padding:10px;overflow:hidden}
 #modal.show{display:flex}
 .sheet{background:#fff;border-radius:18px;width:100%;max-width:520px;padding:18px 16px calc(14px + env(safe-area-inset-bottom));box-shadow:0 10px 40px rgba(0,0,0,.3);max-height:100%;overflow:auto;overscroll-behavior:contain;margin:0}
-.sheet h2{margin:0 0 8px;font-size:21px}
+.sheet h2{margin:0 0 8px;font-size:1.17rem}
 .sheet .msg{margin:0 0 12px;white-space:pre-line}
 .sheet .alert{margin:0 0 12px;padding:10px 12px;border-left:5px solid #b3261e;background:#fdecea;color:#8c1d18;font-weight:700}
 .sheet .btns{display:flex;gap:8px;margin-top:14px;position:sticky;bottom:calc(-14px - env(safe-area-inset-bottom));background:#fff;padding:8px 0 4px}
 .sheet input.text{scroll-margin-top:12px;scroll-margin-bottom:96px}
 .sheet .draftnote{background:#fff3cd;border-radius:8px;padding:6px 10px;color:#4d3b00}
-.sheet .btns button{flex:1;min-height:54px;border-radius:12px;font-size:18px;font-weight:700;border:1px solid var(--line);background:#fff}
+.sheet .btns button{flex:1;min-height:54px;border-radius:12px;font-size:1rem;font-weight:700;border:1px solid var(--line);background:#fff}
 .sheet .btns .ok{background:var(--accent);color:#fff;border-color:var(--accent)}
 .sheet .btns .ok.red{background:var(--danger);border-color:var(--danger)}
 @media(min-width:700px){#modal{align-items:center}}
-#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#222;color:#fff;padding:12px 18px;border-radius:12px;font-size:16px;max-width:92vw;z-index:120;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#222;color:#fff;padding:12px 18px;border-radius:12px;font-size:.89rem;width:max-content;max-width:92vw;z-index:120;opacity:0;pointer-events:none;transition:opacity .2s}
+#app{padding-bottom:var(--toast-pad,0px)}   /* 0.13: while a toast shows, pad the page end so scrolled content can sit above it */
 #toast.show{opacity:1}
 html.touring #toast{bottom:auto;top:calc(10px + env(safe-area-inset-top))}   /* 0.12.1: while the tour is open, a message shows at the top so it never covers Skip tour / Next */
 .sr{position:absolute;left:-9999px}
@@ -177,7 +180,7 @@ html.touring #toast{bottom:auto;top:calc(10px + env(safe-area-inset-top))}   /* 
 #updnote[hidden]{display:none}
 .ver{color:var(--muted);font-size:13px;margin:-8px 2px 12px}
 .ver.homever{margin:-6px 2px 18px}   /* 0.12.1: the version line is the last thing on the main screen */
-.plain.tourhelp{margin:0 0 12px;font-size:18px}
+.plain.tourhelp{margin:0 0 12px;font-size:1rem}
 .sheet.tour{max-height:min(100%, calc(100dvh - 20px))}
 .sheet.tour .tstep{margin:0 0 4px;color:var(--muted);font-size:14px;font-weight:650}
 .sheet.tour h2{outline:none}
@@ -204,10 +207,30 @@ html.touring #toast{bottom:auto;top:calc(10px + env(safe-area-inset-top))}   /* 
 .safety button{min-height:48px;margin:4px 0}
 .safety .redtext{color:var(--danger)}
 .sheet .choices{display:flex;flex-direction:column;gap:8px;margin-top:10px}
-.sheet .choices button{min-height:56px;border-radius:12px;font-size:18px;font-weight:700;border:1px solid var(--line);background:#fff;padding:6px 10px;color:var(--accent)}
+.sheet .choices button{min-height:56px;border-radius:12px;font-size:1rem;font-weight:700;border:1px solid var(--line);background:#fff;padding:6px 10px;color:var(--accent)}
 .sheet .choices button.go{background:var(--go);color:#fff;border-color:var(--go)}
-.sheet .choices button.redline{color:var(--danger);border:2px solid var(--danger);font-size:16px;min-height:50px}
+.sheet .choices button.redline{color:var(--danger);border:2px solid var(--danger);font-size:1rem;min-height:50px}
 .sheet .choices .why{display:block;font-size:14px;font-weight:600;opacity:.9}
+
+/* 0.13: text size controls */
+.tsize{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 12px}
+.tsize .tslabel{font-weight:650;color:var(--muted);font-size:.89rem;margin-right:4px}
+.tsize button{min-width:48px;min-height:48px;border-radius:10px;border:1px solid var(--line);background:#fff;font-size:1rem;font-weight:700;color:var(--accent);padding:0 10px}
+.tsize button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tsize .tsstep{flex:1;min-width:48px}
+/* 0.13: compact Edit pill on the topic title row (no full-width bar) */
+.ttlrow{display:flex;align-items:flex-start;gap:8px;margin:2px 2px 6px}
+.ttlrow .ttl{flex:1;min-width:0;margin:0;font-size:1.35rem;line-height:1.25;overflow-wrap:anywhere}
+.ttlrow .emode{flex:none;min-width:44px;min-height:44px;padding:0 12px;border-radius:999px;border:1px solid var(--accent);background:#fff;color:var(--accent);font-weight:700;font-size:.83rem;line-height:1.1;white-space:nowrap;align-self:center}
+.ttlrow .emode.on{background:var(--accent);color:#fff}
+.tract h2.ttl{font-size:1.35rem;line-height:1.25;margin:2px 2px 6px} /* kept for non-row uses */
+.tract.reading .card .cardbar{display:none}
+.tract.reading .card{padding-bottom:8px}
+.edithint{background:var(--accent-soft);border:1px solid #b7c9da;border-radius:var(--radius);padding:8px 10px;margin:0 0 8px;font-size:.89rem;color:#1f3a52}
+.edithint .two{display:flex;gap:8px;margin-top:6px}
+.edithint button{flex:1;min-height:44px;border-radius:10px;border:1px solid #b7c9da;background:#fff;font-weight:650;color:var(--accent)}
+@media(max-width:360px){.ttlrow .emode{padding:0 10px;font-size:.78rem}}
+
 </style>
 </head>
 <body>
@@ -225,7 +248,7 @@ html.touring #toast{bottom:auto;top:calc(10px + env(safe-area-inset-top))}   /* 
 "use strict";
 /* Copy of the untouched page, captured before anything is drawn. Used for "give someone the app". */
 var PRISTINE = document.documentElement.cloneNode(true);
-var APP_VERSION = "0.12.2 (proof of concept)";
+var APP_VERSION = "0.13 (proof of concept)";
 /* When the app is opened from a web address (not a saved file), let it be installed and work offline. */
 var HOSTED = /^https?:$/.test(location.protocol);
 if (HOSTED){
@@ -454,6 +477,45 @@ function saveNow(){
   return saving;
 }
 function saveMeta(){ return store.set("meta", JSON.parse(JSON.stringify(meta))).catch(function(e){ console.warn(e); }); }
+
+/* ---------- text size (0.13) ----------
+   Five steps from Small to Extra large. Stored on the device in meta.textSize.
+   The whole layout scales via the root font size (rem), so PDF export (print CSS in pt) is unchanged. */
+var TEXT_SIZES = [
+  { id:"s",  label:"Small",        px:15 },
+  { id:"m",  label:"Medium",       px:18 },
+  { id:"l",  label:"Large",        px:20 },
+  { id:"xl", label:"Extra large",  px:22 },
+  { id:"xx", label:"Biggest",      px:24 }
+];
+function textSizeId(){ var id = meta.textSize || "m"; for (var i = 0; i < TEXT_SIZES.length; i++) if (TEXT_SIZES[i].id === id) return id; return "m"; }
+function textSizeIdx(){ var id = textSizeId(); for (var i = 0; i < TEXT_SIZES.length; i++) if (TEXT_SIZES[i].id === id) return i; return 1; }
+function applyTextSize(){
+  var t = TEXT_SIZES[textSizeIdx()];
+  document.documentElement.style.setProperty("--fs", t.px + "px");
+  document.documentElement.setAttribute("data-textsize", t.id);
+}
+function setTextSize(id){
+  var ok = false; for (var i = 0; i < TEXT_SIZES.length; i++) if (TEXT_SIZES[i].id === id) ok = true;
+  if (!ok) return; meta.textSize = id;
+  try { localStorage.setItem("wa-textSize", id); } catch(e){}
+  saveMeta(); applyTextSize(); render();
+  toast("Text size: " + TEXT_SIZES[textSizeIdx()].label);
+}
+function bumpTextSize(dir){
+  var i = textSizeIdx() + (dir < 0 ? -1 : 1);
+  if (i < 0 || i >= TEXT_SIZES.length){ toast(i < 0 ? "Already at the smallest size." : "Already at the biggest size."); return; }
+  setTextSize(TEXT_SIZES[i].id);
+}
+function textSizeControls(){
+  var cur = textSizeId(), h = '<div class="tsize" role="group" aria-label="Text size">';
+  h += '<span class="tslabel">Text size</span>';
+  h += '<button type="button" data-act="textSmaller" aria-label="Make text smaller" ' + (textSizeIdx()===0?'disabled':'') + '>A−</button>';
+  TEXT_SIZES.forEach(function(t){ h += '<button type="button" class="tsstep' + (t.id===cur?' on':'') + '" data-act="textSize" data-size="' + t.id + '" aria-pressed="' + (t.id===cur?'true':'false') + '">' + esc(t.label.replace("Extra large","XL").replace("Biggest","XXL").replace("Medium","M").replace("Large","L").replace("Small","S")) + '</button>'; });
+  h += '<button type="button" data-act="textBigger" aria-label="Make text bigger" ' + (textSizeIdx()===TEXT_SIZES.length-1?'disabled':'') + '>A＋</button>';
+  return h + '</div>';
+}
+
 function setSaved(t){ var el = $("#saved"); if (el) el.textContent = t; }
 /* Save straight away whenever the app is hidden, closed, reloaded, or loses focus. */
 function saveAll(){ flushEditor(); saveNow(); }
@@ -637,9 +699,72 @@ function modal(opts){
 function ask(title, label, value, okText){ return modal({title:title, fields:[{label:label, value:value||""}], ok:okText||"Save"}).then(function(v){ return v == null ? null : cleanTitle(v); }); }
 function confirmDelete(what){ return modal({title:"Delete " + what + "?", message:"This can't be undone. (Tip: if you're unsure, make a backup first with 🛟 Back up on the main screen.)", ok:"Delete", cancel:"Keep it", danger:true}); }
 function info(title, message){ return modal({title:title, message:message, ok:"OK", cancel:false}); }
-var toastTimer;
-function toast(t, ms){ var el = $("#toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(function(){ el.classList.remove("show"); }, ms || 3200); }
-function hideToast(){ clearTimeout(toastTimer); var el = $("#toast"); if (el) el.classList.remove("show"); }
+var toastTimer, toastNudgeFrom = null, toastNudgeTo = null, toastUserScrolled = false, toastScrollListening = false, toastNudging = false;
+function onToastScroll(){
+  if (toastNudging || toastNudgeTo == null) return;
+  if (Math.abs((window.scrollY || 0) - toastNudgeTo) > 2) toastUserScrolled = true;
+}
+function armToastScrollWatch(){
+  if (toastScrollListening) return;
+  toastScrollListening = true;
+  window.addEventListener("scroll", onToastScroll, { passive:true });
+}
+function disarmToastScrollWatch(){
+  if (!toastScrollListening) return;
+  toastScrollListening = false;
+  window.removeEventListener("scroll", onToastScroll);
+}
+function syncToastPad(){
+  var el = $("#toast"), root = document.documentElement, app = $("#app");
+  if (!el || !el.classList.contains("show") || root.classList.contains("touring")){
+    root.style.setProperty("--toast-pad", "0px");
+    /* On hide: put the page back where it was before the nudge, unless the person scrolled themselves. */
+    if (toastNudgeFrom != null && !toastUserScrolled){
+      var back = toastNudgeFrom;
+      toastNudgeFrom = null; toastNudgeTo = null; toastUserScrolled = false; disarmToastScrollWatch();
+      scrollTo(0, back);
+    } else {
+      toastNudgeFrom = null; toastNudgeTo = null; toastUserScrolled = false; disarmToastScrollWatch();
+    }
+    return;
+  }
+  /* Pad the page end by the toast's height so scrolled content can sit above it.
+     If ＋ New section still intersects the toast, nudge the window (and remember where we were). */
+  var h = Math.ceil(el.getBoundingClientRect().height);
+  root.style.setProperty("--toast-pad", (h + 20) + "px");
+  function clearNew(){
+    if (!el.classList.contains("show")) return;
+    var tr = el.getBoundingClientRect();
+    var btn = null, nodes = (app || document).querySelectorAll("button");
+    for (var i = 0; i < nodes.length; i++){ if (/New section/.test(nodes[i].textContent || "")){ btn = nodes[i]; break; } }
+    if (!btn) return;
+    var r = btn.getBoundingClientRect();
+    if (r.width < 1 || r.height < 1) return;
+    if (!(r.right < tr.left || r.left > tr.right || r.bottom < tr.top || r.top > tr.bottom)){
+      var need = Math.ceil(r.bottom - tr.top + 12);
+      if (need > 0){
+        if (toastNudgeFrom == null){ toastNudgeFrom = window.scrollY || 0; toastUserScrolled = false; armToastScrollWatch(); }
+        toastNudging = true;
+        scrollBy(0, need);
+        toastNudgeTo = window.scrollY || 0;
+        toastNudging = false;
+      }
+    }
+  }
+  requestAnimationFrame(function(){ clearNew(); requestAnimationFrame(clearNew); });
+}
+function toast(t, ms){
+  var el = $("#toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toastTimer);
+  /* fresh show: start pad/nudge from the current scroll (don't keep a stale nudge from a prior toast) */
+  toastNudgeFrom = null; toastNudgeTo = null; toastUserScrolled = false;
+  requestAnimationFrame(function(){ syncToastPad(); requestAnimationFrame(syncToastPad); });
+  toastTimer = setTimeout(function(){ hideToast(); }, ms || 3200);
+}
+function hideToast(){ clearTimeout(toastTimer); var el = $("#toast"); if (el) el.classList.remove("show"); syncToastPad(); }
+/* Keep --toast-pad in sync if the toast resizes (text size change while showing). */
+(function(){ var el = document.getElementById("toast"); if (!el || typeof ResizeObserver !== "function") return;
+  new ResizeObserver(function(){ if (el.classList.contains("show")) syncToastPad(); }).observe(el);
+})();
 /* A notice that doesn't block anything (used when the app is open in another tab or window). */
 function banner(t){ var el = $("#banner"); el.innerHTML = '<span></span><button type="button">OK</button>'; el.firstChild.textContent = t; el.classList.add("show"); el.querySelector("button").onclick = function(){ el.classList.remove("show"); maybeAutoTour(); }; }   /* 0.12.1: a first-use tour waiting for this notice opens right after OK */
 
@@ -673,7 +798,7 @@ function tourSteps(){
      : '<p>Open your browser’s menu, then tap <b>Install app</b> or <b>Add to Home screen</b>.</p>') +
     '<p>' + esc(INSTALL_TIP) + '</p>' });
   var how;
-  if (pickerOK()) how = '<p>The first time, your phone asks where to save it. Pick <b>Downloads</b> or <b>Google Drive</b> and tap <b>Save</b>. After that, each tap updates the same file. After a restart, your phone may ask once more: tap <b>Allow</b>.</p>';
+  if (pickerOK()) how = '<p>The first time, your phone asks where to save it. Pick <b>Downloads</b> or <b>Google Drive</b> and tap <b>Save</b>. After that, each tap updates that same file. On Android, Chrome may ask again after you close the app or leave it unused for many hours; tap <b>Allow</b>. (Chrome on phones can’t remember that choice forever yet.)</p>';
   else if (ios) how = '<p>Each tap opens your phone’s share menu. Choose <b>Save to Files</b>, <b>Google Drive</b>, or email it to yourself.</p>';
   else if (android && canShareFiles()) how = '<p>Each tap opens your phone’s share menu. Choose <b>Google Drive</b>, or email it to yourself.</p>';
   else if (canShareFiles()) how = '<p>Each tap opens the share menu. Choose where to save or send the file.</p>';
@@ -682,6 +807,11 @@ function tourSteps(){
     '<p>Your notes live only on this phone. Once you have written some, tap <b>🛟 Back up</b> on the main screen to save a copy in a file.</p>' + how +
     '<p>' + TOUR_YELLOW + ' That means it’s time to tap it again.</p>' +
     '<p>To bring notes back later, use <b>Restore from a backup</b> near the bottom of the main screen, under your sections.</p>' });
+  steps.push({ key:"edit", title:"Reading and editing", body:
+    '<p>When you open a topic, you see your notes in <b>reading</b> mode: clean parts with no Edit buttons in the way.</p>' +
+    '<p>To change something, tap <b>✎ Edit</b> next to the topic title. Then each part gets an Edit button, and you can add, reorder, or delete parts. Tap <b>✓ Done</b> when you finish.</p>' +
+    '<p>A tap while reading never changes or deletes a note.</p>' +
+    '<p>To make text bigger or smaller, tap <b>? Help</b>, then use <b>Text size</b> at the top.</p>' });
   steps.push({ key:"pdf", title:"Make a PDF", body:
     '<p>A PDF is a printable booklet of your notes, easy to read or share. It can’t be brought back into the app, so it doesn’t replace a backup.</p>' +
     '<ol><li>Scroll to the bottom of the main screen and tap <b>📄 PDF and more backup choices</b>.</li><li>Tap <b>📄 Open the printable view</b> (choose which sections to include, if asked), then <b>📄 Save as PDF or print</b>.</li>' +
@@ -793,7 +923,7 @@ function startTour(fromLink, resumeKey){
 }
 
 /* ---------- moving around ---------- */
-var ui = { arrange:false, sel:null, leave:null, lastView:"" };
+var ui = { arrange:false, editMode:false, editTopic:null, sel:null, leave:null, lastView:"" };
 var navStack = [];
 function route(){ var h = (location.hash || "#/").replace(/^#\/?/, ""); var p = h.split("/"); return {view:p[0]||"home", id:decodeURIComponent(p[1]||""), sub:p[2]||""}; }
 function go(hash){ if (location.hash === hash) render(); else location.hash = hash; }
@@ -811,11 +941,21 @@ function header(backTo, backLabel, title, right){
     '<h1>' + esc(title) + '</h1><span class="saved" id="saved"></span>' + (right||"") + '</header>';
 }
 
-function render(navigated){
+function render(navigated){ try { applyTextSize(); } catch(e){}
+
   if (ui.leave){ var f = ui.leave; ui.leave = null; f(); }
   var r = route(), y = window.scrollY, html = "";
   var key = r.view + "/" + r.id;
-  if (navigated || key !== ui.lastView) { ui.arrange = false; }
+  /* 0.13: keep edit mode when returning from a part editor of the same topic; reset only on a different topic, Home/Search/other screens, or reload */
+  if (navigated || key !== ui.lastView) {
+    ui.arrange = false;
+    var keepEdit = false;
+    if (ui.editMode && ui.editTopic){
+      if (r.view === "t" && r.id === ui.editTopic) keepEdit = true;
+      else if (r.view === "e"){ var fs = findSub(r.id); if (fs && fs.topic && fs.topic.id === ui.editTopic) keepEdit = true; }
+    }
+    if (!keepEdit){ ui.editMode = false; ui.editTopic = null; }
+  }
   var same = key === ui.lastView;
   if (ui.lastView.indexOf("share/") === 0 && key.indexOf("share/") !== 0) hideToast();
   ui.lastView = key;
@@ -886,21 +1026,32 @@ function viewSection(id){
 }
 function viewTopic(id){
   var f = findTopic(id); if (!f){ location.replace("#/"); return null; }
-  var t = f.topic, n = t.subsections.length;
+  var t = f.topic, n = t.subsections.length, editing = !!ui.editMode;
   var prev = navStack[navStack.length-2] || "", fromSearch = prev.indexOf("#/search") === 0;
-  var h = header(fromSearch ? prev : "#/s/"+f.section.id, fromSearch ? "Results" : f.section.title, t.title) + '<main class="tract">';
-  h += '<h2 class="ttl">' + esc(t.title) + '</h2>';
-  if (ui.arrange) h += '<button class="plain" data-act="rename" data-kind="topic" data-id="'+t.id+'">✎ Rename this topic</button>';
+  var h = header(fromSearch ? prev : "#/s/"+f.section.id, fromSearch ? "Results" : f.section.title, t.title) + '<main class="tract' + (editing ? '' : ' reading') + '">';
+  /* 0.13: compact Edit pill on the title row. Reading mode has no per-part Edit button. */
+  h += '<div class="ttlrow"><h2 class="ttl">' + esc(t.title) + '</h2><button type="button" class="emode' + (editing ? ' on' : '') + '" data-act="toggleEdit" aria-pressed="' + (editing ? 'true' : 'false') + '" aria-label="' + (editing ? 'Done editing' : 'Edit this topic') + '">' + (editing ? '✓ Done' : '✎ Edit') + '</button></div>';
+  if (!editing && !meta.editHintShown && n){
+    h += '<div class="edithint" id="editHint"><p style="margin:0">To change a part, tap <b>✎ Edit</b> next to the title, then the part’s Edit button. While reading, a tap does nothing to your notes.</p><div class="two"><button type="button" data-act="dismissEditHint">Got it</button><button type="button" data-act="toggleEdit">✎ Edit now</button></div></div>';
+  }
+  if (editing && ui.arrange) h += '<button class="plain" data-act="rename" data-kind="topic" data-id="'+t.id+'">✎ Rename this topic</button>';
   if (!n) h += '<div class="empty">This topic is empty.<br>Tap “Add a part” to start writing.</div>';
   h += '<div class="cards" data-list="sub" data-parent="'+t.id+'">';
   t.subsections.forEach(function(u, i){
     var body = sanitize(u.html);
     h += '<article class="card" data-item="'+u.id+'" data-sub="'+u.id+'">' + (u.title ? '<h3 class="sub-title">' + esc(u.title) + '</h3>' : '') +
-      '<div class="rich">' + (body || '<p class="empty-note">(empty — tap Edit to write)</p>') + '</div><div class="cardbar">' +
-      (ui.arrange ? handle("sub", u.id) + '<button class="ibtn" data-act="up" data-kind="sub" data-id="'+u.id+'" aria-label="Move up" '+(i===0?'disabled':'')+'>↑</button><button class="ibtn" data-act="down" data-kind="sub" data-id="'+u.id+'" aria-label="Move down" '+(i===n-1?'disabled':'')+'>↓</button><button class="ibtn del" data-act="delete" data-kind="sub" data-id="'+u.id+'" aria-label="Delete this part">🗑</button>' : '') +
-      '<button class="editbtn" data-act="nav" data-to="#/e/'+u.id+'">✎ Edit</button></div></article>';
+      '<div class="rich">' + (body || '<p class="empty-note">(empty' + (editing ? ' — tap Edit to write' : '') + ')</p>') + '</div>';
+    if (editing){
+      h += '<div class="cardbar">' +
+        (ui.arrange ? handle("sub", u.id) + '<button class="ibtn" data-act="up" data-kind="sub" data-id="'+u.id+'" aria-label="Move up" '+(i===0?'disabled':'')+'>↑</button><button class="ibtn" data-act="down" data-kind="sub" data-id="'+u.id+'" aria-label="Move down" '+(i===n-1?'disabled':'')+'>↓</button><button class="ibtn del" data-act="delete" data-kind="sub" data-id="'+u.id+'" aria-label="Delete this part">🗑</button>' : '') +
+        '<button class="editbtn" data-act="nav" data-to="#/e/'+u.id+'">✎ Edit</button></div>';
+    }
+    h += '</article>';
   });
-  h += '</div><button class="big" data-act="newSub" data-id="'+t.id+'">＋ Add a part</button>' + arrangeBtn(n, "parts");
+  h += '</div>';
+  if (editing) h += '<button class="big" data-act="newSub" data-id="'+t.id+'">＋ Add a part</button>' + arrangeBtn(n, "parts");
+  else if (n) h += '<p class="hint" style="text-align:center">Tap <b>✎ Edit</b> next to the title to add, change, or reorder parts.</p>';
+  else h += '<button class="big" data-act="newSub" data-id="'+t.id+'">＋ Add a part</button>';
   h += '</main>';
   return h;
 }
@@ -945,7 +1096,8 @@ function viewShare(){
 function viewHelp(){
   var h = header("#/", "Sections", "How to use") + '<main class="help">';
   h += '<button type="button" class="plain tourhelp" id="tourHelp" data-act="tour">🧭 Take the tour</button>';
-  h += '<section class="panel"><h2 style="margin-top:0">Writing</h2><ol><li><b>Sections</b> are your big groups (for example “The Deity of Christ”). Tap <b>＋ New section</b>.</li><li>Open a section and tap <b>＋ New topic</b>. Give it a name and start typing right away.</li><li>Tap the heading or the writing box to start typing.</li><li>A topic is made of <b>parts</b>, like the pieces of a tract. Tap <b>＋ Add a part</b> for the next piece, and <b>✎ Edit</b> to change one.</li><li>While editing, use the buttons for <b>Bold</b>, <i>Italic</i>, <b>Heading</b>, <b>Subheading</b>, <b>Quote</b> (a box for Bible verses), lists, <b>Link</b>, and <b>Picture</b>. Pictures are made smaller automatically so files stay small. Tap a picture while editing to make it small, medium, or full width, or to add a caption.</li><li>To rename, reorder, or delete, tap <b>✎ Change order, names, or delete</b> at the bottom of a list. Move things with the ↑ ↓ buttons, or press and drag the <b>≡ Drag</b> handle. Tap <b>✓ Done changing</b> when finished.</li><li>The phone’s <b>Back</b> button closes a pop-up first (anything you typed in it is kept for next time), then goes back one screen at a time.</li><li>To find something, tap <b>🔍 Search your notes</b> on the main screen and type a word. Tap a result to open it. If a word is spelled a little differently, close matches are shown.</li></ol></section>';
+  h += '<section class="panel" id="textSizeHelp"><h2 style="margin-top:0">Text size</h2><p>Make all the text in the app smaller or bigger. Your choice is remembered on this phone.</p>' + textSizeControls() + '</section>';
+  h += '<section class="panel"><h2 style="margin-top:0">Writing</h2><ol><li><b>Sections</b> are your big groups (for example “The Deity of Christ”). Tap <b>＋ New section</b>.</li><li>Open a section and tap <b>＋ New topic</b>. Give it a name and start typing right away.</li><li>Tap the heading or the writing box to start typing.</li><li>A topic is made of <b>parts</b>, like the pieces of a tract. Topics open in <b>reading</b> mode so your notes stay uncluttered. Tap <b>✎ Edit</b> next to the topic title when you want to change something; then each part shows its own Edit button, and you can add, reorder, or delete parts. Tap <b>✓ Done</b> when finished. A tap while reading never changes or deletes a note.</li><li>While editing a part, use the buttons for <b>Bold</b>, <i>Italic</i>, <b>Heading</b>, <b>Subheading</b>, <b>Quote</b> (a box for Bible verses), lists, <b>Link</b>, and <b>Picture</b>. Pictures are made smaller automatically so files stay small. Tap a picture while editing to make it small, medium, or full width, or to add a caption.</li><li>To rename, reorder, or delete, first tap <b>✎ Edit</b> on the topic (or on a section list, tap <b>✎ Change order, names, or delete</b>). Move things with the ↑ ↓ buttons, or press and drag the <b>≡ Drag</b> handle. Tap <b>✓ Done changing</b> when finished.</li><li>The phone’s <b>Back</b> button closes a pop-up first (anything you typed in it is kept for next time), then goes back one screen at a time.</li><li>To find something, tap <b>🔍 Search your notes</b> on the main screen and type a word. Tap a result to open it. If a word is spelled a little differently, close matches are shown.</li></ol></section>';
   h += '<section class="panel"><h2 style="margin-top:0">Put it on your home screen</h2><p>Open the app’s web address once while online. Then add it to your home screen: on <b>iPhone</b> (Safari), tap Share (the square with an arrow), then <b>Add to Home Screen</b>. On <b>Android</b> (Chrome), tap ⋮, then <b>Install and create shortcut</b>, then <b>Install</b> (not “Create shortcut”). On some phones the menu item is called <b>Install app</b> or <b>Add to Home screen</b>. After that it opens like an app and works with no internet.</p><p id="iphonepointer">On iPhone: if you already wrote notes in Safari, see <b>Keeping your notes safe</b> below first.</p><p id="installtip">If you don’t see the icon on your home screen, look in your app drawer. To put it on your home screen, long-press the icon and pick Add to Home.</p>' + (HOSTED ? '<p>This app’s web address (send it to anyone who wants the app):<br><span class="addr" id="addr">' + esc(location.origin + location.pathname) + '</span></p>' : '<p>You opened this app as a saved file, so it has no web address here. To give it to someone, use <b>⇪ Share</b> → “Blank app”.</p>') + '</section>';
   h += '<section class="panel" id="backHelp"><h2 style="margin-top:0">Backing up</h2><p>Your notes are kept inside this browser on this phone. Now and then, tap <b>🛟 Back up</b> on the main screen. It saves everything in one backup file that this app can bring back.</p><ul><li>' + backupHelpHow() + '</li><li>When you have changed something since your last backup, the button turns yellow and says <b>You have changes since your last backup</b>.</li><li><b>Save as PDF (readable)</b>, in PDF and more backup choices (at the bottom of the main screen), makes a booklet of all your notes that anyone can open. Before your phone’s print screen opens, the app tells you which button saves the PDF.</li></ul><p>Keep the file somewhere other than this phone. If you haven’t made a backup for 30 days, the main screen reminds you (a PDF doesn’t count, because it can’t be brought back).</p></section>';
   h += '<section class="panel" id="restoreHelp"><h2 style="margin-top:0">Restoring</h2><p>Near the bottom of the main screen, under your sections, tap <b>⤒ Choose a backup file</b> under <b>Restore from a backup</b>. Then pick one of two choices:</p><ul><li><b>Add to my notes</b> (safe, recommended). Nothing on this phone is changed or removed. Anything in the backup that isn’t here is added. Each part is compared word for word: an exact copy is skipped, and if a part differs even by one word, both versions are kept, with the backup’s version marked “(from backup)” right after yours. Afterward you see how many parts were added, kept twice, or skipped.</li><li><b>Replace everything with this backup</b>. This replaces ALL notes on this phone with the backup, so changes made since that backup are lost. It’s offered only for a full backup file: one from <b>🛟 Back up</b>, from <b>⇪ Send a copy somewhere else (email, Drive)…</b> or <b>⤓ Save a dated copy</b> on the <b>Back up / Save all</b> screen (on Android, these show after the first save), or from <b>⇪ Share</b> with every section checked. The file says inside how many sections and parts it has, and Replace is offered only if that still matches. A file with only some sections, like one shared from a section, can only be added to your notes. So can a backup made before version 0.11, because it looks the same inside as a shared file. The warning shows how many sections and parts the backup has compared with this phone, and warns you in bold when the backup is much smaller.</li></ul><p id="safetyHelp"><b>Safety copies.</b> Before each replace, the app keeps a copy of your notes as they were. It keeps the last 3, each with its date and how many sections and parts it has, listed under <b>Safety copies</b> in Restore on the main screen. For each one you can <b>Restore this copy</b>, <b>Save as a file</b>, or <b>Delete</b> it (the app asks first). <b>Undo last replace</b> puts back the newest one. Putting a copy back keeps the notes you had a moment ago as a copy in its place, so you can always switch back. If you already have 3, a replace first asks you to save the oldest one as a file. Only then is it removed from the app to make room, so a replace or undo never loses your notes. Safety copies are kept on this phone only, in the same place as your notes, so they don’t replace a backup file kept somewhere else.</p><p id="olderHelp">' + OLDER_BACKUP + '</p></section>';
@@ -1041,23 +1193,32 @@ function pickAndSave(text, sig){
   var p; try { p = window.showSaveFilePicker({ suggestedName:SPOT_NAME, types:[{ description:"Notes backup file", accept:{ "application/json":[".json"] } }] }); } catch(e){ p = Promise.reject(e); }
   return Promise.resolve(p).then(function(h){
     return writeHandle(h, text).then(function(){
-      spot.handle = h; meta.saveSpot = { name: h.name || SPOT_NAME, at: now() };
+      spot.handle = h; spotGranted = true; meta.saveSpot = { name: h.name || SPOT_NAME, at: now() };
       return store.set("saveHandle", h).catch(function(e){ console.warn("save spot not kept", e); });
     }).then(function(){ backupDone("file", sig); toast("Backed up to “" + spotName() + "”."); return true; });
   }, function(e){ if (e && e.name === "AbortError"){ toast("No save spot chosen, so nothing was saved."); return false; } throw e; })
   .catch(function(e){ return saveFailed(e, text, sig, false); });
 }
+var spotGranted = false;   /* set after a real grant this session; never used to skip queryPermission */
 function saveToSpot(text, sig){
   var h = spot.handle, mode = { mode:"readwrite" };
+  /* Always queryPermission before a write. A session flag must never skip that check: if the OS revoked or denied access, we must see it and never fail silently. */
   return Promise.resolve().then(function(){ return h.queryPermission ? h.queryPermission(mode) : "granted"; }).then(function(st){
-    if (st === "granted") return;
+    if (st === "granted"){ spotGranted = true; return; }
+    spotGranted = false;
     if (st === "denied") throw named("NotAllowedError");
-    /* After a restart (or many hours in the background) the phone asks once more. This must happen inside the tap. */
-    toast("Your phone asks once after a restart. Tap Allow.", 6000);
-    return Promise.resolve(h.requestPermission(mode)).then(function(s2){ if (s2 !== "granted") throw named("NotAllowedError"); });
+    /* "prompt": Android Chrome has no "Allow on every visit" for files (desktop-only). Explain first, then requestPermission inside this tap. */
+    var fname = spotName() || SPOT_NAME;
+    return modal({ title:"Chrome will ask first", message:"Next, Chrome asks whether this app may save to “" + fname + "”. Tap Allow (on some phones the button says Save changes). Chrome on phones forgets this when you close the app or leave it unused for many hours, so it may ask again. Your notes stay safe in the app either way.\n\nThis is two taps: Continue here, then Allow.", ok:"Continue", cancel:"Cancel" }).then(function(ok){
+      if (!ok) throw named("AbortError");
+      return Promise.resolve(h.requestPermission(mode)).then(function(s2){
+        if (s2 !== "granted"){ spotGranted = false; throw named("NotAllowedError"); }
+        spotGranted = true;
+      });
+    });
   }).then(function(){ return writeHandle(h, text); }).then(function(){
-    meta.saveSpot = { name: spotName(), at: now() }; backupDone("file", sig); toast("Backed up to “" + spotName() + "”."); return true;
-  }).catch(function(e){ return saveFailed(e, text, sig, true); });
+    meta.saveSpot = { name: spotName(), at: now() }; backupDone("file", sig); toast("Backed up to “" + spotName() + "”. ✓"); return true;
+  }).catch(function(e){ if (e && e.name === "AbortError"){ toast("Backup canceled, so nothing was saved."); return false; } return saveFailed(e, text, sig, true); });
 }
 function saveFailed(e, text, sig, hadSpot){
   console.warn("backup save", e);
@@ -1092,7 +1253,7 @@ function downloadBackup(blob, name, sig){ download(blob, name); backupDone("down
 function forgetSpot(){
   var f = spotName();
   return modal({ title:"Forget the save spot?", message:"The app will stop updating “" + f + "”. The file itself stays where it is.\n\nNext time you tap Back up, you’ll choose a spot again.", ok:"Forget it", cancel:"Keep it" }).then(function(ok){
-    if (!ok) return; spot.handle = null; meta.saveSpot = null; saveMeta(); store.set("saveHandle", null).catch(function(){}); render(); toast("Save spot forgotten.");
+    if (!ok) return; spot.handle = null; spotGranted = false; meta.saveSpot = null; saveMeta(); store.set("saveHandle", null).catch(function(){}); render(); toast("Save spot forgotten.");
   });
 }
 function changeSpot(){ flushEditor(); if (!data.sections.length) return info("Nothing to back up yet", "You have no sections yet."); return pickAndSave(fullBackupText(), dataSig()); }
@@ -1112,7 +1273,7 @@ function backupBlock(where){
 /* How Back up works in this browser; the backup choices screen and Help both use it (0.12.1). */
 function backupHelpHow(){
   var k = backupKind();
-  if (k === "picker") return '<b>On this phone:</b> the first time, your phone asks where to keep the file (for example Downloads or Google Drive). After that, each tap updates that same file, with no questions. After a restart, your phone may ask once more: tap <b>Allow</b>. To use a different place, open <b>📄 PDF and more backup choices</b> (at the bottom of the main screen) and tap <b>Change save spot</b> or <b>Forget save spot</b>.';
+  if (k === "picker") return '<b>On this phone:</b> the first time, your phone asks where to keep the file (for example Downloads, an SD card, or Google Drive). After that, each tap updates that same file. On Android, Chrome may ask again after you close the app or leave it unused for many hours — tap <b>Allow</b>. (Chrome on phones can’t offer “Allow on every visit” for files yet; that exists on computers.) If Allow is denied or the write fails, the app says so and offers another way to save a copy, so a backup never fails silently. To use a different place, open <b>📄 PDF and more backup choices</b> (at the bottom of the main screen) and tap <b>Change save spot</b> or <b>Forget save spot</b>.';
   if (k === "download") return '<b>On this phone:</b> each tap saves a backup file with today’s date to your Downloads. Then send it to Google Drive or email it to yourself, so a copy is kept off this phone.';
   if (k === "android") return '<b>On this phone:</b> each tap opens your phone’s share menu. Choose <b>Google Drive</b>, or email it to yourself.';
   return '<b>On this phone:</b> each tap opens your phone’s share menu. Choose <b>Save to Files</b>, <b>Google Drive</b>, or email it to yourself.';
@@ -1157,7 +1318,7 @@ function viewBackup(){
   var h = header("#/", "Sections", "Back up / Save all") + '<main>';
   var b = meta.backup || {};
   h += '<section class="panel"><h2>Back up (can restore)</h2><p>Saves all your notes in one backup file that this app can bring back.</p>' + backupBlock("page");
-  if (pickerOK() && spot.handle) h += '<div class="two"><button class="plain" data-act="changeSpot">Change save spot</button><button class="plain" data-act="forgetSpot">Forget save spot</button></div><p class="hint">After a restart, your phone may ask once before it saves. Tap <b>Allow</b>.</p>';
+  if (pickerOK() && spot.handle) h += '<div class="two"><button class="plain" data-act="changeSpot">Change save spot</button><button class="plain" data-act="forgetSpot">Forget save spot</button></div><p class="hint">On Android, Chrome may ask again after you close the app or leave it unused for many hours. Tap <b>Allow</b>. (Chrome on phones can’t remember that forever yet.)</p>';
   if (pickerOK()) h += '<button class="plain" data-act="backupCopy">' + (canShareFiles() ? '⇪ Send a copy somewhere else (email, Drive)…' : '⤓ Save a dated copy') + '</button>';
   h += (b.readable ? '<p class="hint" id="lastReadable">Last readable copy (PDF or file): ' + esc(whenText(Date.parse(b.readable))) + '.</p>' : '') +
     '<p class="hint">Keep a copy somewhere other than this phone, for example Google Drive or an email to yourself. Only a backup file counts for the 30-day reminder, because only it can be brought back into the app. A PDF or readable copy doesn’t.</p><p class="hint">To bring a backup back, use <b>Restore from a backup</b> near the bottom of the main screen.</p><p class="hint" id="olderNote">' + OLDER_BACKUP + '</p></section>';
@@ -1604,6 +1765,17 @@ document.addEventListener("click", function(e){
   if (act === "nav") return go(b.getAttribute("data-to"));
   if (act === "back") return goBack(b.getAttribute("data-to"));
   if (act === "arrange"){ ui.arrange = !ui.arrange; return render(); }
+  if (act === "toggleEdit"){
+    ui.editMode = !ui.editMode;
+    if (!ui.editMode){ ui.arrange = false; ui.editTopic = null; }
+    else { var rr = route(); ui.editTopic = rr.view === "t" ? rr.id : (rr.view === "e" && findSub(rr.id) ? findSub(rr.id).topic.id : null); }
+    if (ui.editMode && !meta.editHintShown){ meta.editHintShown = now(); saveMeta(); }
+    return render();
+  }
+  if (act === "dismissEditHint"){ meta.editHintShown = now(); saveMeta(); return render(); }
+  if (act === "textSize"){ return setTextSize(b.getAttribute("data-size")); }
+  if (act === "textBigger"){ return bumpTextSize(1); }
+  if (act === "textSmaller"){ return bumpTextSize(-1); }
   if (act === "newSection") return newSection();
   if (act === "tour") return startTour(true);
   if (act === "newTopic") return newTopic(id);
@@ -2068,6 +2240,7 @@ store.init(COPY_ID).then(function(){ return Promise.all([store.get("data"), stor
 }).then(function(r){
   if (r[0] && Array.isArray(r[0].sections)){ data = { sections: r[0].sections }; rev = typeof r[0].rev === "number" ? r[0].rev : 0; baseJSON = JSON.stringify({sections:data.sections}); }
   if (r[1]) meta = r[1]; if (!Array.isArray(meta.appliedBundles)) meta.appliedBundles = [];
+  try { var _ts = localStorage.getItem("wa-textSize"); if (_ts) meta.textSize = _ts; } catch(e){} if (!meta.textSize) meta.textSize = "m"; applyTextSize();
   loaded = true;
   var bundle = BUNDLE, message = null, oldRep = { removed:0, kept:[], updated:0 };
   data.sections = tidyOldSamples(data.sections, oldRep);
@@ -2108,7 +2281,7 @@ store.init(COPY_ID).then(function(){ return Promise.all([store.get("data"), stor
       var announce = (last ? cmpVer(APP_VERSION, last) > 0 : wasUser) && store.mode() !== "memory";
       if (last && cmpVer(APP_VERSION, last) > 0 && meta.tour && meta.tour.state === "offer") setTour("upgrade");   /* 0.12.1: an update never opens the tour by itself (a 0.12 copy that never answered the card) */
       meta.lastVersion = APP_VERSION; saveMeta(); try { localStorage.setItem(lsKey, APP_VERSION); } catch(e){}
-      if (announce) toast("Updated to version " + APP_VERSION.split(" ")[0] + ". " + (hasOwnNotes() ? "Your notes are kept. " : "") + (!last || cmpVer(last, "0.12") < 0 ? "New: a short tour. Tap ? Help, then Take the tour." : cmpVer(last, "0.12.1") < 0 ? "The PDF button and intro are now at the bottom of the main screen, and Take the tour is in Help." : "Fixes for the first-time tour and a wrong “New version ready” note. The phone’s bottom buttons now get a dark blue bar so they are easier to see (in the installed app, after Chrome updates it while the phone charges on Wi-Fi with the app closed, for example overnight)."), 8000);
+      if (announce) toast("Updated to version " + APP_VERSION.split(" ")[0] + ". " + (hasOwnNotes() ? "Your notes are kept. " : "") + (!last || cmpVer(last, "0.12") < 0 ? "New: a short tour. Tap ? Help, then Take the tour." : cmpVer(last, "0.12.1") < 0 ? "The PDF button and intro are now at the bottom of the main screen, and Take the tour is in Help." : cmpVer(last, "0.13") < 0 ? "New: Text size is in ? Help. Topics open for reading; tap ✎ Edit next to the title to change them." : "You’re on the latest version."), 8000);
     } else if (!meta.lastVersion || meta.lastVersion !== APP_VERSION){ meta.lastVersion = APP_VERSION; saveMeta(); }
   }
   tellOthers({t:"hello"});
@@ -2118,7 +2291,7 @@ store.init(COPY_ID).then(function(){ return Promise.all([store.get("data"), stor
     spot.ready = true; if (spot.handle || safety.length || (meta.tour && meta.tour.state === "offer")) refreshView();
   });
 }).catch(function(e){ console.error(e); $("#main") && ($("#main").innerHTML = '<p class="lead">Something went wrong while opening your notes. Please reload the page.</p>'); });
-window.__wa = { get data(){ return data; }, compareLine: compareLine, cmpVer: cmpVer, revealCaret: function(){ revealCaret(); }, noteBackup: function(k){ noteBackup(k); }, testOfferUpdate: function(){ offerUpdate({ postMessage: function(){ window.__skipAsked = (window.__skipAsked || 0) + 1; } }); }, checkForUpdate: function(){ checkForUpdate(); }, info: function(t, m){ return info(t, m); }, get meta(){ return meta; }, saveMeta: function(){ return saveMeta(); }, render: function(){ render(); }, storageInfo: storageInfo, needsReminder: function(){ return needsReminder(); }, backupName: function(){ return backupName(); }, readableHtml: function(){ return readableHtml(printSections()); }, copyId: COPY_ID, get movedFromShared(){ return movedFromShared; }, get rev(){ return rev; }, sanitize: sanitize, merge: merge, merge3: merge3, normalizeImport: normalizeImport, saveNow: saveNow, doSearch: doSearch, makeSamples: makeSamples, sampleSig: sampleSig, tidyOldSamples: tidyOldSamples, checkForNewer: checkForNewer, safeHref: safeHref, version: APP_VERSION, dataSig: function(){ return dataSig(); }, changed: function(){ return changedSinceBackup(); }, get spot(){ return spot; }, get safety(){ return safety.map(function(c){ return { id:c.id, at:c.at, kind:c.kind, counts:c.counts, data:JSON.stringify(c.sections) }; }); }, isFullBackup: isFullBackup, summaryText: summaryText, pickerOK: function(){ return pickerOK(); }, saveSoon: function(d){ saveSoon(d); }, get tour(){ return { state: meta.tour && meta.tour.state, how: meta.tour && meta.tour.how, open: tourOpen, steps: tourSteps().map(function(x){ return x.key; }), card: !!document.getElementById("tourCard"), auto: !!(meta.tour && meta.tour.autoAt), step: meta.tour && meta.tour.step, resumed: !!(meta.tour && meta.tour.resumed), mode: store.mode() }; }, startTour: function(){ startTour(true); }, get updatesOffered(){ return updatesOffered; }, get autoTourWaiting(){ return !!autoTourTimer; } };
+window.__wa = { get data(){ return data; }, compareLine: compareLine, cmpVer: cmpVer, revealCaret: function(){ revealCaret(); }, noteBackup: function(k){ noteBackup(k); }, testOfferUpdate: function(){ offerUpdate({ postMessage: function(){ window.__skipAsked = (window.__skipAsked || 0) + 1; } }); }, checkForUpdate: function(){ checkForUpdate(); }, info: function(t, m){ return info(t, m); }, get meta(){ return meta; }, saveMeta: function(){ return saveMeta(); }, render: function(){ render(); }, storageInfo: storageInfo, needsReminder: function(){ return needsReminder(); }, backupName: function(){ return backupName(); }, readableHtml: function(){ return readableHtml(printSections()); }, copyId: COPY_ID, get movedFromShared(){ return movedFromShared; }, get rev(){ return rev; }, sanitize: sanitize, merge: merge, merge3: merge3, normalizeImport: normalizeImport, saveNow: saveNow, doSearch: doSearch, makeSamples: makeSamples, sampleSig: sampleSig, tidyOldSamples: tidyOldSamples, checkForNewer: checkForNewer, safeHref: safeHref, version: APP_VERSION, textSize: function(){ return textSizeId(); }, setTextSize: function(id){ setTextSize(id); }, get editMode(){ return !!ui.editMode; }, setEditMode: function(on){ ui.editMode = !!on; if (!ui.editMode) ui.editTopic = null; else { var rr = route(); ui.editTopic = rr.view === "t" ? rr.id : (rr.view === "e" && findSub(rr.id) ? findSub(rr.id).topic.id : null); } render(); }, dataSig: function(){ return dataSig(); }, changed: function(){ return changedSinceBackup(); }, get spot(){ return spot; }, get safety(){ return safety.map(function(c){ return { id:c.id, at:c.at, kind:c.kind, counts:c.counts, data:JSON.stringify(c.sections) }; }); }, isFullBackup: isFullBackup, summaryText: summaryText, pickerOK: function(){ return pickerOK(); }, saveSoon: function(d){ saveSoon(d); }, get tour(){ return { state: meta.tour && meta.tour.state, how: meta.tour && meta.tour.how, open: tourOpen, steps: tourSteps().map(function(x){ return x.key; }), card: !!document.getElementById("tourCard"), auto: !!(meta.tour && meta.tour.autoAt), step: meta.tour && meta.tour.step, resumed: !!(meta.tour && meta.tour.resumed), mode: store.mode() }; }, startTour: function(){ startTour(true); }, toast: function(t, ms){ toast(t, ms); }, syncToastPad: function(){ syncToastPad(); }, get updatesOffered(){ return updatesOffered; }, get autoTourWaiting(){ return !!autoTourTimer; } };
 })();
 </script>
 </body>
